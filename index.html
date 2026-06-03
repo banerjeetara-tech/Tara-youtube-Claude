@@ -11,10 +11,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f2f4f0; --bg2:#e7eae3; --card:#ffffff; --card2:#f6f8f4;
-  --ink:#1b1f1b; --ink-dim:#79817a; --line:#e1e5dd;
-  --brand:#1f5b45; --brand2:#2d7d5f; --brand-d:#163f2f; --accent:#b0573f;
-  --shadow:0 10px 26px rgba(30,60,45,.10); --shadow-sm:0 2px 9px rgba(30,60,45,.07);
+  --bg:#f6f5fa; --bg2:#ecebf3; --card:#ffffff; --card2:#f7f6fb;
+  --ink:#221f2c; --ink-dim:#837e92; --line:#ebe9f2;
+  --brand:#5b4b8a; --brand2:#7a68ad; --brand-d:#473a6e; --accent:#d07a64;
+  --grad:linear-gradient(120deg,#c9b8ec 0%,#e9c3d6 38%,#f4c8a6 68%,#a9dcc9 100%);
+  --shadow:0 14px 34px rgba(60,45,95,.12); --shadow-sm:0 3px 12px rgba(60,45,95,.07);
   --serif:"Playfair Display",Georgia,"Times New Roman",serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -23,61 +24,62 @@ img{max-width:100%}
 body{-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--ink);min-height:100vh;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif}
 
-/* header */
-header{position:sticky;top:0;z-index:30;padding:calc(env(safe-area-inset-top) + 14px) 18px 8px;
-  background:linear-gradient(180deg, var(--bg) 70%, rgba(247,244,239,0));}
-.brandrow{display:flex;align-items:flex-end;gap:12px}
-.brand{font-family:var(--serif);font-weight:900;font-size:34px;letter-spacing:-1px;line-height:.9;color:var(--ink)}
-.brand .dot{color:var(--brand)}
-.live{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:11px;font-weight:800;letter-spacing:1px;color:var(--brand)}
-.live i{width:7px;height:7px;border-radius:50%;background:var(--brand);animation:pulse 1.6s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
-.icbtn{border:none;background:none;color:var(--ink-dim);font-size:21px;padding:4px 6px}
+/* hero header */
+header{position:sticky;top:0;z-index:30;padding:calc(env(safe-area-inset-top) + 12px) 14px 8px;background:var(--bg)}
+.hero{position:relative;border-radius:24px;padding:20px 20px 22px;overflow:hidden;background:var(--grad);box-shadow:var(--shadow)}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 80% -10%,rgba(255,255,255,.5),transparent 60%)}
+.hero .hin{position:relative;z-index:1;display:flex;align-items:flex-start;gap:10px}
+.brand{font-family:var(--serif);font-weight:900;font-size:34px;letter-spacing:-1px;line-height:.92;color:#2a2336}
+.brand .dot{color:#fff}
+.sub{margin:8px 0 0;font-size:10.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:rgba(40,30,55,.62)}
+.tools{margin-left:auto;display:flex;gap:6px}
+.icbtn{border:none;background:rgba(255,255,255,.55);color:#3a3050;font-size:17px;width:38px;height:38px;border-radius:12px;backdrop-filter:blur(6px)}
 .icbtn:active{transform:scale(.9)}
-.icbtn .sp{display:inline-block}
-.spin{animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
-.sub{margin:6px 0 0;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink-dim)}
+.sp{display:inline-block}.spin{animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+.live{position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+  background:rgba(255,255,255,.55);border-radius:999px;padding:5px 11px;font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:#5b4b8a}
+.live i{width:7px;height:7px;border-radius:50%;background:#5b4b8a;animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 
-/* chips */
-.chips{display:flex;gap:9px;overflow-x:auto;padding:14px 16px 4px;scrollbar-width:none}
+/* pill tabs */
+.chips{display:flex;gap:9px;overflow-x:auto;padding:14px 14px 4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1.5px solid var(--line);background:transparent;color:var(--ink-dim);
-  border-radius:999px;padding:10px 18px;font-size:14px;font-weight:700;white-space:nowrap;font-family:var(--serif)}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink-dim);
+  border-radius:999px;padding:10px 17px;font-size:13.5px;font-weight:700;white-space:nowrap;box-shadow:var(--shadow-sm)}
 .chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 
 /* search */
-.toolbar{padding:10px 16px 2px}
+.toolbar{padding:10px 14px 2px}
 .search{position:relative}
 .search input{width:100%;background:var(--card);border:1.5px solid var(--line);color:var(--ink);
-  border-radius:14px;padding:13px 15px 13px 42px;font-size:15px;outline:none;box-shadow:var(--shadow-sm)}
-.search input:focus{border-color:var(--brand)}
-.search .si{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--ink-dim);font-size:15px}
+  border-radius:16px;padding:14px 16px 14px 44px;font-size:15px;outline:none;box-shadow:var(--shadow-sm)}
+.search input:focus{border-color:var(--brand2)}
+.search .si{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--ink-dim);font-size:15px}
 .search input::placeholder{color:var(--ink-dim)}
 
-main{padding:8px 16px 100px;max-width:840px;margin:0 auto}
-
+main{padding:8px 14px 104px;max-width:840px;margin:0 auto}
 .topbar{display:flex;justify-content:flex-end;gap:8px;margin:4px 0 12px}
 .status{font-size:12px;color:var(--ink-dim);padding:2px 2px 12px;display:flex;gap:7px;flex-wrap:wrap}
 .pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:11px;font-weight:600}
 
-/* card — editorial, left accent */
-.card{position:relative;display:flex;gap:13px;background:var(--card);border:1px solid var(--line);
-  border-left:5px solid var(--ac,var(--brand));border-radius:14px;padding:14px 15px;margin-bottom:13px;
-  box-shadow:var(--shadow-sm);overflow:hidden;animation:rise .3s ease both}
-@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* card — soft rounded, image-forward */
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:13px;margin-bottom:14px;box-shadow:var(--shadow-sm);overflow:hidden;display:flex;gap:13px;animation:rise .3s ease both}
+.card:active{transform:scale(.992)}
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.cthumb{flex:none;width:118px;height:118px;border-radius:15px;overflow:hidden;background:var(--bg2);position:relative}
+.cthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.cthumb .pl{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.16);color:#fff;font-size:20px}
 .cmain{flex:1;min-width:0;display:flex;flex-direction:column}
-.crow1{display:flex;align-items:center;gap:9px;margin-bottom:7px}
-.badge{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:6px;
-  background:var(--ac,var(--brand));color:#fff;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.crow1{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.badge{font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:4px 9px;border-radius:999px;
+  background:var(--acb,#eee);color:var(--ac,#555);white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
 .time{font-size:11.5px;color:var(--ink-dim);font-weight:600}
-.vtitle{font-family:var(--serif);font-weight:800;font-size:19px;line-height:1.18;letter-spacing:-.3px;color:var(--ink);
+.vtitle{font-family:var(--serif);font-weight:800;font-size:18px;line-height:1.2;letter-spacing:-.2px;color:var(--ink);
   margin:0 0 6px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .vchan{font-size:12px;color:var(--ink-dim);font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.cthumb{flex:none;width:104px;height:64px;border-radius:10px;overflow:hidden;background:var(--bg2);position:relative;align-self:flex-start;margin-top:2px}
-.cthumb img{width:100%;height:100%;object-fit:cover;display:block}
-.cthumb .pl{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.18);color:#fff;font-size:18px}
-.actions{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
-.act{border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;
+.actions{display:flex;gap:7px;margin-top:auto;padding-top:10px;flex-wrap:wrap}
+.act{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:11px;
   padding:7px 12px;font-size:12px;font-weight:700;display:flex;gap:5px;align-items:center;text-decoration:none}
 .act:active{transform:scale(.94)}
 .act.go{background:var(--brand);color:#fff;border-color:var(--brand)}
@@ -86,28 +88,28 @@ main{padding:8px 16px 100px;max-width:840px;margin:0 auto}
 
 /* selection */
 .selbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;position:sticky;top:0;z-index:5;
-  background:var(--card);border:1px solid var(--line);border-radius:13px;padding:9px 10px;margin-bottom:13px;box-shadow:var(--shadow-sm)}
+  background:var(--card);border:1px solid var(--line);border-radius:15px;padding:9px 10px;margin-bottom:13px;box-shadow:var(--shadow-sm)}
 .selbar .selcount{font-size:12px;font-weight:800;color:var(--ink-dim);margin-right:auto}
-.card.pick{cursor:pointer;align-items:center;border-left-color:var(--ac)}
-.card.pick.picked{background:var(--card2);box-shadow:0 0 0 2px var(--brand) inset}
+.card.pick{cursor:pointer;align-items:center}
+.card.pick.picked{box-shadow:0 0 0 2px var(--brand) inset}
 .card .chk{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);
   display:grid;place-items:center;font-size:13px;font-weight:900;color:#fff}
 .card.pick.picked .chk{background:var(--brand);border-color:var(--brand)}
 
 /* subs */
-.box{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:14px;box-shadow:var(--shadow-sm)}
-.box h3{font-family:var(--serif);font-weight:800;font-size:18px;margin:0 0 11px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow-sm)}
+.box h3{font-family:var(--serif);font-weight:800;font-size:18px;margin:0 0 12px}
 .row{display:flex;gap:8px;margin-bottom:8px}
 .row .inp{flex:1;min-width:0}
-.inp{width:100%;border:1.5px solid var(--line);background:var(--card2);color:var(--ink);border-radius:11px;padding:11px 13px;font-size:14px;outline:none}
+.inp{width:100%;border:1.5px solid var(--line);background:var(--card2);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:14px;outline:none}
 .inp:focus{border-color:var(--brand)}
-.sel{border:1.5px solid var(--line);background:var(--card2);color:var(--ink);border-radius:11px;padding:0 10px;font-size:13px;font-weight:700;max-width:42%}
-.btn{border:none;background:var(--brand);color:#fff;border-radius:11px;padding:11px 16px;font-size:14px;font-weight:800;white-space:nowrap}
+.sel{border:1.5px solid var(--line);background:var(--card2);color:var(--ink);border-radius:12px;padding:0 10px;font-size:13px;font-weight:700;max-width:42%}
+.btn{border:none;background:var(--brand);color:#fff;border-radius:12px;padding:12px 17px;font-size:14px;font-weight:800;white-space:nowrap}
 .btn:active{transform:scale(.96)}.btn[disabled]{opacity:.55}
 .note{font-size:11.5px;color:var(--ink-dim);line-height:1.5;margin-top:6px}
-.glabel{font-family:var(--serif);font-size:15px;font-weight:800;color:var(--ink);margin:18px 2px 10px;display:flex;align-items:center;gap:8px}
+.glabel{font-family:var(--serif);font-size:16px;font-weight:800;color:var(--ink);margin:18px 2px 10px;display:flex;align-items:center;gap:8px}
 .glabel .d{width:10px;height:10px;border-radius:50%}
-.crow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:8px}
+.crow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px;margin-bottom:8px}
 .crow .dot{width:11px;height:11px;border-radius:50%;flex:none}
 .crow b{font-size:13.5px;font-weight:700;display:block;line-height:1.25}
 .crow .csel{margin-left:auto;border:1px solid var(--line);background:var(--card2);color:var(--ink-dim);border-radius:9px;font-size:11px;font-weight:700;padding:5px 4px;max-width:108px}
@@ -116,44 +118,49 @@ main{padding:8px 16px 100px;max-width:840px;margin:0 auto}
 
 .empty{text-align:center;color:var(--ink-dim);padding:46px 20px;font-size:14px;line-height:1.6}
 .empty .big{font-size:38px;margin-bottom:12px}
-.empty b{font-family:var(--serif);font-size:20px;color:var(--ink)}
+.empty b{font-family:var(--serif);font-size:21px;color:var(--ink)}
 .loader{display:grid;place-items:center;padding:46px}
 .dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--brand);animation:bb 1s infinite}
 .dots i:nth-child(2){animation-delay:.15s;background:var(--accent)}.dots i:nth-child(3){animation-delay:.3s;background:var(--brand2)}
 @keyframes bb{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-6px)}}
 
-/* bottom nav */
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:space-around;
-  padding:9px 8px calc(env(safe-area-inset-bottom) + 9px);
-  background:linear-gradient(0deg, var(--card), rgba(255,253,250,.92));
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+/* floating bottom nav */
+.nav{position:fixed;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 10px);z-index:40;display:flex;justify-content:space-around;
+  padding:8px 6px;background:rgba(255,255,255,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
 .nav button{flex:1;background:none;border:none;color:var(--ink-dim);display:flex;flex-direction:column;
-  align-items:center;gap:4px;font-size:11px;font-weight:700;padding:4px 0;position:relative}
-.nav .ic{font-size:21px;line-height:1}
-.nav button.on{color:var(--brand)}
-.nav button.on .lbl{font-family:var(--serif);font-weight:800}
-.nav .badge2{position:absolute;top:-3px;right:50%;transform:translateX(17px);background:var(--accent);color:#fff;
+  align-items:center;gap:3px;font-size:10.5px;font-weight:700;padding:6px 0;position:relative;border-radius:15px}
+.nav .ic{font-size:20px;line-height:1}
+.nav button.on{color:#fff;background:var(--brand)}
+.nav button.on .lbl{font-weight:800}
+.nav .badge2{position:absolute;top:0;right:50%;transform:translateX(16px);background:var(--accent);color:#fff;
   font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
 
-.toast{position:fixed;left:50%;bottom:94px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
-  padding:11px 17px;border-radius:13px;font-weight:700;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:60;box-shadow:var(--shadow);max-width:82%;text-align:center}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+  padding:11px 17px;border-radius:14px;font-weight:700;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:60;box-shadow:var(--shadow);max-width:82%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media (max-width:420px){
   .brand{font-size:30px}
-  .vtitle{font-size:17px}
-  .cthumb{width:92px;height:58px}
+  .vtitle{font-size:16px}
+  .cthumb{width:96px;height:104px}
 }
 </style>
 </head>
 <body>
 <header>
-  <div class="brandrow">
-    <div class="brand">Feed<span class="dot">.</span></div>
+  <div class="hero">
+    <div class="hin">
+      <div>
+        <div class="brand">Feed<span class="dot">.</span></div>
+        <p class="sub" id="sub">all your channels</p>
+      </div>
+      <div class="tools">
+        <button class="icbtn" id="refreshBtn"><span class="sp" id="rIcon">&#10227;</span></button>
+      </div>
+    </div>
     <div class="live"><i></i>LIVE</div>
-    <button class="icbtn" id="refreshBtn"><span class="sp" id="rIcon">&#10227;</span></button>
   </div>
-  <p class="sub" id="sub">one desk &middot; every source</p>
 </header>
 
 <div class="chips" id="chips" style="display:none"></div>
@@ -185,7 +192,8 @@ let SEEN=new Set(SEENRAW||[]);
 let INBOX=LS.get('yf_inbox',[]);
 let ADDED=LS.get('yf_added',[]);
 let REMOVED=new Set(LS.get('yf_removed',[]));
-let CUSTOMCATS=LS.get('yf_cats',[]);
+let CATLIST=LS.get('yf_catlist',null);
+if(!CATLIST){const old=LS.get('yf_cats',[]);CATLIST=[...BASECATS,...old.filter(c=>!BASECATS.includes(c))];}
 let CATMAP=LS.get('yf_catmap',{});
 const saveW=()=>LS.set('yf_watched',[...WATCHED]);
 const saveSaved=()=>LS.set('yf_saved',SAVED);
@@ -195,13 +203,14 @@ const saveSeen=()=>LS.set('yf_seen',[...SEEN]);
 const saveInbox=()=>LS.set('yf_inbox',INBOX);
 const saveAdded=()=>LS.set('yf_added',ADDED);
 const saveRemoved=()=>LS.set('yf_removed',[...REMOVED]);
-const saveCats=()=>LS.set('yf_cats',CUSTOMCATS);
+const saveCats=()=>LS.set('yf_catlist',CATLIST);
 const saveCatmap=()=>LS.set('yf_catmap',CATMAP);
 const savePool=()=>LS.set('yf_pool',S.pool.slice(0,700));
 
-function allCats(){return [...BASECATS,...CUSTOMCATS.filter(c=>!BASECATS.includes(c))]}
+function allCats(){return CATLIST.slice()}
 function resolveCat(id,def){if(CATMAP[id])return CATMAP[id];if(def==='News')return 'General';return def||'General'}
-function catColor(name){if(CATCOLORS[name])return CATCOLORS[name];let i=allCats().indexOf(name);if(i<0)i=0;return CATPOOL[i%CATPOOL.length]}
+const CATPAL=['#6a4a8e','#2b8a72','#c0922f','#7a8a4e','#9a5b8e','#5f8a6a','#b0573f','#8a6f4a','#4e7a6e','#a36b9e','#6e9a5b'];
+function catColor(name){let i=CATLIST.indexOf(name);if(i<0)i=0;return CATPAL[i%CATPAL.length]}
 
 let CH=[];
 function rebuildCH(){
@@ -306,25 +315,25 @@ function recommend(cat){const w=weights(),has=Object.keys(w).length>0;
 /* ---------- card ---------- */
 function matchQ(v){if(!S.q)return true;const q=S.q.toLowerCase();return (v.title||'').toLowerCase().includes(q)||(v.chan||'').toLowerCase().includes(q)}
 function card(v,i,mode){
-  const col=catColor(v.cat);
+  const col=catColor(v.cat);const tint=col+'22';
   if(S.sel){const on=S.selset.has(v.vid);
-    return `<div class="card pick ${on?'picked':''}" data-pick="${v.vid}" style="--ac:${col};animation-delay:${Math.min(i*12,240)}ms">
+    return `<div class="card pick ${on?'picked':''}" data-pick="${v.vid}" style="--ac:${col};--acb:${tint};animation-delay:${Math.min(i*12,240)}ms">
       <span class="chk">${on?'\u2713':''}</span>
-      <div class="cmain"><div class="crow1"><span class="badge">${esc(v.chan)}</span><span class="time">${timeAgo(v.ts)}</span></div>
-        <div class="vtitle">${esc(v.title)}</div></div>
-      <div class="cthumb"><img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"></div></div>`;}
+      <div class="cthumb"><img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"></div>
+      <div class="cmain"><div class="crow1"><span class="badge">${esc(v.cat)}</span><span class="time">${timeAgo(v.ts)}</span></div>
+        <div class="vtitle">${esc(v.title)}</div><div class="vchan">${esc(v.chan)}</div></div></div>`;}
   const saved=SAVED.some(x=>x.vid===v.vid);
   let acts=`<a class="act go" href="${v.link}" target="_blank" rel="noopener" ${mode==='new'?`data-newwatch="${v.vid}"`:''}>\u25b6 Watch</a>`;
   acts+=`<button class="act" data-w="${v.vid}">\u2713 Watched</button>`;
   if(mode==='saved')acts+=`<button class="act warn" data-rm="${v.vid}">\uD83D\uDDD1 Remove</button>`;
   else acts+=`<button class="act ${saved?'on':''}" data-s='${esc(JSON.stringify(v))}'>${saved?'\uD83D\uDCBE Saved':'\uD83D\uDCBE Save'}</button>`;
-  return `<div class="card" style="--ac:${col};animation-delay:${Math.min(i*16,320)}ms">
-    <div class="cmain"><div class="crow1"><span class="badge">${esc(v.chan)}</span><span class="time">${timeAgo(v.ts)}</span></div>
-      <div class="vtitle">${esc(v.title)}</div>
-      <div class="vchan">${v.cat}</div>
-      <div class="actions">${acts}</div></div>
+  return `<div class="card" style="--ac:${col};--acb:${tint};animation-delay:${Math.min(i*16,320)}ms">
     <a class="cthumb" href="${v.link}" target="_blank" rel="noopener" ${mode==='new'?`data-newwatch="${v.vid}"`:''}>
-      <img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"><span class="pl">\u25b6</span></a></div>`;
+      <img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"><span class="pl">\u25b6</span></a>
+    <div class="cmain"><div class="crow1"><span class="badge">${esc(v.cat)}</span><span class="time">${timeAgo(v.ts)}</span></div>
+      <div class="vtitle">${esc(v.title)}</div>
+      <div class="vchan">${esc(v.chan)}</div>
+      <div class="actions">${acts}</div></div></div>`;
 }
 function bindCards(scope){const root=scope||document;
   if(S.sel){root.querySelectorAll('[data-pick]').forEach(el=>el.onclick=()=>{const id=el.dataset.pick;
@@ -493,7 +502,7 @@ function viewManage(){
   paintManage();
   document.getElementById('catBtn').onclick=()=>{const n=document.getElementById('catIn').value.trim();
     if(!n)return;if(allCats().some(c=>c.toLowerCase()===n.toLowerCase()))return toast('Category exists');
-    CUSTOMCATS.push(n);saveCats();document.getElementById('catIn').value='';fillCatSelect();toast('Category created');paintManage()};
+    CATLIST.push(n);saveCats();document.getElementById('catIn').value='';fillCatSelect();toast('Category created');paintManage()};
   const addBtn=document.getElementById('addBtn'),addIn=document.getElementById('addIn'),addCat=document.getElementById('addCat'),note=document.getElementById('addNote');
   addBtn.onclick=async()=>{const val=addIn.value.trim();if(!val){note.textContent='Paste a channel link, @handle or ID.';return}
     addBtn.disabled=true;addBtn.textContent='\u2026';note.textContent='Looking up\u2026';const res=await resolveChannel(val);
@@ -510,14 +519,16 @@ function paintManage(){
   const box=document.getElementById('mlist');if(!box)return;const q=S.mq.trim().toLowerCase();
   let html=`<div class="status"><span class="pill">${CH.length} channels</span><span class="pill">${allCats().length} categories</span></div>`;
   allCats().forEach(cat=>{let rows=CH.filter(c=>c.cat===cat&&(!q||c.title.toLowerCase().includes(q)));
-    if(!rows.length)return;rows.sort((a,b)=>a.title.localeCompare(b.title));
-    html+=`<div class="glabel"><span class="d" style="background:${catColor(cat)}"></span>${esc(cat)} \u00b7 ${rows.length}</div>`;
+    rows.sort((a,b)=>a.title.localeCompare(b.title));
+    html+=`<div class="glabel"><span class="d" style="background:${catColor(cat)}"></span>${esc(cat)} \u00b7 ${rows.length}
+      <button class="act" data-rencat="${esc(cat)}" style="margin-left:auto;padding:4px 10px;font-size:11px">\u270E Rename</button></div>`;
+    if(!rows.length){html+=`<div class="note" style="margin:0 2px 6px">No channels here yet \u2014 assign some below or when adding.</div>`;return;}
     html+=rows.map(c=>`<div class="crow"><span class="dot" style="background:${catColor(c.cat)}"></span>
       <div style="min-width:0"><b>${esc(c.title)}</b></div>
       <select class="csel" data-recat="${c.id}">${allCats().map(x=>`<option ${x===c.cat?'selected':''}>${esc(x)}</option>`).join('')}</select>
       <button class="x" data-del="${c.id}">\u00d7</button></div>`).join('');
   });
-  const reset=(REMOVED.size||ADDED.length||CUSTOMCATS.length||Object.keys(CATMAP).length)
+  const reset=(REMOVED.size||ADDED.length||CATLIST.length!==BASECATS.length||Object.keys(CATMAP).length)
     ?`<button class="act warn" id="resetAll" style="margin-top:10px">\u21bb Reset all changes</button>`:'';
   box.innerHTML=html+reset;
   box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const id=b.dataset.del;
@@ -526,9 +537,21 @@ function paintManage(){
     toast('Removed');updateSub();paintManage();renderNav()});
   box.querySelectorAll('[data-recat]').forEach(s=>s.onchange=()=>{CATMAP[s.dataset.recat]=s.value;saveCatmap();
     rebuildCH();syncCats();toast('Category updated');paintManage()});
+  box.querySelectorAll('[data-rencat]').forEach(b=>b.onclick=()=>{const old=b.dataset.rencat;
+    const nn=prompt('Rename category \u201c'+old+'\u201d to:',old);if(nn===null)return;const nv=nn.trim();
+    if(!nv||nv===old)return;if(allCats().some(c=>c.toLowerCase()===nv.toLowerCase()))return toast('That name already exists');
+    renameCategory(old,nv);});
   const rb=document.getElementById('resetAll');if(rb)rb.onclick=()=>{if(confirm('Restore original channels & categories?')){
-    REMOVED=new Set();ADDED=[];CATMAP={};CUSTOMCATS=[];saveRemoved();saveAdded();saveCatmap();saveCats();
+    REMOVED=new Set();ADDED=[];CATMAP={};CATLIST=[...BASECATS];saveRemoved();saveAdded();saveCatmap();saveCats();
     rebuildCH();S.pool=[];toast('Reset');updateSub();fillCatSelect();render()}};
+}
+function renameCategory(old,nv){
+  const i=CATLIST.indexOf(old);if(i>=0)CATLIST[i]=nv;else CATLIST.push(nv);saveCats();
+  const allch=[...CHANNELS.map(c=>({id:c[0],cat:c[2]})),...ADDED.map(c=>({id:c.id,cat:c.cat}))];
+  allch.forEach(c=>{if(resolveCat(c.id,c.cat)===old)CATMAP[c.id]=nv});
+  Object.keys(CATMAP).forEach(id=>{if(CATMAP[id]===old)CATMAP[id]=nv});
+  saveCatmap();rebuildCH();syncCats();if(S.cat===old)S.cat=nv;
+  toast('Category renamed');fillCatSelect();paintManage();renderNav();
 }
 
 /* ---------- utils ---------- */
