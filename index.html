@@ -8,13 +8,13 @@
 <title>My Feed</title>
 <style>
 :root{
-  --bg:#f4f5f7; --bg2:#eceef1; --card:#ffffff; --card2:#f8f9fb;
-  --ink:#1f2533; --ink-dim:#6b7280; --line:#e4e7ec;
-  --theme:#10b981; --theme2:#34d399;
-  --brand:var(--theme); --brand2:var(--theme2); --accent:#f59e0b;
-  --t-new:#10b981; --t-foryou:#8b5cf6; --t-search:#f59e0b; --t-browse:#ec4899; --t-manage:#14b8a6;
-  --shadow:0 10px 26px rgba(40,45,60,.11);
-  --shadow-sm:0 3px 10px rgba(40,45,60,.07);
+  --bg:#f5f6f7; --bg2:#eceef0; --card:#ffffff; --card2:#f8f9fa;
+  --ink:#1e242e; --ink-dim:#697384; --line:#e4e7eb;
+  --theme:#2f6f63; --theme2:#3c8576;
+  --brand:var(--theme); --brand2:var(--theme2); --accent:#a9606a;
+  --t-new:#2f6f63; --t-foryou:#6b6196; --t-search:#a98445; --t-browse:#a9606a; --t-manage:#5b6b6f;
+  --shadow:0 8px 22px rgba(30,36,46,.09);
+  --shadow-sm:0 2px 8px rgba(30,36,46,.06);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;overflow-x:hidden;width:100%;max-width:100%}
@@ -22,9 +22,8 @@ img{max-width:100%}
 body{
   -webkit-font-smoothing:antialiased;
   background:
-    radial-gradient(860px 460px at 92% -8%, rgba(139,92,246,.10), transparent 58%),
-    radial-gradient(800px 430px at -8% 4%, rgba(16,185,129,.10), transparent 55%),
-    radial-gradient(680px 410px at 50% 114%, rgba(236,72,153,.06), transparent 60%),
+    radial-gradient(820px 440px at 95% -10%, rgba(47,111,99,.06), transparent 60%),
+    radial-gradient(760px 420px at -8% 2%, rgba(107,97,150,.05), transparent 58%),
     var(--bg);
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
@@ -103,6 +102,15 @@ main{padding:8px 16px 100px;max-width:840px;margin:0 auto}
 .act:active{transform:scale(.93)}
 .act.go{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border:none}
 .act.warn{color:var(--accent)}
+.topbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px}
+.selbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;position:sticky;top:0;z-index:5;
+  background:var(--card);border:1px solid var(--line);border-radius:13px;padding:9px 10px;margin-bottom:12px;box-shadow:var(--shadow-sm)}
+.selbar .selcount{font-size:12px;font-weight:800;color:var(--ink-dim);margin-right:auto}
+.card.pick{cursor:pointer;align-items:center}
+.card.pick.picked{border-color:var(--brand);background:var(--card2);box-shadow:0 0 0 2px var(--brand) inset}
+.card .chk{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);
+  display:grid;place-items:center;font-size:13px;font-weight:900;color:#fff;margin-left:2px}
+.card.pick.picked .chk{background:var(--brand);border-color:var(--brand)}
 
 /* manage */
 .crow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
@@ -142,8 +150,9 @@ main{padding:8px 16px 100px;max-width:840px;margin:0 auto}
 .nav button{flex:1;background:none;border:none;color:var(--ink-dim);display:flex;flex-direction:column;
   align-items:center;gap:3px;font-size:10px;font-weight:800;padding:7px 2px;position:relative;border-radius:14px;margin:0 2px;transition:.15s}
 .nav .ic{font-size:20px;line-height:1}
-.nav button.on{color:#fff;background:var(--tc);box-shadow:var(--shadow-sm)}
-.nav button.on .ic{transform:scale(1.05)}
+.nav button.on{color:var(--tc);background:var(--tcb)}
+.nav button.on .ic{transform:scale(1.04)}
+.nav button.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:var(--tc)}
 .nav .badge{position:absolute;top:1px;right:50%;transform:translateX(18px);background:var(--accent);color:#fff;
   font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 5px rgba(0,0,0,.2)}
 
@@ -191,8 +200,8 @@ const CHANNELS=[["UC-CSyyi47VX1lD9zyeABW3w","Dhruv Rathee","General"],["UC-PQKtr
 /* ======================== */
 
 const CAT={
-  AI:{c:'#8b5cf6',i:'\u2726'}, HR:{c:'#f43f5e',i:'\u25C8'}, Podcast:{c:'#f59e0b',i:'\uD83C\uDF99'},
-  News:{c:'#10b981',i:'\u25C9'}, General:{c:'#14b8a6',i:'\u25CF'}
+  AI:{c:'#6b6196',i:'\u2726'}, HR:{c:'#a9606a',i:'\u25C8'}, Podcast:{c:'#a98445',i:'\uD83C\uDF99'},
+  News:{c:'#2f6f63',i:'\u25C9'}, General:{c:'#6e8157',i:'\u25CF'}
 };
 function catColor(c){return (CAT[c]||CAT.General).c}
 const CATS=['AI','HR','Podcast','News','General'];
@@ -313,7 +322,10 @@ async function resolveVideo(url){
 }
 
 /* ---------- state ---------- */
-let S={view:'new',cat:'all',foryou:'rec',q:'',mq:'',pool:LS.get('yf_pool',[]),loading:false,feedError:false};
+let S={view:'new',cat:'all',foryou:'rec',q:'',mq:'',pool:LS.get('yf_pool',[]),loading:false,feedError:false,sel:false,selset:new Set(),selctx:'feed'};
+let HIDDEN=new Set(LS.get('yf_hidden',[]));
+const saveHidden=()=>LS.set('yf_hidden',[...HIDDEN]);
+let CURLIST=[];
 
 /* ---------- load pool (progressive) ---------- */
 async function loadPool(force){
@@ -354,14 +366,24 @@ function weights(){const m={};S.pool.forEach(v=>{if(WATCHED.has(v.vid))m[v.chan]
   TOWATCH.forEach(v=>{m[v.chan]=(m[v.chan]||0)+.5});return m}
 function recommend(cat){
   const w=weights(),has=Object.keys(w).length>0;
-  let p=S.pool.filter(v=>!WATCHED.has(v.vid));if(cat)p=p.filter(v=>v.cat===cat);
+  let p=S.pool.filter(v=>!WATCHED.has(v.vid)&&!HIDDEN.has(v.vid));if(cat)p=p.filter(v=>v.cat===cat);
   return p.map(v=>{let s=v.ts/1e10;if(w[v.chan])s+=w[v.chan]*5;if(!has&&(v.cat==='AI'||v.cat==='HR'))s+=2;return{...v,_s:s}})
     .sort((a,b)=>b._s-a._s).slice(0,60);
 }
 
 /* ---------- card ---------- */
 function card(v,i,mode){
-  const col=catColor(v.cat);const saved=TOWATCH.some(x=>x.vid===v.vid);
+  const col=catColor(v.cat);
+  if(S.sel){
+    const on=S.selset.has(v.vid);
+    return `<div class="card pick ${on?'picked':''}" data-pick="${v.vid}" style="animation-delay:${Math.min(i*14,260)}ms">
+      <span class="chk">${on?'\u2713':''}</span>
+      <div class="thumb"><img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"></div>
+      <div class="meta"><span class="cpill" style="background:${col}1A;color:${col}">${v.cat}</span>
+        <div class="vtitle">${esc(v.title)}</div><div class="vchan">${esc(v.chan)}</div>
+        <div class="vtime">${timeAgo(v.ts)}</div></div></div>`;
+  }
+  const saved=TOWATCH.some(x=>x.vid===v.vid);
   let acts=`<a class="act go" href="${v.link}" target="_blank" rel="noopener">\u25b6 Watch</a>`;
   if(mode==='watched')acts+=`<button class="act" data-uw="${v.vid}">\u21ba Unwatch</button>`;
   else if(mode==='saved')acts+=`<button class="act" data-w="${v.vid}">\u2713 Done</button><button class="act warn" data-rm="${v.vid}">\u2212 Remove</button>`;
@@ -378,6 +400,13 @@ function card(v,i,mode){
 }
 function bindCards(scope){
   const root=scope||document;
+  if(S.sel){
+    root.querySelectorAll('[data-pick]').forEach(el=>el.onclick=()=>{const id=el.dataset.pick;
+      if(S.selset.has(id))S.selset.delete(id);else S.selset.add(id);
+      el.classList.toggle('picked');el.querySelector('.chk').textContent=S.selset.has(id)?'\u2713':'';
+      const c=document.getElementById('selCount');if(c)c.textContent=`${S.selset.size} selected`;});
+    return;
+  }
   root.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{const id=b.dataset.w;
     WATCHED.add(id);saveW();INBOX=INBOX.filter(x=>x.vid!==id);saveInbox();TOWATCH=TOWATCH.filter(x=>x.vid!==id);saveT();
     toast('Marked watched');const c=b.closest('.card');if(c)c.style.opacity=.25;setTimeout(render,280);});
@@ -387,6 +416,44 @@ function bindCards(scope){
     if(TOWATCH.some(x=>x.vid===v.vid)){TOWATCH=TOWATCH.filter(x=>x.vid!==v.vid);toast('Removed from To-Watch');}
     else{TOWATCH.push(v);toast('\u2b50 Added to To-Watch');}saveT();b.textContent=TOWATCH.some(x=>x.vid===v.vid)?'\u2713 Added':'\uff0b Add';renderNav();});
 }
+
+/* ---------- top action bar (Clear + Select) and selection bar ---------- */
+function topActions(col,clearLabel,onClear,ctx){
+  // returns HTML; caller must call bindTop(...) after inserting
+  if(S.sel){
+    const del=ctx==='watched'?'Unwatch':(ctx==='towatch'||ctx==='inbox')?'Remove':'Delete';
+    return `<div class="selbar">
+      <button class="act" id="selAll">All</button>
+      <span class="selcount" id="selCount">${S.selset.size} selected</span>
+      <button class="act go" id="selWatch">\u2713 Watched</button>
+      <button class="act warn" id="selDel">\uD83D\uDDD1 ${del}</button>
+      <button class="act" id="selCancel">Cancel</button></div>`;
+  }
+  return `<div class="topbar">
+    ${clearLabel!==null?`<button class="act" id="clearAll" style="border-color:${col};color:${col}">\uD83D\uDDD1 ${clearLabel||'Clear all'}</button>`:''}
+    <button class="act" id="selBtn" style="border-color:${col};color:${col}">\u2611 Select</button></div>`;
+}
+function bindTop(col,onClear,ctx){
+  if(S.sel){
+    document.getElementById('selAll').onclick=()=>{const all=S.selset.size>=CURLIST.length;
+      S.selset = all?new Set():new Set(CURLIST.map(v=>v.vid));rerender();};
+    document.getElementById('selCancel').onclick=()=>{S.sel=false;S.selset=new Set();rerender();};
+    document.getElementById('selWatch').onclick=()=>{if(!S.selset.size){toast('Select some videos first');return;}
+      S.selset.forEach(id=>{WATCHED.add(id);INBOX=INBOX.filter(x=>x.vid!==id);TOWATCH=TOWATCH.filter(x=>x.vid!==id);});
+      saveW();saveInbox();saveT();toast(`${S.selset.size} marked watched`);S.sel=false;S.selset=new Set();render();};
+    document.getElementById('selDel').onclick=()=>{if(!S.selset.size){toast('Select some videos first');return;}
+      const ids=S.selset;
+      if(ctx==='inbox'){INBOX=INBOX.filter(x=>!ids.has(x.vid));saveInbox();}
+      else if(ctx==='towatch'){TOWATCH=TOWATCH.filter(x=>!ids.has(x.vid));saveT();}
+      else if(ctx==='watched'){ids.forEach(id=>WATCHED.delete(id));saveW();}
+      else{ids.forEach(id=>HIDDEN.add(id));saveHidden();} // feed/foryou/search: hide from feed
+      toast(`${ids.size} removed`);S.sel=false;S.selset=new Set();render();};
+  }else{
+    const cb=document.getElementById('clearAll');if(cb&&onClear)cb.onclick=onClear;
+    const sb=document.getElementById('selBtn');if(sb)sb.onclick=()=>{S.sel=true;S.selset=new Set();S.selctx=ctx;rerender();};
+  }
+}
+function rerender(){render();}
 
 /* ---------- list helpers ---------- */
 function statusLine(n){return `<div class="status"><span class="pill">${n} videos</span>
@@ -404,24 +471,24 @@ const NAV=[
   {k:'browse',ic:'\uD83D\uDDC2\uFE0F',label:'Browse',c:'var(--t-browse)'},
   {k:'manage',ic:'\u2699\uFE0F',label:'Subs',c:'var(--t-manage)'},
 ];
-const TCOL={new:'#10b981',foryou:'#8b5cf6',search:'#f59e0b',browse:'#ec4899',manage:'#14b8a6'};
+const TCOL={new:'#2f6f63',foryou:'#6b6196',search:'#a98445',browse:'#a9606a',manage:'#5b6b6f'};
 function renderNav(){
   document.getElementById('nav').innerHTML=NAV.map(n=>{
     const badge=(n.k==='new'&&INBOX.length)?`<span class="badge">${INBOX.length>99?'99+':INBOX.length}</span>`:'';
-    return `<button data-v="${n.k}" class="${S.view===n.k?'on':''}" style="--tc:${n.c}"><span class="ic">${n.ic}</span>${n.label}${badge}</button>`;
+    return `<button data-v="${n.k}" class="${S.view===n.k?'on':''}" style="--tc:${TCOL[n.k]};--tcb:${TCOL[n.k]}1f"><span class="ic">${n.ic}</span>${n.label}${badge}</button>`;
   }).join('');
-  document.getElementById('nav').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{S.view=b.dataset.v;S.q='';S.mq='';render();});
+  document.getElementById('nav').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{S.view=b.dataset.v;S.q='';S.mq='';S.sel=false;S.selset=new Set();render();});
 }
 function updateSub(){document.getElementById('sub').textContent=`${CH.length} channels \u00b7 free \u00b7 private`}
 
 const BROWSE=[
-  {k:'all',label:'All New',d:'#64748b'},
-  {k:'AI',label:'AI',d:'#8b5cf6'},{k:'HR',label:'HR',d:'#f43f5e'},
-  {k:'Podcast',label:'Podcasts',d:'#f59e0b'},{k:'News',label:'News',d:'#10b981'},
-  {k:'General',label:'General',d:'#14b8a6'},
-  {k:'towatch',label:'\u2b50 To Watch',d:'#ec4899'},{k:'watched',label:'Watched',d:'#94a3b8'},
+  {k:'all',label:'All New',d:'#5b6b6f'},
+  {k:'AI',label:'AI',d:'#6b6196'},{k:'HR',label:'HR',d:'#a9606a'},
+  {k:'Podcast',label:'Podcasts',d:'#a98445'},{k:'News',label:'News',d:'#2f6f63'},
+  {k:'General',label:'General',d:'#6e8157'},
+  {k:'towatch',label:'\u2b50 To Watch',d:'#b07d3f'},{k:'watched',label:'Watched',d:'#8b94a3'},
 ];
-const FORYOU=[{k:'rec',label:'\u2728 For You',d:'#8b5cf6'},{k:'AI',label:'\u2726 AI Picks',d:'#8b5cf6'},{k:'HR',label:'\u25C8 HR Picks',d:'#f43f5e'}];
+const FORYOU=[{k:'rec',label:'\u2728 For You',d:'#6b6196'},{k:'AI',label:'\u2726 AI Picks',d:'#6b6196'},{k:'HR',label:'\u25C8 HR Picks',d:'#a9606a'}];
 
 function setHead(t,sub,col){const el=document.getElementById('vhead');
   el.style.setProperty('--tc',col||'var(--theme)');
@@ -431,7 +498,7 @@ function showChips(items,active,pick){
   el.innerHTML=items.map(c=>{const on=active===c.k;
     return `<button class="chip ${on?'on':''}" data-k="${c.k}" style="${on&&c.d?`--cc:${c.d}`:''}">
     ${c.d?`<span class="d" style="background:${c.d}"></span>`:''}${c.label}${c.n!=null?`<span class="n">${c.n}</span>`:''}</button>`}).join('');
-  el.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>pick(b.dataset.k));
+  el.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{S.sel=false;S.selset=new Set();pick(b.dataset.k);});
 }
 function hideChips(){document.getElementById('chips').style.display='none'}
 function clearBar(col,label){return `<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
@@ -461,8 +528,9 @@ function viewNew(){
       ?`<div class="empty"><div class="big">\uD83D\uDCE1</div><b>Couldn\u2019t reach your feeds</b><br>The free servers can be busy. Try again.<br><button class="btn" id="retry" style="margin-top:16px">\u21bb Retry now</button></div>`
       :`<div class="empty"><div class="big">\uD83D\uDD14</div><b>No new drops yet</b><br>New uploads will appear here automatically on Refresh.</div>`;
   }else{
-    m.innerHTML=clearBar(TCOL.new)+statusLine(INBOX.length)+INBOX.map((v,i)=>card(v,i,'feed')).join('');
-    bindCards();onClear(()=>{INBOX=[];saveInbox();toast('Cleared');render();});
+    CURLIST=INBOX;
+    m.innerHTML=topActions(TCOL.new,'Clear all',null,'inbox')+statusLine(INBOX.length)+INBOX.map((v,i)=>card(v,i,'feed')).join('');
+    bindCards();bindTop(TCOL.new,()=>{INBOX=[];saveInbox();toast('Cleared');render();},'inbox');
   }
   const r=document.getElementById('retry');if(r)r.onclick=async()=>{S.pool=[];await loadPool(true);render();};
 }
@@ -474,11 +542,11 @@ function viewForYou(){
   showChips(FORYOU,S.foryou,k=>{S.foryou=k;render();});
   setHead('\u2728 For You', S.foryou==='rec'?'Recommended from your subscriptions, ranked by what you watch.'
     :S.foryou==='AI'?'AI videos ranked for you.':'HR videos ranked for you.',TCOL.foryou);
-  const list=recommend(S.foryou==='rec'?null:S.foryou);
-  document.getElementById('main').innerHTML=(list.length?clearBar(TCOL.foryou,'Clear these'):'')+listHTML(list,'feed','\uD83C\uDF31',
+  const list=recommend(S.foryou==='rec'?null:S.foryou);CURLIST=list;
+  document.getElementById('main').innerHTML=(list.length?topActions(TCOL.foryou,'Clear these',null,'feed'):'')+listHTML(list,'feed','\uD83C\uDF31',
     S.loading?'Loading\u2026':'Nothing to recommend yet','Watch a few videos and this fills up.');
   bindCards();
-  onClear(()=>{if(confirm('Hide all of these picks? (marks them watched)')){list.forEach(v=>WATCHED.add(v.vid));saveW();toast('Cleared');render();}});
+  if(list.length)bindTop(TCOL.foryou,()=>{if(confirm('Hide all of these picks? (marks them watched)')){list.forEach(v=>WATCHED.add(v.vid));saveW();toast('Cleared');render();}},'feed');
 }
 
 /* ---- Search ---- */
@@ -496,7 +564,8 @@ function paintSearch(){
   if(!q){box.innerHTML=`<div class="empty"><div class="big">\uD83D\uDD0E</div><b>Type to search</b><br>Search ${S.pool.length} recent videos by title or channel.</div>`;return;}
   const yt=`<a class="act go" style="margin:2px 0 14px" href="https://www.youtube.com/results?search_query=${encodeURIComponent(q)}" target="_blank" rel="noopener">\u25b6 Search \u201c${esc(q)}\u201d on YouTube</a>`;
   const chans=[...new Set(S.pool.map(v=>v.chan))].filter(c=>c.toLowerCase().includes(ql)).slice(0,10);
-  const vids=S.pool.filter(v=>(v.title||'').toLowerCase().includes(ql)||(v.chan||'').toLowerCase().includes(ql)).slice(0,80);
+  const vids=S.pool.filter(v=>!HIDDEN.has(v.vid)&&((v.title||'').toLowerCase().includes(ql)||(v.chan||'').toLowerCase().includes(ql))).slice(0,80);
+  CURLIST=vids;
   let html=yt;
   if(chans.length){
     html+=`<div class="glabel">Channels</div><div class="chips" style="padding:0 0 4px">`+
@@ -504,8 +573,8 @@ function paintSearch(){
         return `<a class="chip" style="text-decoration:none" href="https://www.youtube.com/channel/${ch?ch.id:''}/videos" target="_blank" rel="noopener"><span class="d" style="background:${col}"></span>${esc(c)}</a>`}).join('')+`</div>`;
   }
   html+=`<div class="glabel">Videos</div>`+listHTML(vids,'feed','\uD83C\uDF43','No videos match','Use the YouTube button above to search the web.');
-  box.innerHTML=clearBar(TCOL.search,'Clear search')+html;bindCards(box);
-  onClear(()=>{S.q='';const i=document.getElementById('sIn');if(i)i.value='';paintSearch();});
+  box.innerHTML=(vids.length?topActions(TCOL.search,'Clear search',null,'feed'):'')+html;bindCards(box);
+  if(vids.length)bindTop(TCOL.search,()=>{S.q='';const i=document.getElementById('sIn');if(i)i.value='';paintSearch();},'feed');
 }
 
 /* ---- Browse ---- */
@@ -518,33 +587,36 @@ function viewBrowse(){
   setHead('\uD83D\uDDC2\uFE0F '+labels[S.cat],'Latest from your subscriptions, freshest first.',bcol);
   const m=document.getElementById('main');
   if(S.cat==='towatch'){
-    const addbox=`<div class="addbox"><b>\uff0b Add any video to watch</b>
+    const addbox=S.sel?'':`<div class="addbox"><b>\uff0b Add any video to watch</b>
       <div class="row"><input class="input" id="vIn" placeholder="Paste a YouTube video link"></div>
       <div class="row"><button class="btn" id="vAdd" style="flex:1">Add to To-Watch</button></div>
       <div class="note" id="vNote">Paste any youtube.com/watch or youtu.be link \u2014 it\u2019ll be saved here.</div></div>`;
-    m.innerHTML=addbox+(TOWATCH.length?clearBar(bcol):'')+`<div id="twlist">`+listHTML(TOWATCH.slice().reverse(),'saved','\uD83D\uDD16','No saved videos yet','Add one above, or tap \uff0b Add on any video.')+`</div>`;
+    const tw=TOWATCH.slice().reverse();CURLIST=tw;
+    m.innerHTML=addbox+(tw.length?topActions(bcol,'Clear all',null,'towatch'):'')+`<div id="twlist">`+listHTML(tw,'saved','\uD83D\uDD16','No saved videos yet','Add one above, or tap \uff0b Add on any video.')+`</div>`;
     bindCards();
-    onClear(()=>{if(confirm('Remove all saved videos?')){TOWATCH=[];saveT();toast('Cleared');render();}});
-    const vIn=document.getElementById('vIn'),vAdd=document.getElementById('vAdd'),vNote=document.getElementById('vNote');
-    vAdd.onclick=async()=>{const u=vIn.value.trim();if(!u){vNote.textContent='Paste a link first.';return;}
-      vAdd.disabled=true;vAdd.textContent='Adding\u2026';vNote.textContent='Fetching video\u2026';
-      const v=await resolveVideo(u);
-      if(!v){vAdd.disabled=false;vAdd.textContent='Add to To-Watch';vNote.textContent='That doesn\u2019t look like a YouTube link.';return;}
-      if(TOWATCH.some(x=>x.vid===v.vid)){vAdd.disabled=false;vAdd.textContent='Add to To-Watch';vNote.textContent='Already in your list.';return;}
-      TOWATCH.push(v);saveT();vIn.value='';vAdd.disabled=false;vAdd.textContent='Add to To-Watch';
-      vNote.textContent='Added!';toast('Added to To-Watch');render();};
-    vIn.addEventListener('keydown',e=>{if(e.key==='Enter')vAdd.click();});
+    if(tw.length)bindTop(bcol,()=>{if(confirm('Remove all saved videos?')){TOWATCH=[];saveT();toast('Cleared');render();}},'towatch');
+    if(!S.sel){
+      const vIn=document.getElementById('vIn'),vAdd=document.getElementById('vAdd'),vNote=document.getElementById('vNote');
+      vAdd.onclick=async()=>{const u=vIn.value.trim();if(!u){vNote.textContent='Paste a link first.';return;}
+        vAdd.disabled=true;vAdd.textContent='Adding\u2026';vNote.textContent='Fetching video\u2026';
+        const v=await resolveVideo(u);
+        if(!v){vAdd.disabled=false;vAdd.textContent='Add to To-Watch';vNote.textContent='That doesn\u2019t look like a YouTube link.';return;}
+        if(TOWATCH.some(x=>x.vid===v.vid)){vAdd.disabled=false;vAdd.textContent='Add to To-Watch';vNote.textContent='Already in your list.';return;}
+        TOWATCH.push(v);saveT();vIn.value='';vAdd.disabled=false;vAdd.textContent='Add to To-Watch';
+        vNote.textContent='Added!';toast('Added to To-Watch');render();};
+      vIn.addEventListener('keydown',e=>{if(e.key==='Enter')vAdd.click();});
+    }
     return;
   }
-  if(S.cat==='watched'){const w=S.pool.filter(v=>WATCHED.has(v.vid));
-    m.innerHTML=(w.length?clearBar(bcol,'Clear history'):'')+listHTML(w,'watched','\u2713','Nothing watched yet','Mark videos watched and they appear here.');
-    bindCards();onClear(()=>{if(confirm('Clear your entire watched history?')){WATCHED=new Set();saveW();toast('History cleared');render();}});return;}
-  let list=S.pool.filter(v=>!WATCHED.has(v.vid));
+  if(S.cat==='watched'){const w=S.pool.filter(v=>WATCHED.has(v.vid));CURLIST=w;
+    m.innerHTML=(w.length?topActions(bcol,'Clear history',null,'watched'):'')+listHTML(w,'watched','\u2713','Nothing watched yet','Mark videos watched and they appear here.');
+    bindCards();if(w.length)bindTop(bcol,()=>{if(confirm('Clear your entire watched history?')){WATCHED=new Set();saveW();toast('History cleared');render();}},'watched');return;}
+  let list=S.pool.filter(v=>!WATCHED.has(v.vid)&&!HIDDEN.has(v.vid));
   if(S.cat!=='all')list=list.filter(v=>v.cat===S.cat);
-  list=list.slice(0,90);
-  m.innerHTML=(list.length?clearBar(bcol,'Mark all watched'):'')+listHTML(list,'feed','\uD83C\uDF43',S.loading?'Loading\u2026':'Nothing here yet','Tap Refresh, or add channels in Subs.');
+  list=list.slice(0,90);CURLIST=list;
+  m.innerHTML=(list.length?topActions(bcol,'Mark all watched',null,'feed'):'')+listHTML(list,'feed','\uD83C\uDF43',S.loading?'Loading\u2026':'Nothing here yet','Tap Refresh, or add channels in Subs.');
   bindCards();
-  onClear(()=>{if(confirm('Mark all shown videos as watched?')){list.forEach(v=>WATCHED.add(v.vid));saveW();toast('Marked watched');render();}});
+  if(list.length)bindTop(bcol,()=>{if(confirm('Mark all shown videos as watched?')){list.forEach(v=>WATCHED.add(v.vid));saveW();toast('Marked watched');render();}},'feed');
 }
 
 /* ---- Manage ---- */
