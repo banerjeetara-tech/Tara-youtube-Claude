@@ -8,11 +8,13 @@
 <title>My Feed</title>
 <style>
 :root{
-  --bg:#f3ece1; --bg2:#efe6d8; --card:#fffaf2; --card2:#fbf4e9;
-  --ink:#2c2622; --ink-dim:#8d8275; --line:#e7dccb;
-  --brand:#15715f; --brand2:#1f9d86; --accent:#d2643a;
-  --shadow:0 10px 26px rgba(70,55,35,.14);
-  --shadow-sm:0 3px 10px rgba(70,55,35,.08);
+  --bg:#f4f5f7; --bg2:#eceef1; --card:#ffffff; --card2:#f8f9fb;
+  --ink:#1f2533; --ink-dim:#6b7280; --line:#e4e7ec;
+  --theme:#10b981; --theme2:#34d399;
+  --brand:var(--theme); --brand2:var(--theme2); --accent:#f59e0b;
+  --t-new:#10b981; --t-foryou:#8b5cf6; --t-search:#f59e0b; --t-browse:#ec4899; --t-manage:#14b8a6;
+  --shadow:0 10px 26px rgba(40,45,60,.11);
+  --shadow-sm:0 3px 10px rgba(40,45,60,.07);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;overflow-x:hidden;width:100%;max-width:100%}
@@ -20,9 +22,9 @@ img{max-width:100%}
 body{
   -webkit-font-smoothing:antialiased;
   background:
-    radial-gradient(900px 480px at 92% -8%, rgba(125,91,166,.10), transparent 58%),
-    radial-gradient(820px 440px at -8% 4%, rgba(31,157,134,.12), transparent 55%),
-    radial-gradient(700px 420px at 50% 114%, rgba(210,100,58,.08), transparent 60%),
+    radial-gradient(860px 460px at 92% -8%, rgba(139,92,246,.10), transparent 58%),
+    radial-gradient(800px 430px at -8% 4%, rgba(16,185,129,.10), transparent 55%),
+    radial-gradient(680px 410px at 50% 114%, rgba(236,72,153,.06), transparent 60%),
     var(--bg);
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
@@ -32,7 +34,7 @@ body{
 /* header */
 header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:11px;
   padding:calc(env(safe-area-inset-top) + 12px) 16px 11px;
-  background:linear-gradient(180deg, rgba(243,236,225,.97), rgba(243,236,225,.72) 75%, transparent);
+  background:linear-gradient(180deg, rgba(247,246,243,.97), rgba(247,246,243,.72) 75%, transparent);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .logo{width:36px;height:36px;border-radius:11px;flex:none;
   background:linear-gradient(135deg,var(--brand),var(--brand2) 60%,#54b89f);
@@ -47,6 +49,7 @@ header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:11px
 /* view title */
 .vhead{padding:16px 18px 2px;max-width:840px;margin:0 auto}
 .vhead h2{margin:0;font-size:24px;font-weight:800;letter-spacing:-.6px;line-height:1.1}
+.vhead h2::after{content:"";display:block;width:44px;height:4px;border-radius:3px;background:var(--tc,var(--theme));margin-top:9px}
 .vhead p{margin:5px 0 0;font-size:12.5px;color:var(--ink-dim);line-height:1.45;max-width:90%}
 
 /* chips */
@@ -55,9 +58,16 @@ header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:11px
 .chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink-dim);
   border-radius:999px;padding:9px 15px;font-size:13px;font-weight:700;white-space:nowrap;display:flex;gap:7px;align-items:center;box-shadow:var(--shadow-sm)}
 .chip .d{width:8px;height:8px;border-radius:50%}
-.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.chip.on .d{filter:brightness(1.5)}
+.chip.on{background:var(--cc,var(--theme));color:#fff;border-color:var(--cc,var(--theme))}
+.chip.on .d{filter:brightness(2)}
 .chip .n{font-size:11px;opacity:.65;font-weight:800}
+
+/* clear-all bar */
+.barrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:2px 0 10px}
+.barrow .cnt{font-size:12px;color:var(--ink-dim);font-weight:600}
+.clrbtn{border:1.5px solid var(--theme);background:transparent;color:var(--theme);
+  border-radius:11px;padding:8px 13px;font-size:12.5px;font-weight:800;white-space:nowrap}
+.clrbtn:active{transform:scale(.94)}
 
 .toolbar{padding:8px 16px 2px;max-width:840px;margin:0 auto}
 .input{width:100%;background:var(--card);border:1.5px solid var(--line);color:var(--ink);
@@ -130,13 +140,11 @@ main{padding:8px 16px 100px;max-width:840px;margin:0 auto}
   background:linear-gradient(0deg, var(--card), rgba(255,250,242,.9));
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
 .nav button{flex:1;background:none;border:none;color:var(--ink-dim);display:flex;flex-direction:column;
-  align-items:center;gap:4px;font-size:10.5px;font-weight:800;padding:6px 0;position:relative;border-radius:12px}
-.nav .ic{font-size:21px;line-height:1;transition:transform .15s}
-.nav button.on{color:var(--brand)}
-.nav button.on .ic{transform:translateY(-1px) scale(1.06)}
-.nav button.on::after{content:"";position:absolute;top:2px;width:30px;height:30px;border-radius:10px;
-  background:rgba(31,157,134,.13);z-index:-1}
-.nav .badge{position:absolute;top:0;right:50%;transform:translateX(18px);background:var(--accent);color:#fff;
+  align-items:center;gap:3px;font-size:10px;font-weight:800;padding:7px 2px;position:relative;border-radius:14px;margin:0 2px;transition:.15s}
+.nav .ic{font-size:20px;line-height:1}
+.nav button.on{color:#fff;background:var(--tc);box-shadow:var(--shadow-sm)}
+.nav button.on .ic{transform:scale(1.05)}
+.nav .badge{position:absolute;top:1px;right:50%;transform:translateX(18px);background:var(--accent);color:#fff;
   font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 5px rgba(0,0,0,.2)}
 
 .toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);
@@ -183,8 +191,8 @@ const CHANNELS=[["UC-CSyyi47VX1lD9zyeABW3w","Dhruv Rathee","General"],["UC-PQKtr
 /* ======================== */
 
 const CAT={
-  AI:{c:'#7d5ba6',i:'\u2726'}, HR:{c:'#cf5d73',i:'\u25C8'}, Podcast:{c:'#cf9536',i:'\uD83C\uDF99'},
-  News:{c:'#1f9d86',i:'\u25C9'}, General:{c:'#7f9b53',i:'\u25CF'}
+  AI:{c:'#8b5cf6',i:'\u2726'}, HR:{c:'#f43f5e',i:'\u25C8'}, Podcast:{c:'#f59e0b',i:'\uD83C\uDF99'},
+  News:{c:'#10b981',i:'\u25C9'}, General:{c:'#14b8a6',i:'\u25CF'}
 };
 function catColor(c){return (CAT[c]||CAT.General).c}
 const CATS=['AI','HR','Podcast','News','General'];
@@ -200,6 +208,8 @@ let SEEN=new Set(SEENRAW||[]);
 let INBOX=LS.get('yf_inbox',[]);
 let ADDED=LS.get('yf_added',[]);
 let REMOVED=new Set(LS.get('yf_removed',[]));
+let DISMISSED=new Set(LS.get('yf_dismissed',[]));
+const saveDis=()=>LS.set('yf_dismissed',[...DISMISSED]);
 const saveW=()=>LS.set('yf_watched',[...WATCHED]);
 const saveT=()=>LS.set('yf_towatch',TOWATCH);
 const saveSeen=()=>LS.set('yf_seen',[...SEEN]);
@@ -388,39 +398,45 @@ function listHTML(list,mode,ic,t,sub){
 
 /* ===== NAV ===== */
 const NAV=[
-  {k:'new',ic:'\uD83C\uDD95',label:'New'},
-  {k:'foryou',ic:'\u2728',label:'For You'},
-  {k:'search',ic:'\uD83D\uDD0D',label:'Search'},
-  {k:'browse',ic:'\uD83D\uDDC2\uFE0F',label:'Browse'},
-  {k:'manage',ic:'\u2699\uFE0F',label:'Subs'},
+  {k:'new',ic:'\uD83C\uDD95',label:'New',c:'var(--t-new)'},
+  {k:'foryou',ic:'\u2728',label:'For You',c:'var(--t-foryou)'},
+  {k:'search',ic:'\uD83D\uDD0D',label:'Search',c:'var(--t-search)'},
+  {k:'browse',ic:'\uD83D\uDDC2\uFE0F',label:'Browse',c:'var(--t-browse)'},
+  {k:'manage',ic:'\u2699\uFE0F',label:'Subs',c:'var(--t-manage)'},
 ];
+const TCOL={new:'#10b981',foryou:'#8b5cf6',search:'#f59e0b',browse:'#ec4899',manage:'#14b8a6'};
 function renderNav(){
   document.getElementById('nav').innerHTML=NAV.map(n=>{
     const badge=(n.k==='new'&&INBOX.length)?`<span class="badge">${INBOX.length>99?'99+':INBOX.length}</span>`:'';
-    return `<button data-v="${n.k}" class="${S.view===n.k?'on':''}"><span class="ic">${n.ic}</span>${n.label}${badge}</button>`;
+    return `<button data-v="${n.k}" class="${S.view===n.k?'on':''}" style="--tc:${n.c}"><span class="ic">${n.ic}</span>${n.label}${badge}</button>`;
   }).join('');
   document.getElementById('nav').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{S.view=b.dataset.v;S.q='';S.mq='';render();});
 }
 function updateSub(){document.getElementById('sub').textContent=`${CH.length} channels \u00b7 free \u00b7 private`}
 
 const BROWSE=[
-  {k:'all',label:'All New',d:'var(--brand)'},
-  {k:'AI',label:'AI',d:'#7d5ba6'},{k:'HR',label:'HR',d:'#cf5d73'},
-  {k:'Podcast',label:'Podcasts',d:'#cf9536'},{k:'News',label:'News',d:'#1f9d86'},
-  {k:'General',label:'General',d:'#7f9b53'},
-  {k:'towatch',label:'\u2b50 To Watch',d:'var(--accent)'},{k:'watched',label:'Watched',d:'#9a9384'},
+  {k:'all',label:'All New',d:'#64748b'},
+  {k:'AI',label:'AI',d:'#8b5cf6'},{k:'HR',label:'HR',d:'#f43f5e'},
+  {k:'Podcast',label:'Podcasts',d:'#f59e0b'},{k:'News',label:'News',d:'#10b981'},
+  {k:'General',label:'General',d:'#14b8a6'},
+  {k:'towatch',label:'\u2b50 To Watch',d:'#ec4899'},{k:'watched',label:'Watched',d:'#94a3b8'},
 ];
-const FORYOU=[{k:'rec',label:'\u2728 For You',d:'var(--brand)'},{k:'AI',label:'\u2726 AI Picks',d:'#7d5ba6'},{k:'HR',label:'\u25C8 HR Picks',d:'#cf5d73'}];
+const FORYOU=[{k:'rec',label:'\u2728 For You',d:'#8b5cf6'},{k:'AI',label:'\u2726 AI Picks',d:'#8b5cf6'},{k:'HR',label:'\u25C8 HR Picks',d:'#f43f5e'}];
 
-function setHead(t,sub){document.getElementById('vhead').innerHTML=`<h2>${t}</h2>${sub?`<p>${sub}</p>`:''}`}
+function setHead(t,sub,col){const el=document.getElementById('vhead');
+  el.style.setProperty('--tc',col||'var(--theme)');
+  el.innerHTML=`<h2>${t}</h2>${sub?`<p>${sub}</p>`:''}`}
 function showChips(items,active,pick){
   const el=document.getElementById('chips');el.style.display='flex';
-  el.innerHTML=items.map(c=>`<button class="chip ${active===c.k?'on':''}" data-k="${c.k}">
-    ${c.d?`<span class="d" style="background:${c.d}"></span>`:''}${c.label}${c.n!=null?`<span class="n">${c.n}</span>`:''}</button>`).join('');
+  el.innerHTML=items.map(c=>{const on=active===c.k;
+    return `<button class="chip ${on?'on':''}" data-k="${c.k}" style="${on&&c.d?`--cc:${c.d}`:''}">
+    ${c.d?`<span class="d" style="background:${c.d}"></span>`:''}${c.label}${c.n!=null?`<span class="n">${c.n}</span>`:''}</button>`}).join('');
   el.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>pick(b.dataset.k));
 }
 function hideChips(){document.getElementById('chips').style.display='none'}
-function showToolbar(h){const t=document.getElementById('toolbar');t.style.display='block';t.innerHTML=h}
+function clearBar(col,label){return `<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+  <button class="act" id="clearAll" style="background:${col};color:#fff;border:none">\uD83D\uDDD1 ${label||'Clear all'}</button></div>`}
+function onClear(fn){const b=document.getElementById('clearAll');if(b)b.onclick=fn;}function showToolbar(h){const t=document.getElementById('toolbar');t.style.display='block';t.innerHTML=h}
 function hideToolbar(){const t=document.getElementById('toolbar');t.style.display='none';t.innerHTML=''}
 
 async function render(){
@@ -438,18 +454,17 @@ async function render(){
 function viewNew(){
   hideChips();hideToolbar();
   INBOX=INBOX.filter(v=>!WATCHED.has(v.vid));saveInbox();
-  setHead('\uD83C\uDD95 New Drops','Fresh videos & podcasts from your subscriptions, auto-collected. They stay until you mark them watched.');
+  setHead('\uD83C\uDD95 New Drops','Fresh videos & podcasts from your subscriptions, auto-collected. They stay until you mark them watched.',TCOL.new);
   const m=document.getElementById('main');
   if(!INBOX.length){
     m.innerHTML=S.feedError
       ?`<div class="empty"><div class="big">\uD83D\uDCE1</div><b>Couldn\u2019t reach your feeds</b><br>The free servers can be busy. Try again.<br><button class="btn" id="retry" style="margin-top:16px">\u21bb Retry now</button></div>`
       :`<div class="empty"><div class="big">\uD83D\uDD14</div><b>No new drops yet</b><br>New uploads will appear here automatically on Refresh.</div>`;
   }else{
-    m.innerHTML=`<div style="display:flex;justify-content:flex-end;margin-bottom:6px"><button class="act warn" id="clr">\uD83D\uDDD1 Clear all</button></div>`+statusLine(INBOX.length)+INBOX.map((v,i)=>card(v,i,'feed')).join('');
-    bindCards();
+    m.innerHTML=clearBar(TCOL.new)+statusLine(INBOX.length)+INBOX.map((v,i)=>card(v,i,'feed')).join('');
+    bindCards();onClear(()=>{INBOX=[];saveInbox();toast('Cleared');render();});
   }
   const r=document.getElementById('retry');if(r)r.onclick=async()=>{S.pool=[];await loadPool(true);render();};
-  const c=document.getElementById('clr');if(c)c.onclick=()=>{INBOX=[];saveInbox();toast('Cleared');render();};
 }
 
 /* ---- For You ---- */
@@ -458,17 +473,18 @@ function viewForYou(){
   if(!['rec','AI','HR'].includes(S.foryou))S.foryou='rec';
   showChips(FORYOU,S.foryou,k=>{S.foryou=k;render();});
   setHead('\u2728 For You', S.foryou==='rec'?'Recommended from your subscriptions, ranked by what you watch.'
-    :S.foryou==='AI'?'AI videos ranked for you.':'HR videos ranked for you.');
+    :S.foryou==='AI'?'AI videos ranked for you.':'HR videos ranked for you.',TCOL.foryou);
   const list=recommend(S.foryou==='rec'?null:S.foryou);
-  document.getElementById('main').innerHTML=listHTML(list,'feed','\uD83C\uDF31',
+  document.getElementById('main').innerHTML=(list.length?clearBar(TCOL.foryou,'Clear these'):'')+listHTML(list,'feed','\uD83C\uDF31',
     S.loading?'Loading\u2026':'Nothing to recommend yet','Watch a few videos and this fills up.');
   bindCards();
+  onClear(()=>{if(confirm('Hide all of these picks? (marks them watched)')){list.forEach(v=>WATCHED.add(v.vid));saveW();toast('Cleared');render();}});
 }
 
 /* ---- Search ---- */
 function viewSearch(){
   hideChips();
-  setHead('\uD83D\uDD0D Search','Find any recent video from your subscriptions \u2014 or search YouTube.');
+  setHead('\uD83D\uDD0D Search','Find any recent video from your subscriptions \u2014 or search YouTube.',TCOL.search);
   showToolbar(`<input class="input" id="sIn" placeholder="Search videos & channels\u2026" value="${esc(S.q)}">`);
   const inp=document.getElementById('sIn');
   inp.oninput=()=>{S.q=inp.value;paintSearch();};
@@ -488,7 +504,8 @@ function paintSearch(){
         return `<a class="chip" style="text-decoration:none" href="https://www.youtube.com/channel/${ch?ch.id:''}/videos" target="_blank" rel="noopener"><span class="d" style="background:${col}"></span>${esc(c)}</a>`}).join('')+`</div>`;
   }
   html+=`<div class="glabel">Videos</div>`+listHTML(vids,'feed','\uD83C\uDF43','No videos match','Use the YouTube button above to search the web.');
-  box.innerHTML=html;bindCards(box);
+  box.innerHTML=clearBar(TCOL.search,'Clear search')+html;bindCards(box);
+  onClear(()=>{S.q='';const i=document.getElementById('sIn');if(i)i.value='';paintSearch();});
 }
 
 /* ---- Browse ---- */
@@ -497,15 +514,17 @@ function viewBrowse(){
   const chips=BROWSE.map(b=>({...b,n:b.k==='towatch'?TOWATCH.length:b.k==='watched'?WATCHED.size:undefined}));
   showChips(chips,S.cat,k=>{S.cat=k;render();});
   const labels={all:'All New',AI:'AI',HR:'HR',Podcast:'Podcasts',News:'News',General:'General',towatch:'To Watch',watched:'Watched'};
-  setHead('\uD83D\uDDC2\uFE0F '+labels[S.cat],'Latest from your subscriptions, freshest first.');
+  const bcol=(BROWSE.find(b=>b.k===S.cat)||{}).d||'var(--t-browse)';
+  setHead('\uD83D\uDDC2\uFE0F '+labels[S.cat],'Latest from your subscriptions, freshest first.',bcol);
   const m=document.getElementById('main');
   if(S.cat==='towatch'){
     const addbox=`<div class="addbox"><b>\uff0b Add any video to watch</b>
       <div class="row"><input class="input" id="vIn" placeholder="Paste a YouTube video link"></div>
       <div class="row"><button class="btn" id="vAdd" style="flex:1">Add to To-Watch</button></div>
       <div class="note" id="vNote">Paste any youtube.com/watch or youtu.be link \u2014 it\u2019ll be saved here.</div></div>`;
-    m.innerHTML=addbox+`<div id="twlist">`+listHTML(TOWATCH.slice().reverse(),'saved','\uD83D\uDD16','No saved videos yet','Add one above, or tap \uff0b Later on any video.')+`</div>`;
+    m.innerHTML=addbox+(TOWATCH.length?clearBar(bcol):'')+`<div id="twlist">`+listHTML(TOWATCH.slice().reverse(),'saved','\uD83D\uDD16','No saved videos yet','Add one above, or tap \uff0b Add on any video.')+`</div>`;
     bindCards();
+    onClear(()=>{if(confirm('Remove all saved videos?')){TOWATCH=[];saveT();toast('Cleared');render();}});
     const vIn=document.getElementById('vIn'),vAdd=document.getElementById('vAdd'),vNote=document.getElementById('vNote');
     vAdd.onclick=async()=>{const u=vIn.value.trim();if(!u){vNote.textContent='Paste a link first.';return;}
       vAdd.disabled=true;vAdd.textContent='Adding\u2026';vNote.textContent='Fetching video\u2026';
@@ -517,17 +536,21 @@ function viewBrowse(){
     vIn.addEventListener('keydown',e=>{if(e.key==='Enter')vAdd.click();});
     return;
   }
-  if(S.cat==='watched'){const w=S.pool.filter(v=>WATCHED.has(v.vid));m.innerHTML=listHTML(w,'watched','\u2713','Nothing watched yet','Mark videos watched and they appear here.');bindCards();return;}
+  if(S.cat==='watched'){const w=S.pool.filter(v=>WATCHED.has(v.vid));
+    m.innerHTML=(w.length?clearBar(bcol,'Clear history'):'')+listHTML(w,'watched','\u2713','Nothing watched yet','Mark videos watched and they appear here.');
+    bindCards();onClear(()=>{if(confirm('Clear your entire watched history?')){WATCHED=new Set();saveW();toast('History cleared');render();}});return;}
   let list=S.pool.filter(v=>!WATCHED.has(v.vid));
   if(S.cat!=='all')list=list.filter(v=>v.cat===S.cat);
-  m.innerHTML=listHTML(list.slice(0,90),'feed','\uD83C\uDF43',S.loading?'Loading\u2026':'Nothing here yet','Tap Refresh, or add channels in Subs.');
+  list=list.slice(0,90);
+  m.innerHTML=(list.length?clearBar(bcol,'Mark all watched'):'')+listHTML(list,'feed','\uD83C\uDF43',S.loading?'Loading\u2026':'Nothing here yet','Tap Refresh, or add channels in Subs.');
   bindCards();
+  onClear(()=>{if(confirm('Mark all shown videos as watched?')){list.forEach(v=>WATCHED.add(v.vid));saveW();toast('Marked watched');render();}});
 }
 
 /* ---- Manage ---- */
 function viewManage(){
   hideChips();
-  setHead('\u2699\uFE0F Subscriptions','Add or remove channels. Saved on your phone.');
+  setHead('\u2699\uFE0F Subscriptions','Add or remove channels. Saved on your phone.',TCOL.manage);
   showToolbar(`<input class="input" id="mIn" placeholder="Filter your channels\u2026" value="${esc(S.mq)}">`);
   const mIn=document.getElementById('mIn');mIn.oninput=()=>{S.mq=mIn.value;paintManageList();};
   document.getElementById('main').innerHTML=`
@@ -536,8 +559,10 @@ function viewManage(){
       <div class="row"><select class="sel" id="addCat">${CATS.map(c=>`<option>${c}</option>`).join('')}</select>
         <button class="btn" id="addBtn" style="flex:1">Add channel</button></div>
       <div class="note" id="addNote">Most reliable: paste the link with \u201c/channel/UC\u2026\u201d or the UC\u2026 ID. @handles work too.</div></div>
+    ${(REMOVED.size||ADDED.length)?clearBar(TCOL.manage,'Reset all changes'):''}
     <div id="mlist"></div>`;
   paintManageList();
+  onClear(()=>{if(confirm('Restore all original channels and remove your custom changes?')){REMOVED=new Set();ADDED=[];saveRemoved();saveAdded();rebuildCH();S.pool=[];toast('Reset to defaults');updateSub();render();}});
   const addBtn=document.getElementById('addBtn'),addIn=document.getElementById('addIn'),addCat=document.getElementById('addCat'),note=document.getElementById('addNote');
   addBtn.onclick=async()=>{const val=addIn.value.trim();if(!val){note.textContent='Paste a channel link, @handle or ID first.';return;}
     addBtn.disabled=true;addBtn.textContent='Adding\u2026';note.textContent='Looking up the channel\u2026';
