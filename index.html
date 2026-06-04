@@ -363,7 +363,7 @@ async function resolveVideo(url){const id=vidId(url);if(!id||id.length<6)return 
     ts:Date.now(),thumb:`https://i.ytimg.com/vi/${id}/mqdefault.jpg`};}
 
 /* ---------- state ---------- */
-let S={v:'refresh',cat:'all',fy:'foryou',csub:'cats',q:'',mq:'',pool:LS.get('yf_pool',[]),
+let S={v:'refresh',cat:'all',fy:'foryou',csub:'cats',chf:'all',q:'',mq:'',pool:LS.get('yf_pool',[]),
   loading:false,err:false,sel:false,selset:new Set(),paint:null};
 let CURLIST=[];
 
@@ -660,7 +660,7 @@ function paintCatList(){const box=document.getElementById('catList');if(!box)ret
     html+=`<div class="box"><div class="glabel"><span class="secdot" style="background:${col}"></span>
       <span class="gtitle">${esc(cat)}</span><span class="gn">${rows.length} channels</span>
       <button class="renBtn" data-ren="${esc(cat)}">✎ Rename</button></div>
-      ${rows.map(c=>`<div class="crow"><span class="dot" style="background:${col}"></span><b>${esc(c.title)}</b>
+      ${rows.map(c=>`<div class="crow"><span class="dot" style="background:${col}"></span><b><a href="https://www.youtube.com/channel/${c.id}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(c.title)}</a></b>
         <select class="csel" data-recat="${c.id}" title="Move to category">${allCats().map(x=>`<option${x===c.cat?' selected':''}>${esc(x)}</option>`).join('')}</select></div>`).join('')}
       ${rows.length===0?`<p class="note">No channels here yet. Move channels in from another category using the dropdowns.</p>`:''}
     </div>`;});
@@ -703,8 +703,8 @@ function paintSavedList(){const box=document.getElementById('savedList');if(!box
 /* --- Watched --- */
 function paintWatched(){
   const wl=WLIST.slice().sort((a,b)=>(b.watchedAt||0)-(a.watchedAt||0));CURLIST=wl;
-  setMain(pageHead('Watched','History · download anytime')+`<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <button class="dlbtn" id="dlBtn">⬇ Download (${wl.length})</button>
+  setMain(pageHead('Watched','History · open or export the list')+`<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="dlbtn" id="dlBtn">⬇ Export list (${wl.length})</button>
     <button class="btn-s warn" id="clrW">🗑 Clear history</button></div><div id="wWrap"></div>`);
   document.getElementById('dlBtn').onclick=()=>{if(!wl.length)return toast('Nothing to download');
     const rows=[['Title','Channel','Category','Link','Watched At'],...wl.map(v=>[v.title,v.chan,v.cat||'',v.link,new Date(v.watchedAt||v.ts).toLocaleString()])];
@@ -723,8 +723,9 @@ function paintChannels(){
     <div class="row"><select class="sel" id="addCat"></select><button class="btn b1" id="addBtn" style="flex:1">Add</button></div>
     <div class="note" id="addNote">Paste a youtube.com/channel/UC… link or the UC… ID. @handles also work.</div></div>
     <div class="row" style="margin-bottom:8px"><input class="inp" id="mIn" placeholder="Filter channels…"></div>
+    <div id="chFilter" style="display:flex;gap:8px;overflow-x:auto;padding:0 0 10px;-webkit-overflow-scrolling:touch"></div>
     <div id="chList"></div>`);
-  fillCatSel();
+  fillCatSel();paintChFilter();
   document.getElementById('mIn').oninput=e=>{S.mq=e.target.value;paintChList();};
   paintChList();
   const addBtn=document.getElementById('addBtn'),addIn=document.getElementById('addIn'),addCat=document.getElementById('addCat'),note=document.getElementById('addNote');
@@ -738,14 +739,19 @@ function paintChannels(){
     note.textContent=`Added "${res.title}"! Tap ⟳ to load videos.`;toast('Channel added');updateHeader();paintChList();renderNav();};
   addIn.addEventListener('keydown',e=>{if(e.key==='Enter')addBtn.click();});}
 function fillCatSel(){const s=document.getElementById('addCat');if(s)s.innerHTML=allCats().map(c=>`<option>${esc(c)}</option>`).join('');}
+function paintChFilter(){const el=document.getElementById('chFilter');if(!el)return;
+  const items=[{k:'all',lb:'All'},...allCats().map(c=>({k:c,lb:c}))];
+  el.innerHTML=items.map(c=>`<button class="chip${S.chf===c.k?' on':''}" data-col="t4" data-chf="${esc(c.k)}">${esc(c.lb)}</button>`).join('');
+  el.querySelectorAll('[data-chf]').forEach(b=>b.onclick=()=>{S.chf=b.dataset.chf;paintChFilter();paintChList();});}
 function paintChList(){const box=document.getElementById('chList');if(!box)return;const q=(S.mq||'').trim().toLowerCase();
-  let html=`<div class="status"><span class="pill">${CH.length} channels</span></div>`;
-  allCats().forEach(cat=>{let rows=CH.filter(c=>c.cat===cat&&(!q||c.title.toLowerCase().includes(q)));
+  const cats=(S.chf&&S.chf!=='all')?[S.chf]:allCats();
+  let html=`<div class="status"><span class="pill">${CH.length} channels</span>${S.chf!=='all'?`<span class="pill">filter: ${esc(S.chf)}</span>`:''}</div>`;
+  cats.forEach(cat=>{let rows=CH.filter(c=>c.cat===cat&&(!q||c.title.toLowerCase().includes(q)));
     if(!rows.length&&q)return;rows.sort((a,b)=>a.title.localeCompare(b.title));const col=catColor(cat);
     html+=`<div class="glabel"><span class="secdot" style="background:${col}"></span><span class="gtitle">${esc(cat)}</span><span class="gn">${rows.length}</span></div>`;
     if(!rows.length){html+=`<p class="note" style="margin:0 2px 8px">No channels yet.</p>`;return;}
     html+=rows.map(c=>`<div class="crow"><span class="dot" style="background:${col}"></span>
-      <b>${esc(c.title)}</b>
+      <b><a href="https://www.youtube.com/channel/${c.id}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(c.title)}</a></b>
       <select class="csel" data-recat="${c.id}">${allCats().map(x=>`<option${x===c.cat?' selected':''}>${esc(x)}</option>`).join('')}</select>
       <button class="xbtn" data-del="${c.id}">×</button></div>`).join('');});
   const rst=(REMOVED.size||ADDED.length||Object.keys(CATMAP).length)?`<button class="btn-s warn" id="rstBtn" style="margin-top:10px">↺ Reset all changes</button>`:'';
