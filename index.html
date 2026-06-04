@@ -11,10 +11,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#e6eff2; --card:#ffffff; --card2:#f1f7f9; --ink:#33424a; --ink2:#7d909a; --line:#d6e5ea;
-  --t1:#d98aa0; --t2:#9a8fcf; --t3:#54b3a9; --t4:#e0a86b;
-  --brand:var(--t3); --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
-  --sh:0 10px 30px rgba(70,110,125,.13); --sh2:0 2px 10px rgba(70,110,125,.08);
+  --bg:#f6ece0; --card:#fffdf9; --card2:#f7eee1; --ink:#3a3142; --ink2:#9a8775; --line:#ecdcc9;
+  --t1:#d4573c; --t2:#e2843c; --t3:#d9a534; --t4:#c2705a;
+  --brand:var(--t1); --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
+  --sh:0 10px 30px rgba(150,90,55,.16); --sh2:0 2px 10px rgba(150,90,55,.09);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 html{height:100%}
@@ -26,22 +26,22 @@ button{cursor:pointer;font-family:var(--sans)}
 /* HEADER */
 header{flex:none;padding:calc(env(safe-area-inset-top)+10px) 14px 8px}
 .hero{border-radius:22px;padding:18px 20px 16px;overflow:hidden;position:relative;
-  background:linear-gradient(170deg,#bcdce8 0%,#d3e8ee 55%,#e6eff2 100%)}
-.hglow{position:absolute;inset:0;background:radial-gradient(95% 75% at 75% 0%,rgba(255,255,255,.6),transparent 62%)}
+  background:linear-gradient(145deg,#e8895a 0%,#eca877 38%,#f2cb9c 70%,#f7e6cf 100%)}
+.hglow{position:absolute;inset:0;background:radial-gradient(95% 75% at 80% 0%,rgba(255,255,255,.5),transparent 60%)}
 .hrow{display:flex;align-items:flex-start;position:relative;z-index:1}
-.logo{font-family:var(--serif);font-weight:700;font-size:30px;letter-spacing:-.5px;color:#33505a;line-height:1}
-.logo span{color:#54b3a9}
-.hmeta{margin-top:4px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(51,80,90,.6)}
+.logo{font-family:var(--serif);font-weight:700;font-size:30px;letter-spacing:-.5px;color:#4a2c1e;line-height:1}
+.logo span{color:#d4573c}
+.hmeta{margin-top:4px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(74,44,30,.62)}
 .htools{margin-left:auto;display:flex;gap:8px;align-items:center}
 .htool{width:38px;height:38px;border-radius:12px;border:none;background:rgba(255,255,255,.55);
-  backdrop-filter:blur(8px);color:#33505a;font-size:17px;display:grid;place-items:center}
+  backdrop-filter:blur(8px);color:#4a2c1e;font-size:17px;display:grid;place-items:center}
 .htool:active{transform:scale(.9)}
 .spin{animation:spin 1s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 .hstats{display:flex;gap:10px;margin-top:14px;position:relative;z-index:1}
 .hstat{background:rgba(255,255,255,.55);backdrop-filter:blur(6px);border-radius:999px;
-  padding:5px 12px;font-size:10.5px;font-weight:800;color:#3d5a64;letter-spacing:.4px}
-.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#e85d7e;animation:pulse 1.6s infinite;margin-right:4px}
+  padding:5px 12px;font-size:10.5px;font-weight:800;color:#6a3f28;letter-spacing:.4px}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#d4573c;animation:pulse 1.6s infinite;margin-right:4px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
 
 /* TAB NAV (floating pill) */
@@ -57,7 +57,7 @@ header{flex:none;padding:calc(env(safe-area-inset-top)+10px) 14px 8px}
 .nb[data-t="all"].on{background:var(--t3)}
 .nb[data-t="customize"].on{background:var(--t4)}
 .nbg{position:absolute;top:1px;right:50%;transform:translateX(14px);min-width:16px;height:16px;
-  border-radius:8px;background:#e85d7e;color:#fff;font-size:9px;font-weight:900;
+  border-radius:8px;background:#d4573c;color:#fff;font-size:9px;font-weight:900;
   display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 
 /* CHIPS */
@@ -118,6 +118,7 @@ main{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 
 .act.watch{background:var(--t1);color:#fff;border:none}
 .act.add{background:var(--t2);color:#fff;border:none}
 .act.saveon{background:var(--t3);color:#fff;border:none}
+.act.warn{color:var(--t1);border-color:var(--t1);background:var(--card2)}
 
 /* SELECTION MODE */
 .card.pick{cursor:pointer}
@@ -259,7 +260,7 @@ const CHANNELS=[["UC-CSyyi47VX1lD9zyeABW3w","Dhruv Rathee","General"],["UC-PQKtr
 
 /* ---------- categories ---------- */
 const BASECATS=['AI','HR','Podcast','General'];
-const CATPAL=['#d64f7a','#7c55c8','#2a9d8f','#e07b28','#9b59b6','#16a085','#c0392b','#8e44ad','#1a6b4a','#d35400'];
+const CATPAL=['#d4573c','#e2843c','#d9a534','#7e8a3c','#c2705a','#b07a3a','#9c5a3c','#6b8f6a','#cf6f4a','#a85f7a'];
 const LS={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},
   set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
 
@@ -388,7 +389,11 @@ async function loadPool(force){
     const first=SEENRAW===null;
     const fresh0=out.filter(v=>v.vid&&!SEEN.has(v.vid));
     out.forEach(v=>{if(v.vid)SEEN.add(v.vid)});saveSeen();SEENRAW=[...SEEN];
-    if(!first){const f=fresh0.filter(v=>!WATCHED.has(v.vid)&&!INBOX.some(x=>x.vid===v.vid));
+    if(first){ /* seed New with recent videos so it isn't empty on a fresh install */
+      let seed=out.filter(v=>!WATCHED.has(v.vid)&&v.ts>Date.now()-2*86400000);
+      if(!seed.length)seed=out.filter(v=>!WATCHED.has(v.vid)).slice(0,25);
+      INBOX=seed.slice(0,60);saveInbox();added=INBOX.length;
+    }else{const f=fresh0.filter(v=>!WATCHED.has(v.vid)&&!INBOX.some(x=>x.vid===v.vid));
       INBOX=[...f,...INBOX];if(INBOX.length>400)INBOX=INBOX.slice(0,400);saveInbox();added=f.length;}
   }else if(!had)toast("Couldn't reach feeds — tap \u27f3 to retry");
   updateHeader();renderNav();
@@ -440,8 +445,12 @@ function card(v,i,mode){
         <div class="ctime">${timeAgo(v.ts)}</div></div></div>`;}
   const watchAttr=`data-nw="${v.vid}"`;
   let acts=`<a class="act watch" href="${v.link}" target="_blank" rel="noopener" ${watchAttr}>▶ Watch</a>`;
-  if(mode!=='refresh')acts+=`<button class="act add" data-add='${esc(JSON.stringify(v))}'>＋ Add</button>`;
-  acts+=`<button class="act${saved?' saveon':''}" data-s='${esc(JSON.stringify(v))}'>${saved?'✔ Saved':'💾 Save'}</button>`;
+  if(mode==='saved'){acts+=`<button class="act warn" data-rm="${v.vid}">🗑 Remove</button>`;}
+  else if(mode==='watched'){acts+=`<button class="act warn" data-rmw="${v.vid}">🗑 Remove</button>`;}
+  else{
+    if(mode!=='refresh')acts+=`<button class="act add" data-add='${esc(JSON.stringify(v))}'>＋ Add</button>`;
+    acts+=`<button class="act${saved?' saveon':''}" data-s='${esc(JSON.stringify(v))}'>${saved?'✔ Saved':'💾 Save'}</button>`;
+  }
   return `<div class="card" style="animation-delay:${Math.min(i*14,280)}ms">
     <a class="cthumb" href="${v.link}" target="_blank" rel="noopener" ${watchAttr}>
       <img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"><span class="pl">▶</span></a>
@@ -472,11 +481,13 @@ function bindCards(root){root=root||document;
     else{SAVED.push(v);toast('💾 Saved');}saveSaved();renderNav();b.textContent=SAVED.some(x=>x.vid===v.vid)?'✔ Saved':'💾 Save';b.classList.toggle('saveon');});
   /* remove (saved list) */
   root.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{SAVED=SAVED.filter(x=>x.vid!==b.dataset.rm);saveSaved();toast('Removed');render();});
+  /* remove (watched history) */
+  root.querySelectorAll('[data-rmw]').forEach(b=>b.onclick=()=>{const id=b.dataset.rmw;WLIST=WLIST.filter(x=>x.vid!==id);WATCHED.delete(id);saveWL();saveW();toast('Removed');render();});
   /* swipe on refresh cards */
   if(S.v==='refresh')root.querySelectorAll('.card').forEach(addSwipe);}
 
 function markWatched(id){WATCHED.add(id);INBOX=INBOX.filter(x=>x.vid!==id);SAVED=SAVED.filter(x=>x.vid!==id);
-  const v=S.pool.find(x=>x.vid===id)||INBOX.find(x=>x.vid===id);
+  const v=S.pool.find(x=>x.vid===id)||INBOX.find(x=>x.vid===id)||SAVED.find(x=>x.vid===id)||CURLIST.find(x=>x.vid===id);
   if(v&&!WLIST.some(x=>x.vid===id))WLIST.unshift({...v,watchedAt:Date.now()});
   saveW();saveInbox();saveSaved();saveWL();}
 
@@ -511,6 +522,7 @@ function bindTop(onClear,ctx){
     document.getElementById('sDel').onclick=()=>{if(!S.selset.size)return toast('Select videos first');const ids=S.selset;
       if(ctx==='inbox')INBOX=INBOX.filter(x=>!ids.has(x.vid)),saveInbox();
       else if(ctx==='saved')SAVED=SAVED.filter(x=>!ids.has(x.vid)),saveSaved();
+      else if(ctx==='watched'){WLIST=WLIST.filter(x=>!ids.has(x.vid));ids.forEach(id=>WATCHED.delete(id));saveWL();saveW();}
       else{ids.forEach(id=>HIDDEN.add(id));saveHidden();}
       toast(`${ids.size} removed`);S.sel=false;S.selset=new Set();render();};
   }else{
@@ -520,9 +532,9 @@ function bindTop(onClear,ctx){
 }
 
 /* ---------- NAV ---------- */
-const TABS=[{k:'refresh',ic:'↺',lb:'Refresh'},{k:'foryou',ic:'✦',lb:'For You'},{k:'all',ic:'▤',lb:'All'},{k:'customize',ic:'⚙',lb:'Customize'}];
+const TABS=[{k:'refresh',ic:'↺',lb:'New'},{k:'foryou',ic:'✦',lb:'For You'},{k:'all',ic:'▤',lb:'All'},{k:'customize',ic:'⚙',lb:'Customize'}];
 function renderNav(){
-  document.getElementById('nav').innerHTML=TABS.map(t=>{const badge=(t.k==='refresh'&&INBOX.length)?`<span class="nbg">${INBOX.length>99?'99+':INBOX.length}</span>`:t.k==='customize'&&SAVED.length?`<span class="nbg" style="background:var(--t3)">${SAVED.length}</span>`:'';
+  document.getElementById('nav').innerHTML=TABS.map(t=>{const badge=(t.k==='refresh'&&INBOX.length)?`<span class="nbg">${INBOX.length>99?'99+':INBOX.length}</span>`:'';
     return`<button class="nb${S.v===t.k?' on':''}" data-t="${t.k}"><span class="ic">${t.ic}</span>${t.lb}${badge}</button>`;}).join('');
   document.getElementById('nav').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{S.v=b.dataset.t;S.q='';S.sel=false;S.selset=new Set();render();});
 }
@@ -551,7 +563,7 @@ async function render(){
 /* ===================== REFRESH ===================== */
 function viewRefresh(){
   hideChips();showSearch();
-  setMain(pageHead('Refresh','New videos · auto-collected')+`<div id="list"></div>`);
+  setMain(pageHead('New','Fresh videos · auto-collected')+`<div id="list"></div>`);
   S.paint=paintRefresh;paintRefresh();
 }
 function paintRefresh(){
@@ -614,7 +626,7 @@ function paintAll(){
 /* ===================== CUSTOMIZE ===================== */
 function viewCustomize(){
   hideChips();hideSearch();
-  const subs=[{k:'cats',lb:'📂 Categories'},{k:'saved',lb:'💾 Saved'},{k:'watched',lb:'👁 Watched'},{k:'channels',lb:'📡 Channels'}];
+  const subs=[{k:'cats',lb:'📂 Categories'},{k:'saved',lb:`💾 Saved · ${SAVED.length}`},{k:'watched',lb:`👁 Watched · ${WLIST.length}`},{k:'channels',lb:'📡 Channels'}];
   const el=document.getElementById('chips');el.style.display='flex';
   el.innerHTML=subs.map(s=>`<button class="chip${S.csub===s.k?' on':''}" data-col="t4" data-cs="${s.k}">${s.lb}</button>`).join('');
   el.querySelectorAll('[data-cs]').forEach(b=>b.onclick=()=>{S.csub=b.dataset.cs;render();});
@@ -632,19 +644,21 @@ function paintCats(){
     CATLIST.push(n);saveCats();document.getElementById('catIn').value='';toast('Category created');paintCatList();};
   paintCatList();}
 function paintCatList(){const box=document.getElementById('catList');if(!box)return;
-  let html='';allCats().forEach(cat=>{const rows=CH.filter(c=>c.cat===cat);const col=catColor(cat);
+  let html='';allCats().forEach(cat=>{const rows=CH.filter(c=>c.cat===cat).sort((a,b)=>a.title.localeCompare(b.title));const col=catColor(cat);
     html+=`<div class="box"><div class="glabel"><span class="secdot" style="background:${col}"></span>
       <span class="gtitle">${esc(cat)}</span><span class="gn">${rows.length} channels</span>
       <button class="renBtn" data-ren="${esc(cat)}">✎ Rename</button></div>
-      ${rows.slice(0,5).map(c=>`<div class="crow"><span class="dot" style="background:${col}"></span><b>${esc(c.title)}</b></div>`).join('')}
-      ${rows.length>5?`<p class="note">+${rows.length-5} more — see Channels tab</p>`:''}
-      ${rows.length===0?`<p class="note">No channels here yet. Assign channels in the Channels tab.</p>`:''}
+      ${rows.map(c=>`<div class="crow"><span class="dot" style="background:${col}"></span><b>${esc(c.title)}</b>
+        <select class="csel" data-recat="${c.id}" title="Move to category">${allCats().map(x=>`<option${x===c.cat?' selected':''}>${esc(x)}</option>`).join('')}</select></div>`).join('')}
+      ${rows.length===0?`<p class="note">No channels here yet. Move channels in from another category using the dropdowns.</p>`:''}
     </div>`;});
   box.innerHTML=html;
   box.querySelectorAll('[data-ren]').forEach(b=>b.onclick=()=>{const old=b.dataset.ren;
     const nv=(prompt(`Rename "${old}" to:`,old)||'').trim();
     if(!nv||nv===old)return;if(allCats().some(c=>c.toLowerCase()===nv.toLowerCase()))return toast('Name exists');
-    renameCategory(old,nv);});}
+    renameCategory(old,nv);});
+  box.querySelectorAll('[data-recat]').forEach(s=>s.onchange=()=>{CATMAP[s.dataset.recat]=s.value;saveCatmap();
+    rebuildCH();syncCats();toast('Channel moved');paintCatList();});}
 function renameCategory(old,nv){const i=CATLIST.indexOf(old);if(i>=0)CATLIST[i]=nv;saveCats();
   const all=[...CHANNELS.map(c=>({id:c[0],cat:c[2]})),...ADDED.map(c=>({id:c.id,cat:c.cat}))];
   all.forEach(c=>{if(resolveCat(c.id,c.cat)===old)CATMAP[c.id]=nv;});
@@ -664,39 +678,31 @@ function paintSaved(){
     const v=await resolveVideo(u);vAdd.disabled=false;vAdd.textContent='Save video';
     if(!v){vNote.textContent="Doesn't look like a YouTube link.";return;}
     if(SAVED.some(x=>x.vid===v.vid)){vNote.textContent='Already saved.';return;}
-    SAVED.push(v);saveSaved();vIn.value='';vNote.textContent='Saved!';toast('💾 Saved');paintSavedList();};
+    SAVED.push(v);saveSaved();vIn.value='';vNote.textContent='Saved!';toast('💾 Saved');render();};
   vIn.addEventListener('keydown',e=>{if(e.key==='Enter')vAdd.click();});
   paintSavedList();}
 function paintSavedList(){const box=document.getElementById('savedList');if(!box)return;
-  if(!SAVED.length){box.innerHTML=`<div class="empty"><div class="big">💾</div><b>Nothing saved yet</b><p>Tap 💾 Save on any video or paste a link above.</p></div>`;return;}
-  const list=SAVED.slice().reverse();
-  box.innerHTML=`<div class="status"><span class="pill">${list.length} saved</span></div>`+
-    list.map(v=>{const col=catColor(v.cat);const tint=col+'22';
-      return`<div class="card"><a class="cthumb" href="${v.link}" target="_blank"><img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"></a>
-        <div class="cmain"><div class="catpill" style="background:${tint};color:${col}">${esc(v.cat)}</div>
-          <div class="ctitle">${esc(v.title)}</div><div class="cchan">${esc(v.chan)}</div><div class="ctime">${timeAgo(v.ts)}</div>
-          <div class="cacts"><a class="act watch" href="${v.link}" target="_blank">▶ Watch</a>
-            <button class="act warn" data-rm="${v.vid}">🗑 Remove</button></div></div></div>`;}).join('');
-  box.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{SAVED=SAVED.filter(x=>x.vid!==b.dataset.rm);saveSaved();toast('Removed');paintSavedList();});}
+  const list=SAVED.slice().reverse();CURLIST=list;
+  if(!list.length){box.innerHTML=`<div class="empty"><div class="big">💾</div><b>Nothing saved yet</b><p>Tap 💾 Save on any video or paste a link above.</p></div>`;return;}
+  box.innerHTML=topBar('saved','Clear all',null)+`<div class="status"><span class="pill">${list.length} saved</span></div>`+
+    list.map((v,i)=>card(v,i,'saved')).join('');
+  bindCards(box);bindTop(()=>{if(confirm('Remove all saved videos?')){SAVED=[];saveSaved();toast('Cleared');render();}},'saved');}
 
 /* --- Watched --- */
 function paintWatched(){
-  const wl=WLIST.sort((a,b)=>(b.watchedAt||0)-(a.watchedAt||0));
+  const wl=WLIST.slice().sort((a,b)=>(b.watchedAt||0)-(a.watchedAt||0));CURLIST=wl;
   setMain(pageHead('Watched','History · download anytime')+`<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <button class="dlbtn" id="dlBtn">⬇ Download history</button>
-    <button class="btn-s warn" id="clrW">🗑 Clear history</button></div>
-    <div class="status"><span class="pill">${wl.length} watched</span></div>`+
-    (wl.length?wl.map(v=>{const col=catColor(v.cat||'General');const tint=col+'22';
-      return`<div class="card"><a class="cthumb" href="${v.link}" target="_blank"><img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"></a>
-        <div class="cmain"><div class="catpill" style="background:${tint};color:${col}">${esc(v.cat||'General')}</div>
-          <div class="ctitle">${esc(v.title)}</div><div class="cchan">${esc(v.chan)}</div>
-          <div class="ctime">Watched ${timeAgo(v.watchedAt||v.ts)}</div></div></div>`;}).join('')
-      :`<div class="empty"><div class="big">👁</div><b>No history yet</b><p>Videos you watch will appear here automatically.</p></div>`));
-  document.getElementById('dlBtn').onclick=()=>{
+    <button class="dlbtn" id="dlBtn">⬇ Download (${wl.length})</button>
+    <button class="btn-s warn" id="clrW">🗑 Clear history</button></div><div id="wWrap"></div>`);
+  document.getElementById('dlBtn').onclick=()=>{if(!wl.length)return toast('Nothing to download');
     const rows=[['Title','Channel','Category','Link','Watched At'],...wl.map(v=>[v.title,v.chan,v.cat||'',v.link,new Date(v.watchedAt||v.ts).toLocaleString()])];
     const csv=rows.map(r=>r.map(x=>'"'+(x||'').replace(/"/g,'""')+'"').join(',')).join('\n');
     const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='watched.csv';a.click();toast('Downloaded!');};
-  document.getElementById('clrW').onclick=()=>{if(confirm('Clear all watched history?')){WLIST=[];WATCHED=new Set();saveW();saveWL();toast('Cleared');paintWatched();}};}
+  document.getElementById('clrW').onclick=()=>{if(confirm('Clear all watched history?')){WLIST=[];WATCHED=new Set();saveW();saveWL();toast('Cleared');render();}};
+  const wrap=document.getElementById('wWrap');
+  if(!wl.length){wrap.innerHTML=`<div class="empty"><div class="big">👁</div><b>No history yet</b><p>Videos you watch will appear here automatically.</p></div>`;return;}
+  wrap.innerHTML=topBar('watched','',null)+`<div class="status"><span class="pill">${wl.length} watched</span></div>`+wl.map((v,i)=>card(v,i,'watched')).join('');
+  bindCards(wrap);bindTop(null,'watched');}
 
 /* --- Channels --- */
 function paintChannels(){
@@ -744,12 +750,13 @@ function paintChList(){const box=document.getElementById('chList');if(!box)retur
 /* ---------- init ---------- */
 document.getElementById('refreshBtn').onclick=async()=>{const p=document.getElementById('newpill');if(p)p.classList.remove('show');S.pool=[];await loadPool(true);render();};
 updateHeader();render();
-if(S.pool.length)setTimeout(loadPool,800);   // had cached pool -> silent background refresh
-let lChk=Date.now();
-/* re-check quietly when you return to the app (new videos surface via the pill, view is not disturbed) */
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&Date.now()-lChk>3*60*1000){lChk=Date.now();loadPool();}});
-/* keep checking quietly while the app is open */
-setInterval(()=>{if(document.visibilityState==='visible'&&!S.loading){lChk=Date.now();loadPool();}},15*60*1000);
+if(S.pool.length)setTimeout(loadPool,600);   // had cached pool -> silent background refresh
+/* re-check quietly on open, return, focus & periodically — reliable in Home-Screen (standalone) mode too.
+   loadPool is cache-gated per channel (20 min) so calls are cheap; new videos surface via the pill. */
+const recheck=()=>{if(document.visibilityState!=='hidden'&&!S.loading)loadPool();};
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')recheck();});
+window.addEventListener('pageshow',()=>recheck());
+window.addEventListener('focus',recheck);
+setInterval(recheck,8*60*1000);
 </script>
 </body></html>
