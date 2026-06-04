@@ -1,779 +1,1134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Feed.</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>Brief</title>
+
+<!-- iOS / PWA: add to home screen, full screen, no browser chrome -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Brief" />
+<meta name="theme-color" content="#F4EEE2" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Crect width='180' height='180' rx='40' fill='%23191510'/%3E%3Ctext x='50%25' y='62%25' font-family='Georgia,serif' font-size='120' font-weight='900' fill='%23F4EEE2' text-anchor='middle'%3EB%3C/text%3E%3Ccircle cx='128' cy='126' r='9' fill='%23B4321F'/%3E%3C/svg%3E" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --bg:#f6ece0; --card:#fffdf9; --card2:#f7eee1; --ink:#3a3142; --ink2:#9a8775; --line:#ecdcc9;
-  --t1:#d4573c; --t2:#e2843c; --t3:#d9a534; --t4:#c2705a;
-  --brand:var(--t1); --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
-  --sh:0 10px 30px rgba(150,90,55,.16); --sh2:0 2px 10px rgba(150,90,55,.09);
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-html{height:100%}
-html,body{overflow-x:hidden;width:100%;background:var(--bg)}
-body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-img{max-width:100%;display:block}
-button{cursor:pointer;font-family:var(--sans)}
+  :root{
+    --ink:#191510; --paper:#F4EEE2; --card:#FBF7EE; --accent:#B4321F; --mute:#8A8071;
+    --sans:'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    --serif:'Fraunces', Georgia, serif;
+  }
+  *{box-sizing:border-box; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--sans);
+    overscroll-behavior-y:none;
+  }
+  #app{
+    max-width:520px; margin:0 auto; min-height:100%;
+    display:flex; flex-direction:column;
+    background:var(--paper);
+    position:relative;
+  }
+  .no-bar::-webkit-scrollbar{display:none;}
+  .no-bar{scrollbar-width:none;}
 
-/* HEADER */
-header{flex:none;padding:calc(env(safe-area-inset-top)+10px) 14px 8px}
-.hero{border-radius:22px;padding:18px 20px 16px;overflow:hidden;position:relative;
-  background:linear-gradient(145deg,#e8895a 0%,#eca877 38%,#f2cb9c 70%,#f7e6cf 100%)}
-.hglow{position:absolute;inset:0;background:radial-gradient(95% 75% at 80% 0%,rgba(255,255,255,.5),transparent 60%)}
-.hrow{display:flex;align-items:flex-start;position:relative;z-index:1}
-.logo{font-family:var(--serif);font-weight:700;font-size:30px;letter-spacing:-.5px;color:#4a2c1e;line-height:1}
-.logo span{color:#d4573c}
-.hmeta{margin-top:4px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(74,44,30,.62)}
-.htools{margin-left:auto;display:flex;gap:8px;align-items:center}
-.htool{width:38px;height:38px;border-radius:12px;border:none;background:rgba(255,255,255,.55);
-  backdrop-filter:blur(8px);color:#4a2c1e;font-size:17px;display:grid;place-items:center}
-.htool:active{transform:scale(.9)}
-.spin{animation:spin 1s linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
-.hstats{display:flex;gap:10px;margin-top:14px;position:relative;z-index:1}
-.hstat{background:rgba(255,255,255,.55);backdrop-filter:blur(6px);border-radius:999px;
-  padding:5px 12px;font-size:10.5px;font-weight:800;color:#6a3f28;letter-spacing:.4px}
-.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#d4573c;animation:pulse 1.6s infinite;margin-right:4px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+  /* header */
+  header{
+    padding:calc(env(safe-area-inset-top) + 12px) 20px 12px;
+    border-bottom:1px solid rgba(25,21,16,.10);
+    display:flex; align-items:flex-end; justify-content:space-between;
+    position:sticky; top:0; z-index:20;
+    background:rgba(244,238,226,.92); backdrop-filter:blur(12px);
+  }
+  .brand{font-family:var(--serif); font-weight:900; font-size:30px; line-height:1; letter-spacing:-.02em;}
+  .brand b{color:var(--accent);}
+  .tagline{font-size:10.5px; color:var(--mute); letter-spacing:.16em; text-transform:uppercase; margin-top:5px; font-weight:600;}
+  .hbtns{display:flex; align-items:center; gap:14px;}
+  .live{display:flex; align-items:center; gap:5px;}
+  .dot{width:7px; height:7px; border-radius:99px; background:var(--accent); display:inline-block; animation:pulse 1.6s infinite;}
+  .live span{font-size:10px; font-weight:700; color:var(--accent); letter-spacing:.1em;}
+  .iconbtn{border:none; background:transparent; cursor:pointer; color:var(--ink); padding:4px; display:flex;}
+  .iconbtn svg{width:21px; height:21px;}
+  .spin{animation:spin 1s linear infinite;}
 
-/* TAB NAV (floating pill) */
-.nav{flex:none;margin:6px 14px calc(env(safe-area-inset-bottom)+8px);max-width:840px;width:calc(100% - 28px);
-  align-self:center;display:flex;background:#ffffff;border:1.5px solid #c5dbe1;border-radius:24px;padding:7px;
-  box-shadow:0 6px 18px rgba(60,100,115,.18),0 -2px 10px rgba(60,100,115,.05)}
-.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;
-  font-family:var(--sans);font-size:10.5px;font-weight:700;color:#5b6b73;padding:8px 0;border-radius:18px;position:relative}
-.nb .ic{font-size:20px;line-height:1}
-.nb.on{color:#fff}
-.nb[data-t="refresh"].on{background:var(--t1)}
-.nb[data-t="foryou"].on{background:var(--t2)}
-.nb[data-t="all"].on{background:var(--t3)}
-.nb[data-t="customize"].on{background:var(--t4)}
-.nbg{position:absolute;top:1px;right:50%;transform:translateX(14px);min-width:16px;height:16px;
-  border-radius:8px;background:#d4573c;color:#fff;font-size:9px;font-weight:900;
-  display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  /* chips */
+  .chips{display:flex; overflow-x:auto; gap:8px; padding:12px 16px 10px; border-bottom:1px solid rgba(25,21,16,.07); background:rgba(255,255,255,.25); position:sticky; top:var(--hh,64px); z-index:15;}
+  .chip{flex:0 0 auto; padding:7px 14px; border-radius:999px; border:1.5px solid rgba(25,21,16,.14); background:transparent; color:var(--ink); font-family:var(--sans); font-weight:600; font-size:13px; cursor:pointer; white-space:nowrap; transition:all .18s;}
+  .chip.on{color:#fff;}
+  #searchbar{padding:0 16px 10px; background:rgba(255,255,255,.25);}
+  #searchbar input{width:100%; border:1.5px solid rgba(25,21,16,.16); border-radius:11px; padding:10px 13px; font-family:var(--sans); font-size:14px; background:#fff; color:var(--ink); outline:none;}
+  #searchbar input:focus{border-color:var(--accent);}
 
-/* CHIPS */
-.chips-row{flex:none;display:flex;gap:8px;overflow-x:auto;padding:12px 14px 4px;scrollbar-width:none}
-.chips-row::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);
-  border-radius:999px;padding:9px 16px;font-size:13px;font-weight:700;white-space:nowrap;box-shadow:var(--sh2)}
-.chip.on{color:#fff;border-color:transparent}
-.chip[data-col="t1"].on{background:var(--t1)}
-.chip[data-col="t2"].on{background:var(--t2)}
-.chip[data-col="t3"].on{background:var(--t3)}
-.chip[data-col="t4"].on{background:var(--t4)}
+  /* body */
+  main{flex:1; overflow-y:auto; padding:14px 16px calc(env(safe-area-inset-bottom) + 92px);}
 
-/* SEARCH */
-.sbar{flex:none;padding:8px 14px 2px}
-.sbar input{width:100%;background:var(--card);border:1.5px solid var(--line);color:var(--ink);
-  border-radius:14px;padding:12px 14px 12px 42px;font-size:14.5px;font-family:var(--sans);outline:none;box-shadow:var(--sh2)}
-.sbar input:focus{border-color:var(--brand)}
-.sbar input::placeholder{color:var(--ink2)}
-.sbar .si{position:absolute;left:26px;top:50%;transform:translateY(-50%);color:var(--ink2);font-size:15px;pointer-events:none}
-.sbarwrap{position:relative}
+  /* print card */
+  .pcard{background:var(--card); border:1px solid rgba(25,21,16,.08); border-radius:16px; padding:16px; margin-bottom:12px; cursor:pointer; touch-action:manipulation; animation:rise .4s ease both;}
+  .meta{display:flex; align-items:center; gap:8px; margin-bottom:9px;}
+  .badge{font-family:var(--sans); font-weight:700; font-size:10px; letter-spacing:.06em; color:#fff; padding:3px 8px; border-radius:5px; text-transform:uppercase;}
+  .time{font-size:11px; color:var(--mute); display:flex; align-items:center; gap:4px;}
+  .ptitle{font-family:var(--serif); font-weight:600; font-size:18.5px; line-height:1.18; margin:0;}
+  .pdek{font-size:13px; color:#5c5446; line-height:1.45; margin:8px 0 0;}
 
-/* MAIN */
-main{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 14px 18px;max-width:860px;margin:0 auto;width:100%}
+  /* video card */
+  .vcard{display:block; text-decoration:none; color:inherit; margin-bottom:16px; cursor:pointer; animation:rise .4s ease both;}
+  .thumbwrap{position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#211c14; border:1px solid rgba(25,21,16,.1);}
+  .thumbwrap img{width:100%; height:100%; object-fit:cover; display:block;}
+  .playbtn{position:absolute; inset:0; margin:auto; width:54px; height:54px; border-radius:99px; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,.25);}
+  .vtitle{font-family:var(--serif); font-weight:600; font-size:16px; line-height:1.22; margin:10px 0 0;}
+  .vmeta{display:flex; align-items:center; gap:8px; margin-top:7px;}
 
-/* TOP ACTIONS BAR */
-.tbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-.tbar .btn-s{border:1.5px solid var(--line);background:var(--card);color:var(--ink2);
-  border-radius:10px;padding:7px 12px;font-size:12px;font-weight:700;display:flex;gap:5px;align-items:center}
-.tbar .btn-s.warn{color:var(--t1);border-color:var(--t1)}
-.tbar .spacer{flex:1}
-.selbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;background:var(--card);
-  border:1px solid var(--line);border-radius:13px;padding:9px 10px;margin-bottom:12px;box-shadow:var(--sh2);position:sticky;top:2px;z-index:5}
-.selbar .sc{font-size:12px;font-weight:800;color:var(--ink2);flex:1}
-.status{font-size:12px;color:var(--ink2);display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
-.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:11px;font-weight:600}
+  /* open-channel tile (fallback) */
+  .openchan{display:flex; align-items:center; justify-content:space-between; gap:10px; text-decoration:none; color:inherit; background:var(--card); border:1px solid rgba(25,21,16,.08); border-radius:14px; padding:16px; margin-bottom:12px;}
+  .openchan .lbl{font-family:var(--serif); font-weight:600; font-size:16px;}
 
-/* CARD */
-.card{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;
-  padding:12px;margin-bottom:12px;box-shadow:var(--sh2);overflow:hidden;position:relative;
-  animation:rise .28s ease both;transition:transform .15s,opacity .15s}
-.card:active{transform:scale(.99)}
-@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.cthumb{flex:none;width:112px;height:112px;border-radius:14px;overflow:hidden;background:var(--card2);position:relative;align-self:flex-start}
-.cthumb img{width:100%;height:100%;object-fit:cover}
-.cthumb .pl{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.18);color:#fff;font-size:18px}
-.cmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-.catpill{align-self:flex-start;font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
-  padding:3px 8px;border-radius:7px}
-.ctitle{font-family:var(--serif);font-weight:600;font-size:16.5px;line-height:1.25;color:var(--ink);letter-spacing:-.1px;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cchan{font-size:11.5px;color:var(--ink2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ctime{font-size:11px;color:var(--ink2);opacity:.8}
-.cacts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.act{border:1.5px solid var(--line);background:var(--card2);color:var(--ink);border-radius:10px;
-  padding:6px 10px;font-size:11.5px;font-weight:700;display:flex;gap:4px;align-items:center;text-decoration:none;white-space:nowrap}
-.act:active{transform:scale(.93)}
-.act.watch{background:var(--t1);color:#fff;border:none}
-.act.add{background:var(--t2);color:#fff;border:none}
-.act.saveon{background:var(--t3);color:#fff;border:none}
-.act.warn{color:var(--t1);border-color:var(--t1);background:var(--card2)}
+  /* summary */
+  .subtoggle{display:flex; background:rgba(25,21,16,.06); border-radius:12px; padding:4px; margin-bottom:14px;}
+  .subtoggle button{flex:1; border:none; cursor:pointer; padding:9px 0; border-radius:9px; background:transparent; color:var(--ink); font-family:var(--sans); font-weight:600; font-size:13px;}
+  .subtoggle button.on{background:var(--ink); color:var(--paper);}
+  .sumhead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:14px;}
+  .sumhead .lt{font-size:12px; font-weight:600; color:var(--mute); display:flex; align-items:center; gap:6px;}
+  .refresh{border:none; background:var(--ink); color:var(--paper); border-radius:10px; padding:9px 14px; font-family:var(--sans); font-weight:700; font-size:12.5px; cursor:pointer; display:flex; align-items:center; gap:7px;}
+  .refresh:disabled{opacity:.55;}
+  .scard{background:var(--card); border:1px solid rgba(25,21,16,.08); border-left:3px solid var(--accent); border-radius:12px; padding:13px 15px; margin-bottom:10px; touch-action:manipulation; animation:rise .4s ease both;}
+  .podbtn{width:100%; border:none; cursor:pointer; background:#3E5C50; color:#F4EEE2; border-radius:13px; padding:14px 0; font-family:var(--sans); font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:9px; margin-bottom:16px; box-shadow:0 4px 14px rgba(62,92,80,.28); transition:opacity .15s;}
+  .podbtn:disabled{opacity:.45;}
+  .snum{font-family:var(--sans); font-weight:800; font-size:11px; color:var(--accent); letter-spacing:.04em;}
+  .stitle{font-family:var(--serif); font-weight:600; font-size:15.5px; line-height:1.25; margin:3px 0 0;}
+  .sdesc{font-size:12.5px; color:#5c5446; line-height:1.4; margin:5px 0 0;}
 
-/* SELECTION MODE */
-.card.pick{cursor:pointer}
-.card.pick.ticked{box-shadow:0 0 0 2.5px var(--brand)inset}
-.chkbox{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);
-  display:grid;place-items:center;font-size:12px;font-weight:900;color:#fff;flex-shrink:0}
-.ticked .chkbox{background:var(--brand);border-color:var(--brand)}
+  /* states */
+  .note{text-align:center; color:var(--mute); font-size:12.5px; line-height:1.5; padding:10px 14px;}
+  .skel{background:var(--card); border:1px solid rgba(25,21,16,.06); border-radius:16px; height:96px; margin-bottom:12px; position:relative; overflow:hidden;}
+  .skel::after{content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent); animation:shimmer 1.3s infinite;}
 
-/* SECTION HEADER (All grouped view) */
-.sechead{display:flex;flex-direction:column;align-items:center;gap:8px;margin:28px 0 16px}
-.sechead .stitle{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:-.2px}
-.sechead .divider{width:42px;height:2px;background:var(--ink);opacity:.4;border-radius:2px}
-.sechead-line{display:none}
-.secdot{width:10px;height:10px;border-radius:50%;flex:none}
-.secn{font-size:11px;font-weight:700;color:var(--ink2)}
-.showmore{width:100%;border:1.5px dashed var(--line);background:transparent;color:var(--ink2);
-  border-radius:12px;padding:11px;font-weight:700;font-size:12.5px;margin-bottom:12px;font-family:var(--sans)}
+  /* bottom tabs */
+  nav{position:fixed; left:0; right:0; bottom:0; max-width:520px; margin:0 auto; background:rgba(244,238,226,.94); backdrop-filter:blur(12px); border-top:1px solid rgba(25,21,16,.1); display:flex; padding:10px 12px calc(env(safe-area-inset-bottom) + 12px); z-index:30;}
+  nav button{flex:1; border:none; background:transparent; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--mute); font-family:var(--sans);}
+  nav button.on{color:var(--accent);}
+  nav button svg{width:22px; height:22px;}
+  nav span{font-size:11px; font-weight:500;}
+  nav button.on span{font-weight:700;}
 
-/* NEW-VIDEOS PILL (non-disruptive refresh) */
-.newpill{position:fixed;top:calc(env(safe-area-inset-top)+128px);left:50%;z-index:58;border:none;
-  transform:translateX(-50%) translateY(-12px);background:var(--t3);color:#fff;border-radius:999px;
-  padding:10px 20px;font-family:var(--sans);font-weight:700;font-size:13px;box-shadow:var(--sh);
-  opacity:0;pointer-events:none;transition:.28s cubic-bezier(.2,.8,.2,1)}
-.newpill.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
-.newpill:active{transform:translateX(-50%) scale(.94)}
+  /* sheets / settings */
+  .scrim{position:fixed; inset:0; z-index:40; background:rgba(10,9,7,.45); display:flex; align-items:flex-end; max-width:520px; margin:0 auto;}
+  .sheet{width:100%; background:var(--paper); border-radius:26px 26px 0 0; padding:10px 22px calc(env(safe-area-inset-bottom) + 30px); animation:up .28s cubic-bezier(.2,.8,.2,1) both; max-height:86vh; overflow-y:auto;}
+  .grip{width:42px; height:5px; border-radius:99px; background:rgba(25,21,16,.2); margin:4px auto 16px;}
+  .field{width:100%; border:1.5px solid rgba(25,21,16,.18); border-radius:10px; padding:11px 12px; font-family:var(--sans); font-size:14px; margin-top:6px; background:#fff;}
+  .pbtn{margin-top:16px; width:100%; border:none; cursor:pointer; background:var(--ink); color:var(--paper); border-radius:12px; padding:14px 0; font-family:var(--sans); font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;}
 
-/* DATE GROUP LABEL (Refresh) */
-.dgroup{font-family:var(--sans);font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;
-  color:var(--ink2);margin:20px 4px 10px;display:flex;align-items:center;gap:10px}
-.dgroup::after{content:"";flex:1;height:1px;background:var(--line)}
-
-/* PAGE TITLE (centered, underline — matches reference) */
-.pagetitle{text-align:center;margin:6px 0 12px}
-.pagetitle h2{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.2px;color:var(--ink)}
-.pagetitle .divider{width:34px;height:2px;background:var(--ink);opacity:.4;margin:7px auto 0;border-radius:2px}
-.pagetitle p{font-size:11px;color:var(--ink2);margin-top:6px;letter-spacing:.3px}
-
-/* TODAY BANNER */
-.daybanner{background:linear-gradient(120deg,var(--t1) 15%,var(--t2));color:#fff;border-radius:12px;
-  padding:8px 13px;margin-bottom:11px;display:flex;align-items:center;gap:9px}
-.daybanner .cnt{font-family:var(--serif);font-weight:900;font-size:20px;line-height:1}
-.daybanner .lbl{font-size:11px;font-weight:700;opacity:.9}
-.daybanner .hint{font-size:9.5px;opacity:.72;margin-top:1px}
-
-/* CUSTOMIZE */
-.box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:14px;box-shadow:var(--sh2)}
-.box h3{font-family:var(--serif);font-weight:800;font-size:18px;margin-bottom:12px;color:var(--ink)}
-.inp{width:100%;border:1.5px solid var(--line);background:var(--card2);color:var(--ink);border-radius:11px;
-  padding:11px 13px;font-size:14px;font-family:var(--sans);outline:none}
-.inp:focus{border-color:var(--brand)}
-.row{display:flex;gap:8px;margin-bottom:8px;align-items:stretch}
-.row .inp{flex:1;min-width:0}
-.sel{border:1.5px solid var(--line);background:var(--card2);color:var(--ink);border-radius:11px;
-  padding:0 10px;font-size:13px;font-weight:700;font-family:var(--sans);max-width:44%}
-.btn{border:none;border-radius:11px;padding:11px 16px;font-size:14px;font-weight:800;
-  font-family:var(--sans);white-space:nowrap;color:#fff}
-.btn.b1{background:var(--t1)}.btn.b2{background:var(--t2)}.btn.b3{background:var(--t3)}.btn.b4{background:var(--t4)}
-.btn:disabled{opacity:.5}
-.note{font-size:11.5px;color:var(--ink2);line-height:1.5;margin-top:6px}
-.glabel{display:flex;align-items:center;gap:8px;margin:18px 0 10px}
-.glabel .gtitle{font-family:var(--serif);font-size:16px;font-weight:800}
-.glabel .gn{font-size:11px;font-weight:700;color:var(--ink2)}
-.glabel .renBtn{margin-left:auto;border:1px solid var(--line);background:var(--card2);color:var(--ink2);
-  border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;font-family:var(--sans)}
-.crow{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
-  border-radius:13px;padding:10px 11px;margin-bottom:8px}
-.crow .dot{width:10px;height:10px;border-radius:50%;flex:none}
-.crow b{font-size:13.5px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.crow .csel{border:1px solid var(--line);background:var(--card2);color:var(--ink2);border-radius:9px;
-  font-size:11px;font-weight:700;font-family:var(--sans);padding:5px 4px;max-width:100px}
-.crow .xbtn{border:1px solid var(--line);background:var(--card2);color:var(--t1);
-  border-radius:9px;width:32px;height:32px;font-size:16px;font-weight:900;flex:none;display:grid;place-items:center}
-.crow .xbtn:active{transform:scale(.88)}
-.dlbtn{display:flex;align-items:center;gap:8px;border:1.5px solid var(--t3);background:transparent;
-  color:var(--t3);border-radius:12px;padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);margin-bottom:12px}
-
-/* EMPTY / LOADER */
-.empty{text-align:center;padding:44px 20px;color:var(--ink2)}
-.empty .big{font-size:40px;margin-bottom:12px}
-.empty b{font-family:var(--serif);font-size:20px;color:var(--ink)}
-.empty p{font-size:13.5px;line-height:1.5;margin-top:6px}
-.loader{display:grid;place-items:center;padding:50px}
-.dots{display:flex;gap:6px}
-.dots i{width:9px;height:9px;border-radius:50%;animation:bb 1s infinite}
-.dots i:nth-child(1){background:var(--t1)}.dots i:nth-child(2){background:var(--t2);animation-delay:.15s}
-.dots i:nth-child(3){background:var(--t3);animation-delay:.3s}
-@keyframes bb{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(-6px)}}
-
-/* TOAST */
-.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(14px);
-  background:var(--ink);color:#fff;padding:11px 18px;border-radius:14px;font-weight:700;
-  font-size:13px;opacity:0;transition:.22s;z-index:99;pointer-events:none;
-  box-shadow:var(--sh);max-width:82%;text-align:center;white-space:pre-line}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* SWIPE HINTS */
-.card.swl{transform:translateX(-60px)!important;opacity:.4}
-.card.swr{transform:translateX(60px)!important;opacity:.4}
-
-@media(max-width:400px){
-  .ctitle{font-size:15.5px}
-  .cthumb{width:96px;height:100px}
-}
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes up{from{transform:translateY(100%);} to{transform:none;}}
+  @keyframes shimmer{to{transform:translateX(100%);}}
 </style>
 </head>
 <body>
-
-<header>
-  <div class="hero">
-    <div class="hglow"></div>
-    <div class="hrow">
-      <div><div class="logo">Feed<span>.</span></div><div class="hmeta" id="hmeta">loading&hellip;</div></div>
-      <div class="htools">
-        <button class="htool" id="refreshBtn"><span id="rIcon">&#10227;</span></button>
-      </div>
+<div id="app">
+  <header>
+    <div>
+      <div class="brand">Brief<b>.</b></div>
+      <div class="tagline">One desk · every source</div>
     </div>
-    <div class="hstats">
-      <div class="hstat"><span class="live-dot"></span>LIVE</div>
-      <div class="hstat" id="hvidct">0 videos</div>
-      <div class="hstat" id="htodayct">0 new today</div>
+    <div class="hbtns">
+      <span class="live"><span class="dot"></span><span>LIVE</span></span>
+      <button class="iconbtn" id="btnRefresh" title="Reload news">
+        <svg id="refreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+      </button>
+      <button class="iconbtn" id="btnWebSearch" title="Search News">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
     </div>
-  </div>
-</header>
+  </header>
 
-<div class="chips-row" id="chips" style="display:none"></div>
-<div class="sbar sbarwrap" id="sbar" style="display:none">
-  <span class="si">&#128269;</span>
-  <input id="qIn" placeholder="Search&hellip;">
+  <div class="chips no-bar" id="chips"></div>
+  <div id="searchbar"><input id="q" type="search" placeholder="Search news…" autocomplete="off" /></div>
+  <main class="no-bar" id="main"></main>
+
+  <nav id="nav">
+    <button data-tab="print" class="on">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+      <span>Print</span>
+    </button>
+    <button data-tab="video">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <span>YouTube</span>
+    </button>
+    <button data-tab="summary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.94 14.34A6 6 0 1 1 12 3a6 6 0 0 1 2.06 11.34M9 21h6M10 17.5h4"/><path d="m19 3 .7 2.3L22 6l-2.3.7L19 9l-.7-2.3L16 6l2.3-.7z"/></svg>
+      <span>Summary</span>
+    </button>
+    <button data-tab="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span>Search</span>
+    </button>
+  </nav>
 </div>
-<main id="main"></main>
-
-<nav class="nav" id="nav"></nav>
-<div class="toast" id="toast"></div>
 
 <script>
-/* ===================== CHANNEL DATA ===================== */
-const CHANNELS=[["UC-CSyyi47VX1lD9zyeABW3w","Dhruv Rathee","General"],["UC-PQKtrPhk3JXyjUleBLgQQ","AI Edge","AI"],["UC00ifCvU8YOOzbL3RdiSTDw","GetsetflySCIENCE by Gaurav Thakur","General"],["UC16niRr50-MSBwiO3YDb3RA","BBC News","News"],["UC2Nwwobsd0ctkzVieXZvyQA","Ankit Inspires India","General"],["UC2UXDak6o7rBm23k3Vv5dww","Tina Huang","AI"],["UC2_Wb_-crFN9TGj9a7pv9XA","Jayant Mundhra","General"],["UC2ojq-nuP8ceeHqiroeKhBA","Nate Herk | AI Automation","General"],["UC3-IDKNIABI98_J2aqa2YjQ","Think School Hindi","General"],["UC3KK7ENB_ierAXvrxVNnbZQ","Ben AI","AI"],["UC3nj1JNLJvK9jV4KTbZw_qg","SparX by Mukesh Bansal","Podcast"],["UC3uJIdRFTGgLWrUziaHbzrg","NDTV Profit","News"],["UC3ypnIXMFRu69CAim2QaDPw","digitalOdd by Deepak Roy","General"],["UC4QZ_LsYcvcq7qOsOhpAX4A","ColdFusion","General"],["UC4ZVkG3RQPzvZk7alIVjcCg","theMITmonk","General"],["UC6JEz6BKg7hX7idKecN7QYA","Jist","General"],["UC6RJ7-PaXg6TIH2BzZfTV7w","Times Now","News"],["UC6WzPg6yxF9dQx2_O6R4lww","Nitish Rajput","General"],["UC6_a1EFyDRPlHX75091EcAQ","The Indian Dream","General"],["UC7qfffOXz7AYlnJlcfkMmZw","Monks & Warriors by Kaushal & Kaushalendra","General"],["UC83iGbaOhZR8AWNYYNzSNjg","India Global Review","News"],["UC87QeJ7WF71zJ5LF7vVVYrg","The Gaurav Thakur Show Clips","General"],["UC8butISFwT-Wl7EV0hUK0BQ","freeCodeCamp.org","AI"],["UC8uj-UFGDzAx3RfPzeRqnyA","Finshots TV","News"],["UC8uzDk1ubCmVW-dQJ-zwP8A","Tellis Like It Is","General"],["UC9D7QzaNDP11e4jI4ygU5Xg","NewsBook","News"],["UC9pxOEHrjsl7YKBSc7sl_KQ","YourStory","General"],["UC9wtYrne8S_5AVgxGnaz1-w","Tarun Kumar Kedia","General"],["UCAuUUnT6oDeKwE6v1NGQxug","TED","General"],["UCAupiXL76_Fx55VTTJ_2jnA","ETHRWorld","HR"],["UCB6qWJa9meGXQ3R_Ps1lupA","HR Leaders - Shaping the future of work.","General"],["UCC2iTo59lAdlTo88Dpzc9Mw","Biography Timeline","General"],["UCCJsQKOKArvDksacfT2ryQw","World Affairs by Unacademy","General"],["UCCgQaXjsJ6EdFPZeTFQoSyw","Brut India","News"],["UCCo9xACnSNwW1m6zjJkzSgQ","Eros Universe Big Picture","General"],["UCCx38Ms2ghsggBmkQcJ4-9g","Unravelled by Shankar","General"],["UCDhBfUEe-JKH-Y4-Z77QJOQ","Exploring Minds","General"],["UCESLZhusAkFfsNsApnjF_Cg","All-In Podcast","Podcast"],["UCGYlNGlloLLZiAL3zBgbMgQ","Josh Talks","General"],["UCGnt6wuMPoof3bvYUDSODNw","Wyngx","General"],["UCGq-a57w-aPwyi3pW7XLiHw","The Diary Of A CEO","Podcast"],["UCHOKvQW2N4kLVhKYn2bvF7A","Prakhar Gupta","General"],["UCHd62-u_v4DvJ8TCFtpi4GA","Washington Post","News"],["UCHyu2gwfAkOXWroIjvxVUCg","Career247","HR"],["UCI_mwTKUhicNzFrhm33MzBQ","ET Now","News"],["UCKZozRVHRYsYHGEyNKuhhdA","Think School","General"],["UCLWhUPF668K0jWTrMw-DpJg","The WillPower Star","General"],["UCNSdjX4ry9fICqeObdZPAZQ","Flying Beast","General"],["UCNU_lfiiWBdtULKOw6X0Dig","Krish Naik","AI"],["UCNnnebGhmIJ8MQ4X1HwphRw","The Official Steve Harvey","Podcast"],["UCOu85KXcYcEClNAeiKrDA6Q","Indian Silicon Valley by Jivraj Singh Sachar","Podcast"],["UCPGrgwfbkjTIgPoOh2q1BAg","David Ondrej","AI"],["UCPgfM-dk3XAb4T3DtT6Nwsw","CA Rahul Malodia","General"],["UCPxMZIFE856tbTfdkdjzTSQ","BeerBiceps","Podcast"],["UCQky96IjrfzJcSUiCogID6w","Shivanshu Agrawal","General"],["UCRgMIwmmh1-2k5HeTQ2cdkQ","Gaurav Thakur","General"],["UCRzYN32xtBf3Yxsx5BvJWJw","warikoo","General"],["UCSaf-7p3J_N-02p7jHzm5tA","The Quint","News"],["UCT2Iw5HWDSQa1lesPk23jMQ","SHLLOKA","General"],["UCUOjpYruRCB61RnB846trCQ","Vaad","General"],["UCWx7JXxm2xkTabER32I0GZg","The BarberShop with Shantanu","Podcast"],["UCXbvLfGlPtu15atjvl4c86Q","Siddharth Chopra","General"],["UCY6N8zZhs2V7gNTUxPuKWoQ","Ishan Sharma","General"],["UCYPvAwZP8pZhSMW8qs7cVCw","India Today","News"],["UCYalWwW79BdxmMTKUyBFj5g","Shubhankar Mishra","General"],["UCZFMm1mMw0F81Z37aaEzTUA","NDTV","News"],["UCZOKv_xnTzyLD9RJmbBUV9Q","Vedanta Society of New York","General"],["UC_E4px0RST-qFwXLJWBav8Q","Business Casual","News"],["UCaPHWiExfUWaKsUtENLCv5w","Business Today","News"],["UCasyz2FJZxtaxlYdHRgXKww","Shrishti Sahu","General"],["UCatL-c6pmnjzEOHSyjn-sHA","Khan GS Research Centre","General"],["UCb_2aQH7ZcW8tvlnJvjW8rQ","Live Hindi Facts","General"],["UCbk_QsfaFZG6PdQeCvaYXJQ","Jay Shetty Podcast","Podcast"],["UCbzVRTkX3bzNZuBd9In4XyA","Modern MBA","General"],["UCcBc0kafKTdcc5NAGEmA83g","Apni Pathshala","General"],["UCcYzLCs3zrQIBVHYA1sK2sw","Sadhguru","General"],["UCckHqySbfy5FcPP6MD_S-Yg","Times Of India","News"],["UCdoadna9HFHsxXWhafhNvKw","AWS Events","AI"],["UCee875A_K1BdvoV93OuWNeQ","HistoryBook","General"],["UCef1-8eOpJgud7szVPlZQAQ","CNN-News18","News"],["UCepBxbSrGZkgjgGJuY04c-Q","Professor Of How","General"],["UCetbO4FSZljvqT4ji_nFq9g","Be With Sam","General"],["UCeudZuDYinOWlWk69fTZCTg","Learn By KK Create","General"],["UCfBfBd-1kvCOPxVll8tBJ9Q","Bharatvaarta","General"],["UCfTChq0D-9sqe4P8TTuTI3g","SHRM India","HR"],["UCffs9TWLuHnZpKJwrHGuYVw","Aditya Saini Finance","General"],["UCfkne4JtM5Ir26-IJihliug","CrimeBook","General"],["UCh13OyDSm-Kb8ij3yZArtFg","Higgsfield AI","AI"],["UCh29s-RNWI6z63670hUv71Q","VOGUE India","General"],["UChWtJey46brNr7qHQpN6KLQ","The Wire","News"],["UChpleBmo18P08aKCIgti38g","Matt Wolfe","AI"],["UChqUTb7kYRX8-EiaN3XFrSQ","Reuters","News"],["UCk2U-Oqn7RXf-ydPqfSxG5g","Mel Robbins","Podcast"],["UCkAlEDBOaqMfe7la9vwIxOA","Baaten Bazar Ki (BBK)","General"],["UCkJ34UcwUfZm1RLTbmB_v9w","Krish Kothari","General"],["UCkO3uAmES7hmFfLOBRgzY_Q","Wronged","General"],["UCkox_p0dIE3bGN9yKonKZBA","Vyapari 2 CEO","General"],["UClXAalunTPaX1YV185DWUeg","Vaibhav Sisinty","General"],["UCloWBBZ3E9b9NGW3r30DN5A","AKTK","General"],["UCmTM_hPCeckqN3cPWtYZZcg","The Deshbhakt","News"],["UCnC8SAZzQiBGYVSKZ_S3y4Q","Nikhil Kamath","Podcast"],["UCneyi-aYq4VIBYIAQgWmk_w","Ranveer Allahbadia","Podcast"],["UCnpekFV93kB1O0rVqEKSumg","Backstage with Millionaires","Podcast"],["UCo2Pmy68kxzxFmqOcgv9m_A","Aditya Raj Kaul","News"],["UCpP-xAGNjhqMP8g_GAMENtA","Tweak India","General"],["UCpeRzRS1b1NvY4og1huE7jw","Dostcast","Podcast"],["UCrdPiSPVW0rtRsI002BX8iw","Mojo Story","News"],["UCrpEPrZCzOBIpz4XRMEaUAQ","India Today Conclave","General"],["UCs1Z_YBe_x1GuYcMA_-VIkg","Lyrics Bull","General"],["UCsDTy8jvHcwMvSZf_JGi-FA","Abhi and Niyu","General"],["UCsJbtfpVKHM7TRblaE1ucOA","Humans of Bombay","Podcast"],["UCtFQDgA8J8_iiwc5-KoAQlg","ANI News","News"],["UCtVrw9XA7bwOM_0EAxM5VTA","Timeless Threads","General"],["UCui4jxDaMb53Gdh-AZUTPAg","Liam Ottley","AI"],["UCuyRsHZILrU7ZDIAbGASHdA","ThePrint","News"],["UCvKrX11XR1Znxriqij0kMHA","BhaktiBook","General"],["UCw-kH-Od73XDAt7qtH9uBYA","World Economic Forum","General"],["UCwAnu01qlnVg1Ai2AbtTMaA","Jeff Su","AI"],["UCwXekc-fe9L4g4ImdvAlgdA","Women in the World","News"],["UCwcWc2zH0m66_CHILH1seNg","Wondery","Podcast"],["UCwqusr8YDwM-3mEYTDeJHzw","Republic World","News"],["UCy5NS7dKEs8stXh2de65zXw","The World with Richard Engel and Yalda Hakim","News"],["UCyAMoOTlfSGPxrtvh6M6wig","Shyam Meera Singh","General"],["UCySwLinG-gvRsbfyxwOVqMQ","The Female Quotient","HR"],["UCyUQxtFk3guy3WHaZ-2NNOg","Anurag Bansal","General"],["UCyVEEtk2lgJU2TEcu852b-g","learning never stops","General"],["UCz22l7kbce-uFJAoaZqxD1A","Gaur Gopal Das","General"],["UCz8QaiQxApLq8sLNcszYyJw","Firstpost","News"],["UCzI8K9xO_5E-4iCP7Km6cRQ","Faye D'Souza","News"],["UCzwCEE_PchiBULMnAJqhGVg","Raj Shamani","Podcast"]];
-/* ======================================================== */
+/* ============================================================
+   BRIEF — one desk for all your news (real, standalone, lite)
+   News  : free RSS via CORS-proxy chain (NO Anthropic API)
+   Video : YouTube RSS -> thumbnails; tap opens YouTube app (Premium)
+   Summary: Anthropic API used ONLY on Refresh, ONLY if a key is saved
+   ============================================================ */
 
-/* ---------- categories ---------- */
-const BASECATS=['AI','HR','Podcast','General'];
-const CATPAL=['#d4573c','#e2843c','#d9a534','#7e8a3c','#c2705a','#b07a3a','#9c5a3c','#6b8f6a','#cf6f4a','#a85f7a'];
-const LS={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},
-  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
-
-let CATLIST=LS.get('yf_catlist',null);
-if(!CATLIST){const o=LS.get('yf_cats',[]);CATLIST=[...BASECATS,...o.filter(c=>!BASECATS.includes(c))];}
-const saveCats=()=>LS.set('yf_catlist',CATLIST);
-function allCats(){return CATLIST.slice()}
-function catColor(n){const i=CATLIST.indexOf(n);return CATPAL[Math.max(0,i)%CATPAL.length]}
-function resolveCat(id,def){const m=CATMAP[id];if(m)return m;if(def==='News')return 'General';return def||'General'}
-
-/* ---------- storage ---------- */
-let WATCHED=new Set(LS.get('yf_watched',[]));
-let WLIST=LS.get('yf_wlist',[]);          // full watched objects
-let SAVED=LS.get('yf_saved',LS.get('yf_towatch',[]));
-let HIDDEN=new Set(LS.get('yf_hidden',[]));
-let CACHE=LS.get('yf_cache',{});
-let SEENRAW=LS.get('yf_seen',null);
-let SEEN=new Set(SEENRAW||[]);
-let INBOX=LS.get('yf_inbox',[]);
-let ADDED=LS.get('yf_added',[]);
-let REMOVED=new Set(LS.get('yf_removed',[]));
-let CATMAP=LS.get('yf_catmap',{});
-const saveW=()=>LS.set('yf_watched',[...WATCHED]);
-const saveWL=()=>{if(WLIST.length>300)WLIST=WLIST.slice(0,300);LS.set('yf_wlist',WLIST)};
-const saveSaved=()=>LS.set('yf_saved',SAVED);
-const saveHidden=()=>LS.set('yf_hidden',[...HIDDEN]);
-const saveCache=()=>LS.set('yf_cache',CACHE);
-const saveSeen=()=>LS.set('yf_seen',[...SEEN]);
-const saveInbox=()=>LS.set('yf_inbox',INBOX);
-const saveAdded=()=>LS.set('yf_added',ADDED);
-const saveRemoved=()=>LS.set('yf_removed',[...REMOVED]);
-const saveCatmap=()=>LS.set('yf_catmap',CATMAP);
-const savePool=()=>LS.set('yf_pool',S.pool.slice(0,700));
-
-/* ---------- channel list ---------- */
-let CH=[];
-function rebuildCH(){
-  const base=CHANNELS.map(c=>({id:c[0],title:c[1],cat:resolveCat(c[0],c[2])})).filter(c=>!REMOVED.has(c.id));
-  const ids=new Set(base.map(c=>c.id));
-  const add=ADDED.filter(c=>!ids.has(c.id)&&!REMOVED.has(c.id)).map(c=>({id:c.id,title:c.title,cat:resolveCat(c.id,c.cat)}));
-  CH=[...base,...add];
-}
-rebuildCH();
-function syncCats(){const m={};CH.forEach(c=>m[c.id]=c.cat);
-  [S.pool,INBOX,SAVED].forEach(arr=>arr.forEach(v=>{if(m[v.cid])v.cat=m[v.cid]}));
-  savePool();saveInbox();saveSaved();}
-
-/* ---------- proxies ---------- */
-const FEED=id=>'https://www.youtube.com/feeds/videos.xml?channel_id='+id;
-const PROXIES=[
-  id=>`https://api.allorigins.win/raw?url=${encodeURIComponent(FEED(id))}`,
-  id=>`https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(FEED(id))}`,
-  id=>`https://corsproxy.io/?url=${encodeURIComponent(FEED(id))}`,
-  id=>`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(FEED(id))}`,
+/* --- CORS proxy chain: if one is down, the next is tried --- */
+const PROXIES = [
+  u => "https://corsproxy.io/?url=" + encodeURIComponent(u),
+  u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+  u => "https://thingproxy.freeboard.io/fetch/" + u,
+  u => "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u),
 ];
-let BEST=-1;
-async function tf(u,ms){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms||6000);
-  try{return await fetch(u,{cache:'no-store',signal:c.signal})}finally{clearTimeout(t)}}
-function proxyOrder(){const i=[0,1,2,3];if(BEST>=0){i.splice(i.indexOf(BEST),1);i.unshift(BEST)}return i}
-function vidId(l){const m=(l||'').match(/[?&]v=([^&]+)/)||(l||'').match(/watch\?v=([\w-]+)/);return m?m[1]:(l||'').split('/').pop()}
-function mkEntry(e,ch){const id=vidId(e.link)||e.id;return{vid:id,title:e.title||'',link:e.link||'https://youtu.be/'+id,
-  chan:ch.title,cid:ch.id,cat:ch.cat,thumb:e.thumb||`https://i.ytimg.com/vi/${id}/mqdefault.jpg`,ts:e.pub?new Date(e.pub).getTime():0}}
-function parseXML(x,ch){const d=new DOMParser().parseFromString(x,'text/xml');
-  return[...d.getElementsByTagName('entry')].map(en=>{const g=t=>{const el=en.getElementsByTagName(t)[0];return el?el.textContent:''};
-    const id=(en.getElementsByTagName('yt:videoId')[0]||{}).textContent||vidId((en.getElementsByTagName('link')[0]||{}).getAttribute?.('href'));
-    const link=(en.getElementsByTagName('link')[0]||{}).getAttribute?.('href')||('https://youtu.be/'+id);
-    const pub=g('published')||g('updated');
-    return{vid:id,title:g('title'),link,chan:ch.title,cid:ch.id,cat:ch.cat,
-      thumb:`https://i.ytimg.com/vi/${id}/mqdefault.jpg`,ts:pub?new Date(pub).getTime():0}})}
 
-async function fetchChannel(ch){
-  const c=CACHE[ch.id];if(c&&Date.now()-c.t<12*60*1000)return c.items;
-  for(const pi of proxyOrder()){
-    try{const r=await tf(PROXIES[pi](ch.id));if(!r.ok)continue;
-      const ct=r.headers.get('content-type')||'';let items=[];
-      if(ct.includes('json')){const j=await r.json();if(!j.items)continue;
-        items=j.items.map(it=>mkEntry({title:it.title,link:it.link,pub:it.pubDate,id:(it.guid||it.link||'').split(':').pop(),thumb:it.thumbnail||(it.enclosure?.link)||''},ch));}
-      else items=parseXML(await r.text(),ch);
-      if(items.length){items=items.slice(0,7);if(BEST<0)BEST=pi;CACHE[ch.id]={t:Date.now(),items};saveCache();return items;}
-    }catch(e){}
-  }return c?c.items:[];}
+/* --- PRINT SOURCES. Each tries its feeds in order until one returns stories.
+   Colours are a soft, soothing muted palette that sits calmly on the cream paper. --- */
+const PRINT = [
+  { id:"et",      name:"Economic Times",   short:"ET",    color:"#B05A6E", bridge:true, feeds:[
+      "https://economictimes.indiatimes.com/rssfeedsdefault.cms",
+      "https://economictimes.indiatimes.com/rssfeedstopstories.cms",
+      "https://news.google.com/rss/search?q=when:2d%20site:economictimes.indiatimes.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"ndtv",    name:"NDTV",             short:"NDTV",  color:"#C26B6B", feeds:[
+      "https://feeds.feedburner.com/ndtvnews-top-stories",
+      "https://news.google.com/rss/search?q=when:2d%20site:ndtv.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"cnbc",    name:"CNBC",             short:"CNBC",  color:"#5B7BA6", feeds:[
+      "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114",
+      "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+      "https://news.google.com/rss/search?q=when:2d%20site:cnbc.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"bs",      name:"Business Standard",short:"BS",    color:"#A6705A", feeds:[
+      "https://news.google.com/rss/search?q=when:2d%20site:business-standard.com&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://www.business-standard.com/rss/latest.rss",
+      "https://www.business-standard.com/rss/home_page_top_stories.rss" ] },
+  { id:"bbc",     name:"BBC News",         short:"BBC",   color:"#9A5A5A", feeds:[
+      "https://feeds.bbci.co.uk/news/rss.xml",
+      "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "https://news.google.com/rss/search?q=when:2d%20site:bbc.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"hindu",   name:"The Hindu",        short:"HINDU", color:"#5E8C7B", bridge:true, feeds:[
+      "https://www.thehindu.com/feeder/default.rss",
+      "https://www.thehindu.com/news/national/feeder/default.rss",
+      "https://news.google.com/rss/search?q=when:2d%20site:thehindu.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"ie",      name:"Indian Express",   short:"IE",    color:"#7B8AA6", bridge:true,
+    wpjson:"https://indianexpress.com/wp-json/wp/v2/posts?per_page=15&_fields=title,link,excerpt,date",
+    feeds:[
+      "https://indianexpress.com/feed/",
+      "https://indianexpress.com/section/india/feed/",
+      "https://news.google.com/rss/search?q=when:2d%20site:indianexpress.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"toi",     name:"Times of India",   short:"TOI",   color:"#B0894D", feeds:[
+      "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+      "https://news.google.com/rss/search?q=when:2d%20site:timesofindia.indiatimes.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"ht",      name:"Hindustan Times",  short:"HT",    color:"#88A06B", feeds:[
+      "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml",
+      "https://www.hindustantimes.com/feeds/rss/world-news/rssfeed.xml",
+      "https://news.google.com/rss/search?q=when:2d%20site:hindustantimes.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"nyt",     name:"New York Times",   short:"NYT",   color:"#5C5C5C", feeds:[
+      "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+      "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "https://news.google.com/rss/search?q=when:2d%20site:nytimes.com&hl=en-US&gl=US&ceid=US:en" ] },
+  { id:"guardian",name:"The Guardian",     short:"GDN",   color:"#4E7BA6", feeds:[
+      "https://www.theguardian.com/international/rss",
+      "https://www.theguardian.com/world/rss",
+      "https://news.google.com/rss/search?q=when:2d%20site:theguardian.com&hl=en-GB&gl=GB&ceid=GB:en" ] },
+  { id:"ethr",    name:"ET HR World",      short:"HR",    color:"#8A7BB0", feeds:[
+      "https://hr.economictimes.indiatimes.com/rss/topstories",
+      "https://news.google.com/rss/search?q=when:3d%20site:hr.economictimes.indiatimes.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"reuters", name:"Reuters",          short:"RTRS",  color:"#C2885A", feeds:[
+      "https://news.google.com/rss/search?q=reuters&hl=en-US&gl=US&ceid=US:en",
+      "https://news.google.com/rss/search?q=reuters&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"telegraph",name:"The Telegraph",   short:"TGPH",  color:"#6E8AA6", feeds:[
+      "https://www.telegraph.co.uk/rss.xml",
+      "https://www.telegraph.co.uk/news/rss.xml",
+      "https://news.google.com/rss/search?q=when:2d%20site:telegraph.co.uk&hl=en-GB&gl=GB&ceid=GB:en" ] },
+  { id:"markets",  name:"Markets & IPO",    short:"MKTS",  color:"#4F8A6E", merge:true, end:true, feeds:[
+      "https://www.moneycontrol.com/rss/latestnews.xml",
+      "https://www.moneycontrol.com/rss/marketreports.xml",
+      "https://news.google.com/rss/search?q=NSE%20Nifty%20Sensex%20BSE%20stock%20market&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=IPO%20GMP%20listing%20allotment%20India&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=global%20stock%20markets%20Wall%20Street%20Nasdaq&hl=en-US&gl=US&ceid=US:en",
+      "https://news.google.com/rss/search?q=Bloomberg%20news&hl=en-US&gl=US&ceid=US:en",
+      "https://news.google.com/rss/search?q=when:1d%20site:bloomberg.com&hl=en-US&gl=US&ceid=US:en" ] },
+  { id:"bollywood", name:"Movie",            short:"MOVIE", color:"#B06890", end:true, merge:true, feeds:[
+      "https://timesofindia.indiatimes.com/rss/rssfeed/entertainment.cms",
+      "https://www.bollywoodhungama.com/rss/bollywood-news-rss.xml",
+      "https://www.filmibeat.com/rss/hindi.xml",
+      "https://www.filmibeat.com/rss/telugu.xml",
+      "https://feeds.feedburner.com/ndtvmovies-latest",
+      "https://www.koimoi.com/feed/",
+      "https://www.bollywoodlife.com/feed/",
+      "https://news.google.com/rss/search?q=Bollywood%20movie%20news&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=Tollywood%20Telugu%20movie%20news&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"sports",    name:"Sports",           short:"SPORT", color:"#4A8AA6", end:true, merge:true, feeds:[
+      "https://feeds.feedburner.com/NdtvSports-latest",
+      "https://timesofindia.indiatimes.com/rss/rssfeed/sports.cms",
+      "https://feeds.bbci.co.uk/sport/rss.xml",
+      "https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
+      "https://www.hindustantimes.com/feeds/rss/sports/rssfeed.xml",
+      "https://www.thehindu.com/sport/feeder/default.rss",
+      "https://news.google.com/rss/search?q=India%20cricket%20IPL%20football%20hockey%20kabaddi%20sports&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=world%20football%20tennis%20Formula1%20NBA%20Olympics%20sports&hl=en-US&gl=US&ceid=US:en" ] },
+];
 
-async function resolveChannel(input){input=(input||'').trim();if(!input)return null;
-  let id=null,m=input.match(/channel\/(UC[\w-]{20,})/)||input.match(/^(UC[\w-]{20,})$/);if(m)id=m[1];
-  const url=id?`https://www.youtube.com/channel/${id}`:/^https?:\/\//.test(input)?input:input.startsWith('@')?`https://www.youtube.com/${input}`:`https://www.youtube.com/@${input}`;
-  for(const mk of[u=>`https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(u)}`,u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`]){
-    try{const r=await tf(mk(url),9000);const t=await r.text();
-      if(!id){const mm=t.match(/"(?:channelId|externalId)":"(UC[\w-]+)"/)||t.match(/channel\/(UC[\w-]+)/);if(mm)id=mm[1];}
-      let title='';const tm=t.match(/<meta property="og:title" content="([^"]+)"/)||t.match(/<title>([^<]+?)\s*-\s*YouTube<\/title>/);
-      if(tm)title=tm[1].replace(/&amp;/g,'&').replace(/&#0?39;/g,"'").replace(/&#x27;/gi,"'").replace(/&quot;/g,'"');
-      if(id)return{id,title:title||input.replace(/^@/,'')};}catch(e){}}
-  return id?{id,title:input.replace(/^@/,'')}:null;}
+/* --- VIDEO CHANNELS. ytid verified where present; null -> graceful "Open channel" tile.
+   Soothing muted palette, consistent with the print tab. --- */
+const VIDEO = [
+  { id:"ndtv",      name:"NDTV",                short:"NDTV", color:"#C26B6B", ytid:"UCZFMm1mMw0F81Z37aaEzTUA", handle:"@ndtv" },
+  { id:"reuters",   name:"Reuters",             short:"RTRS", color:"#C2885A", ytid:"UChqUTb7kYRX8-EiaN3XFrSQ", handle:"@Reuters" },
+  { id:"etnow",     name:"ET Now",              short:"ETN",  color:"#5B7BA6", ytid:"UCI_mwTKUhicNzFrhm33MzBQ", handle:"@ETNOW" },
+  { id:"indiatv",   name:"India TV",            short:"ITV",  color:"#B05A6E", ytid:"UCttspZesZIDEwwpVIgoZtWQ", handle:"@indiatv" },
+  { id:"timesnow",  name:"Times Now",           short:"TN",   color:"#A6705A", ytid:"UC6RJ7-PaXg6TIH2BzZfTV7w", handle:"@TimesNow" },
+  { id:"bbc",       name:"BBC News",            short:"BBC",  color:"#7A7A7A", ytid:"UC16niRr50-MSBwiO3YDb3RA", handle:"@BBCNews" },
+  { id:"cnni",      name:"CNN International",    short:"CNN",  color:"#9A6E6E", ytid:"UCupvZG-5ko_eiXAupbDfxWw", handle:"@CNN" },
+  { id:"aje",       name:"Al Jazeera English",  short:"AJE",  color:"#6E9A8A", ytid:"UCNye-wNBqNL5ZzHSJj3l8Bg", handle:"@AlJazeeraEnglish" },
+  { id:"wion",      name:"WION",                short:"WION", color:"#6E9AA6", ytid:"UC_gUM8rL-Lrg6O3adPW9K1g", handle:"@WION" },
+  { id:"news18",    name:"CNN-News18",          short:"N18",  color:"#A68A5A", ytid:"UCef1-8eOpJgud7szVPlZQAQ", handle:"@cnnnews18" },
+  { id:"ddindia",   name:"DD India",            short:"DD",   color:"#7B9A8A", ytid:"UCGDQNvybfDDeGTf4GtigXaw", handle:"@DDIndia" },
+  { id:"republic",  name:"Republic World",      short:"REP",  color:"#B07A5A", ytid:"UCwqusr8YDwM-3mEYTDeJHzw", handle:"@RepublicWorld" },
+  { id:"firstpost", name:"Firstpost",           short:"FP",   color:"#5C8AA6", ytid:"UCz8QaiQxApLq8sLNcszYyJw", handle:"@Firstpost" },
+  { id:"abp",       name:"ABP Ananda",          short:"ABP",  color:"#B06E6E", ytid:"UCv3rFzn-GHGtqzXiaq3sWNg", handle:"@abpanandatv", forceHandle:true },
+];
 
-async function resolveVideo(url){const id=vidId(url);if(!id||id.length<6)return null;
-  let title='Saved video',author='';
-  const oe=`https://www.youtube.com/oembed?url=${encodeURIComponent('https://youtu.be/'+id)}&format=json`;
-  for(const mk of[u=>`https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(u)}`,u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`]){
-    try{const j=JSON.parse(await(await tf(mk(oe),8000)).text());if(j?.title){title=j.title;author=j.author_name||'';break;}}catch(e){}}
-  return{vid:id,title,link:`https://youtu.be/${id}`,chan:author||'YouTube',cid:'manual',cat:'General',
-    ts:Date.now(),thumb:`https://i.ytimg.com/vi/${id}/mqdefault.jpg`};}
-
-/* ---------- state ---------- */
-let S={v:'refresh',cat:'all',fy:'foryou',csub:'cats',chf:'all',q:'',mq:'',pool:LS.get('yf_pool',[]),
-  loading:false,err:false,sel:false,selset:new Set(),paint:null};
-let CURLIST=[];
-
-/* ---------- load pool ---------- */
-async function loadPool(force){
-  if(S.loading)return;S.loading=true;
-  document.getElementById('rIcon').innerHTML='<span class="spin">&#10227;</span>';
-  if(force){CACHE={};saveCache();BEST=-1;}
-  const had=S.pool.length>0;
-  if(!had)setMain(`<div class="loader"><div style="text-align:center"><div class="dots"><i></i><i></i><i></i></div>
-    <p style="color:var(--ink2);font-size:12.5px;margin-top:14px" id="ldt">Gathering your channels&hellip;</p></div></div>`);
-  const out=[];let done=0,painted=false;
-  for(let i=0;i<CH.length;i+=16){
-    await Promise.all(CH.slice(i,i+16).map(async ch=>{const r=await fetchChannel(ch);out.push(...r)}));
-    done+=Math.min(16,CH.length-i);
-    if(out.length&&!painted&&!had){out.sort((a,b)=>b.ts-a.ts);S.pool=[...out];painted=true;render();}
-    const lt=document.getElementById('ldt');if(lt)lt.textContent=`Loading… ${done}/${CH.length}`;
-  }
-  out.sort((a,b)=>b.ts-a.ts);S.pool=out;S.loading=false;S.err=!out.length&&!had;
-  document.getElementById('rIcon').textContent='⟳';
-  let added=0;
-  if(out.length){savePool();
-    const first=SEENRAW===null;
-    const fresh0=out.filter(v=>v.vid&&!SEEN.has(v.vid));
-    out.forEach(v=>{if(v.vid)SEEN.add(v.vid)});saveSeen();SEENRAW=[...SEEN];
-    if(first){ /* seed New with recent videos so it isn't empty on a fresh install */
-      let seed=out.filter(v=>!WATCHED.has(v.vid)&&v.ts>Date.now()-2*86400000);
-      if(!seed.length)seed=out.filter(v=>!WATCHED.has(v.vid)).slice(0,25);
-      INBOX=seed.slice(0,60);saveInbox();added=INBOX.length;
-    }else{const f=fresh0.filter(v=>!WATCHED.has(v.vid)&&!INBOX.some(x=>x.vid===v.vid));
-      INBOX=[...f,...INBOX];if(INBOX.length>400)INBOX=INBOX.slice(0,400);saveInbox();added=f.length;}
-  }else if(!had)toast("Couldn't reach feeds — tap \u27f3 to retry");
-  updateHeader();renderNav();
-  if(!had){render();toast(out.length?'All set — new videos arrive on their own.':'');}
-  else if(added>0){showNewPill(added);}      /* background: announce, don't yank the view */
+/* Summary sources — all FREE, no API, no Twitter (Twitter has no reliable free feed).
+   Breaking = your loaded newspapers (general news). AI = dedicated AI publications.
+   Kept on separate source pools so the two lists never come out the same. */
+const AI_FEEDS = [
+  "https://techcrunch.com/category/artificial-intelligence/feed/",
+  "https://venturebeat.com/category/ai/feed/",
+  "https://www.theverge.com/rss/index.xml",
+  "https://www.wired.com/feed/tag/ai/latest/rss",
+  "https://news.google.com/rss/search?q=when:1d%20(OpenAI%20OR%20Anthropic%20OR%20%22AI%20model%22%20OR%20Gemini)&hl=en-US&gl=US&ceid=US:en",
+];
+/* fetch several feeds, merge, de-dupe by title, newest first; one dead feed never blocks the rest */
+async function fetchMany(urls){
+  const out = [];
+  const res = await Promise.allSettled(urls.map(async u => {
+    try{ const items = parsePrint(await proxyFetch(u)); if(items.length) return items; throw 0; }
+    catch(e){ return await fetchViaRss2Json(u); }   // bridge fallback (handles Google News)
+  }));
+  res.forEach(r => { if(r.status==="fulfilled") out.push(...r.value); });
+  const seen = new Set();
+  return out.sort((a,b)=>b.ts-a.ts).filter(i => {
+    const k = i.title.toLowerCase().slice(0,45); if(seen.has(k)) return false; seen.add(k); return true;
+  });
 }
-function quietPaint(){updateHeader();renderNav();}
-function showNewPill(n){let p=document.getElementById('newpill');
-  if(!p){p=document.createElement('button');p.id='newpill';p.className='newpill';document.body.appendChild(p);}
-  p.innerHTML=`&#8593; ${n} new video${n>1?'s':''}`;p.classList.add('show');
-  p.onclick=()=>{p.classList.remove('show');if(S.v!=='refresh'){S.v='refresh';}render();
-    const m=document.getElementById('main');if(m)m.scrollIntoView({behavior:'smooth'});};
-  clearTimeout(p._t);p._t=setTimeout(()=>p.classList.remove('show'),12000);}
-async function ensurePool(){if(!S.pool.length)await loadPool();}
 
-/* ---------- recommendations ---------- */
-function watchWeights(){const m={};S.pool.forEach(v=>{if(WATCHED.has(v.vid))m[v.chan]=(m[v.chan]||0)+1});
-  SAVED.forEach(v=>{m[v.chan]=(m[v.chan]||0)+.5});return m;}
-function recommend(cat){const w=watchWeights();
-  let p=S.pool.filter(v=>!WATCHED.has(v.vid)&&!HIDDEN.has(v.vid));
-  if(cat)p=p.filter(v=>v.cat===cat);
-  return p.map(v=>{let s=v.ts/1e10;if(w[v.chan])s+=w[v.chan]*6;return{...v,_s:s}}).sort((a,b)=>b._s-a._s);}
+/* --- state --- */
+const state = {
+  tab: "print",
+  printSrc: "all",
+  videoSrc: "all",
+  sumView: "breaking",
+  print: {},   // id -> [items]
+  video: {},   // id -> [items]
+  sum: load("brief.sum", { breaking:[], ai:[], ts:null, aiWritten:false }),
+  kolkata: load("brief.kolkata", []),
+  loadingSum: false,
+  loadingKol: false,
+  speaking: false,
+  query: "",
+  searchQ: "",
+  searchResults: [],
+  searchLoading: false,
+  searchError: "",
+};
 
-/* ---------- helpers ---------- */
-async function downloadCSV(name,csv){
+const $main = document.getElementById("main");
+const $chips = document.getElementById("chips");
+const $searchbar = document.getElementById("searchbar");
+const $q = document.getElementById("q");
+$q.oninput = () => { state.query = $q.value.trim().toLowerCase(); render(); };
+function matchesQuery(it){
+  if(!state.query) return true;
+  return (it.title||"").toLowerCase().includes(state.query) || (it.dek||"").toLowerCase().includes(state.query);
+}
+
+/* --- helpers --- */
+function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function esc(s){ return (s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function strip(html){ const d=document.createElement("div"); d.innerHTML=html||""; return (d.textContent||"").replace(/\s+/g," ").trim(); }
+function timeAgo(ts){
+  if(!ts) return "";
+  const s = Math.floor((Date.now()-ts)/1000);
+  if(s<60) return s+"s"; const m=Math.floor(s/60);
+  if(m<60) return m+"m"; const h=Math.floor(m/60);
+  if(h<24) return h+"h"; const d=Math.floor(h/24); return d+"d";
+}
+function colorFor(list,id){ const x=list.find(s=>s.id===id); return x?x.color:"#191510"; }
+let _renderTimer;
+function scheduleRender(){ clearTimeout(_renderTimer); _renderTimer = setTimeout(() => render(), 120); }
+
+async function proxyFetch(url){
+  // cache-bust so the proxy AND the upstream feed serve fresh content on every refresh
+  const fresh = url + (url.includes("?") ? "&" : "?") + "_=" + Date.now();
+  const attempt = make => {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 6500);
+    return fetch(make(fresh), { cache:"no-store", signal:ctrl.signal }).then(async r => {
+      clearTimeout(to);
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      const t = await r.text();
+      if(t && t.length > 150) return t;
+      throw new Error("empty");
+    }).catch(e => { clearTimeout(to); throw e; });
+  };
+  // race all proxies at once; first one to succeed wins — uses manual race for iOS Safari compatibility
+  return new Promise((resolve, reject) => {
+    let settled = false, pending = PROXIES.length;
+    PROXIES.map(attempt).forEach(p => {
+      p.then(v => { if(!settled){ settled=true; resolve(v); } })
+       .catch(() => { if(--pending === 0 && !settled) reject(new Error("all proxies failed")); });
+    });
+  });
+}
+
+/* RSS-to-JSON bridge: fetches a feed server-side and returns CORS-friendly JSON.
+   Tries multiple bridge services so one going down doesn't break everything. */
+async function fetchViaRss2Json(url){
+  const parseR2J = j => {
+    if(j.status !== "ok" || !Array.isArray(j.items)) throw new Error("bad");
+    return j.items.map(it => {
+      let dek = strip(it.description || it.content || "");
+      if(dek.length > 180) dek = dek.slice(0,178) + "…";
+      return { title: strip(it.title), link: it.link, dek, ts: it.pubDate ? Date.parse(it.pubDate.replace(" ","T")+"Z") : 0 };
+    }).filter(x => x.title && x.link).sort((a,b)=>b.ts-a.ts).slice(0, 25);
+  };
+  // Try rss2json.com
   try{
-    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
-    try{const file=new File([blob],name,{type:'text/csv'});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return;}
-    }catch(e){if(e&&e.name==='AbortError')return;}
-    const url=URL.createObjectURL(blob);const a=document.createElement('a');
-    a.href=url;a.download=name;document.body.appendChild(a);a.click();
-    setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},1500);toast('Saved to Files');
-  }catch(e){try{const u=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));window.open(u,'_blank');}catch(_){toast('Download not supported here');}}
-}
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
-function timeAgo(ts){if(!ts)return'';const s=(Date.now()-ts)/1000;
-  if(s<3600)return Math.max(1,Math.floor(s/60))+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';
-  if(s<86400*7)return Math.floor(s/86400)+'d ago';if(s<86400*30)return Math.floor(s/86400/7)+'w ago';return Math.floor(s/86400/30)+'mo ago';}
-let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2200);}
-function setMain(h){document.getElementById('main').innerHTML=h;}
-function matchQ(v){if(!S.q)return true;const q=S.q.toLowerCase();return (v.title||'').toLowerCase().includes(q)||(v.chan||'').toLowerCase().includes(q);}
-function todayCount(){const d=Date.now()-86400000;return INBOX.filter(v=>v.ts>d).length;}
-function updateHeader(){
-  const n=CH.length,vn=S.pool.length;
-  document.getElementById('hmeta').textContent=`${n} channels · ${vn} videos`;
-  document.getElementById('hvidct').textContent=`${vn} videos`;
-  document.getElementById('htodayct').textContent=`${todayCount()} new today`;
+    const r = await fetch("https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(url), { cache:"no-store" });
+    if(r.ok){ const j = await r.json(); const items = parseR2J(j); if(items.length) return items; }
+  }catch(e){}
+  // Try via CORS proxy chain (raw XML parse fallback)
+  try{
+    const text = await proxyFetch(url);
+    const items = parsePrint(text);
+    if(items.length) return items;
+  }catch(e){}
+  throw new Error("all rss2json methods failed");
 }
 
-/* ---------- card ---------- */
-function card(v,i,mode){
-  const col=catColor(v.cat);const tint=col+'22';const saved=SAVED.some(x=>x.vid===v.vid);
-  if(S.sel){const on=S.selset.has(v.vid);
-    return `<div class="card pick${on?' ticked':''}" data-pick="${v.vid}" style="animation-delay:${Math.min(i*11,220)}ms">
-      <div class="chkbox">${on?'✓':''}</div>
-      <a class="cthumb" href="${v.link}" target="_blank"><img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"></a>
-      <div class="cmain"><div class="catpill" style="background:${tint};color:${col}">${esc(v.cat)}</div>
-        <div class="ctitle">${esc(v.title)}</div><div class="cchan">${esc(v.chan)}</div>
-        <div class="ctime">${timeAgo(v.ts)}</div></div></div>`;}
-  const watchAttr=`data-nw="${v.vid}"`;
-  let acts=`<a class="act watch" href="${v.link}" target="_blank" rel="noopener" ${watchAttr}>▶ Watch</a>`;
-  if(mode==='saved'){acts+=`<button class="act warn" data-rm="${v.vid}">🗑 Remove</button>`;}
-  else if(mode==='watched'){acts+=`<button class="act warn" data-rmw="${v.vid}">🗑 Remove</button>`;}
-  else{
-    if(mode!=='refresh')acts+=`<button class="act add" data-add='${esc(JSON.stringify(v))}'>＋ Add</button>`;
-    acts+=`<button class="act${saved?' saveon':''}" data-s='${esc(JSON.stringify(v))}'>${saved?'✔ Saved':'💾 Save'}</button>`;
+/* --- parsers --- */
+function parsePrint(xml){
+  const doc = new DOMParser().parseFromString(xml, "text/xml");
+  let nodes = [...doc.getElementsByTagName("item")];
+  if(!nodes.length) nodes = [...doc.getElementsByTagName("entry")]; // Atom
+  return nodes.map(n => {
+    const g = t => { const e = n.getElementsByTagName(t)[0]; return e ? e.textContent.trim() : ""; };
+    // namespace-robust: find first child whose localName matches and has text (handles content:encoded etc.)
+    const gLocal = local => {
+      for(const e of n.getElementsByTagName("*")){
+        if(e.localName === local){ const tx = (e.textContent||"").trim(); if(tx) return tx; }
+      }
+      return "";
+    };
+    let link = g("link");
+    if(!link){ const l = n.getElementsByTagName("link")[0]; if(l) link = l.getAttribute("href") || ""; }
+    let title = g("title");
+    // Google News appends " - Source"; keep title clean
+    const pub = g("pubDate") || g("published") || g("updated") || g("dc:date");
+    let dek = strip(gLocal("description") || gLocal("encoded") || gLocal("summary") || gLocal("content") || g("media:description"));
+    if(dek.length > 180) dek = dek.slice(0,178) + "…";
+    return { title: strip(title), link, dek, ts: pub ? Date.parse(pub) : 0 };
+  }).filter(x => x.title && x.link).sort((a,b)=>b.ts-a.ts).slice(0, 25);
+}
+
+function parseVideo(xml){
+  const doc = new DOMParser().parseFromString(xml, "text/xml");
+  const nodes = [...doc.getElementsByTagName("entry")];
+  return nodes.map(n => {
+    const g = t => { const e = n.getElementsByTagName(t)[0]; return e ? e.textContent.trim() : ""; };
+    let vid = g("yt:videoId") || g("videoId");
+    if(!vid){ const m = (n.getElementsByTagName("link")[0]?.getAttribute("href")||"").match(/v=([\w-]+)/); if(m) vid = m[1]; }
+    const stat = n.getElementsByTagName("media:statistics")[0] || n.getElementsByTagName("statistics")[0];
+    const views = stat ? stat.getAttribute("views") : "";
+    const pub = g("published") || g("updated");
+    return {
+      vid,
+      title: strip(g("title")),
+      thumb: vid ? `https://i.ytimg.com/vi/${vid}/hqdefault.jpg` : "",
+      views: views ? Number(views).toLocaleString("en-IN") : "",
+      ts: pub ? Date.parse(pub) : 0,
+    };
+  }).filter(x => x.vid && x.title).slice(0, 15);
+}
+
+/* --- loaders (independent; one failure never blocks the rest) --- */
+async function fetchWpJson(url){
+  const text = await proxyFetch(url);
+  const posts = JSON.parse(text);
+  if(!Array.isArray(posts) || !posts.length) throw new Error("no posts");
+  return posts.map(p => ({
+    title: strip(p.title?.rendered||""),
+    link: p.link||"",
+    dek: (() => { const t = strip(p.excerpt?.rendered||""); return t.length>178 ? t.slice(0,178)+"…" : t; })(),
+    ts: p.date ? Date.parse(p.date) : 0
+  })).filter(p => p.title && p.link);
+}
+
+async function loadPrint(src){
+  const store = items => {
+    items.forEach(i => { i.src = src.id; i.sourceName = src.name; });
+    state.print[src.id] = items; save("brief.print."+src.id, items); scheduleRender();
+  };
+  // WordPress REST API: gives real excerpts when RSS is blocked
+  if(src.wpjson){
+    try{ const items = await fetchWpJson(src.wpjson); if(items.length){ store(items); return; } }catch(e){}
   }
-  return `<div class="card" style="animation-delay:${Math.min(i*14,280)}ms">
-    <a class="cthumb" href="${v.link}" target="_blank" rel="noopener" ${watchAttr}>
-      <img loading="lazy" src="${v.thumb}" onerror="this.src='https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg'"><span class="pl">▶</span></a>
-    <div class="cmain"><div class="catpill" style="background:${tint};color:${col}">${esc(v.cat)}</div>
-      <div class="ctitle">${esc(v.title)}</div><div class="cchan">${esc(v.chan)}</div>
-      <div class="ctime">${timeAgo(v.ts)}</div>
-      <div class="cacts">${acts}</div></div></div>`;
-}
-
-/* ---------- card binding ---------- */
-function bindCards(root){root=root||document;
-  if(S.sel){root.querySelectorAll('[data-pick]').forEach(el=>el.onclick=ev=>{if(ev.target.closest('a'))return;
-    const id=el.dataset.pick;S.selset.has(id)?S.selset.delete(id):S.selset.add(id);
-    el.classList.toggle('ticked');el.querySelector('.chkbox').textContent=S.selset.has(id)?'✓':'';
-    const sc=document.getElementById('selCt');if(sc)sc.textContent=`${S.selset.size} selected`;});return;}
-  /* watch — opens link and marks */
-  root.querySelectorAll('[data-nw]').forEach(el=>el.addEventListener('click',()=>{
-    markWatched(el.dataset.nw);setTimeout(render,500);}));
-  /* manual watched button */
-  root.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{markWatched(b.dataset.w);const c=b.closest('.card');if(c)c.style.opacity='.25';setTimeout(render,260);});
-  /* add to refresh */
-  root.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{let v;try{v=JSON.parse(b.dataset.add.replace(/&#39;/g,"'"))}catch(e){return;}
-    if(INBOX.some(x=>x.vid===v.vid)){toast('Already in New');return;}
-    delete v._s;INBOX.unshift(v);saveInbox();renderNav();updateHeader();toast('Added to New ↑');
-    const c=b.closest('.card');if(c){c.style.opacity='.5';b.textContent='✓ Added';b.disabled=true;}});
-  /* save toggle */
-  root.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const v=JSON.parse(b.dataset.s.replace(/&#39;/g,"'"));
-    if(SAVED.some(x=>x.vid===v.vid)){SAVED=SAVED.filter(x=>x.vid!==v.vid);toast('Removed from Saved');}
-    else{SAVED.push(v);toast('💾 Saved');}saveSaved();renderNav();b.textContent=SAVED.some(x=>x.vid===v.vid)?'✔ Saved':'💾 Save';b.classList.toggle('saveon');});
-  /* remove (saved list) */
-  root.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{SAVED=SAVED.filter(x=>x.vid!==b.dataset.rm);saveSaved();toast('Removed');render();});
-  /* remove (watched history) */
-  root.querySelectorAll('[data-rmw]').forEach(b=>b.onclick=()=>{const id=b.dataset.rmw;WLIST=WLIST.filter(x=>x.vid!==id);WATCHED.delete(id);saveWL();saveW();toast('Removed');render();});
-  /* swipe on refresh cards */
-  if(S.v==='refresh')root.querySelectorAll('.card').forEach(addSwipe);}
-
-function markWatched(id){WATCHED.add(id);INBOX=INBOX.filter(x=>x.vid!==id);SAVED=SAVED.filter(x=>x.vid!==id);
-  const v=S.pool.find(x=>x.vid===id)||INBOX.find(x=>x.vid===id)||SAVED.find(x=>x.vid===id)||CURLIST.find(x=>x.vid===id);
-  if(v&&!WLIST.some(x=>x.vid===id))WLIST.unshift({...v,watchedAt:Date.now()});
-  saveW();saveInbox();saveSaved();saveWL();}
-
-/* swipe gesture */
-function addSwipe(el){let sx=0,sy=0,st=0;
-  el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()},{passive:true});
-  el.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
-    if(Date.now()-st>400||Math.abs(dx)<72||Math.abs(dy)>Math.abs(dx))return;
-    const vid=el.querySelector('[data-nw]')?.dataset.nw;
-    if(dx<0&&vid){el.classList.add('swl');setTimeout(()=>{markWatched(vid);render();},300);}
-    else if(dx>0){const ds=el.querySelector('[data-s]');if(ds)ds.click();}},{passive:true});}
-
-/* ---------- top-actions bar ---------- */
-function topBar(ctx,clearLabel,onClear){
-  if(S.sel){return`<div class="selbar"><span class="sc" id="selCt">${S.selset.size} selected</span>
-    <button class="btn-s" id="sAll">All</button>
-    <button class="btn-s" id="sW">✓ Watched</button>
-    <button class="btn-s" id="sS">💾 Save</button>
-    <button class="btn-s warn" id="sDel">🗑 Remove</button>
-    <button class="btn-s" id="sC">✕</button></div>`;}
-  return`<div class="tbar">
-    ${clearLabel?`<button class="btn-s warn" id="clearAll">🗑 ${clearLabel}</button>`:''}
-    <span class="spacer"></span>
-    <button class="btn-s" id="selBtn">☑ Select</button></div>`;}
-function bindTop(onClear,ctx){
-  if(S.sel){
-    document.getElementById('sAll').onclick=()=>{const all=S.selset.size>=CURLIST.length;S.selset=all?new Set():new Set(CURLIST.map(v=>v.vid));render();};
-    document.getElementById('sC').onclick=()=>{S.sel=false;S.selset=new Set();render();};
-    document.getElementById('sW').onclick=()=>{if(!S.selset.size)return toast('Select videos first');S.selset.forEach(id=>markWatched(id));toast(`${S.selset.size} watched`);S.sel=false;S.selset=new Set();render();};
-    document.getElementById('sS').onclick=()=>{if(!S.selset.size)return toast('Select videos first');let n=0;
-      CURLIST.filter(v=>S.selset.has(v.vid)&&!SAVED.some(x=>x.vid===v.vid)).forEach(v=>{SAVED.push(v);n++;});saveSaved();toast(`${n} saved`);S.sel=false;S.selset=new Set();render();};
-    document.getElementById('sDel').onclick=()=>{if(!S.selset.size)return toast('Select videos first');const ids=S.selset;
-      if(ctx==='inbox')INBOX=INBOX.filter(x=>!ids.has(x.vid)),saveInbox();
-      else if(ctx==='saved')SAVED=SAVED.filter(x=>!ids.has(x.vid)),saveSaved();
-      else if(ctx==='watched'){WLIST=WLIST.filter(x=>!ids.has(x.vid));ids.forEach(id=>WATCHED.delete(id));saveWL();saveW();}
-      else{ids.forEach(id=>HIDDEN.add(id));saveHidden();}
-      toast(`${ids.size} removed`);S.sel=false;S.selset=new Set();render();};
-  }else{
-    const cb=document.getElementById('clearAll');if(cb&&onClear)cb.onclick=onClear;
-    document.getElementById('selBtn').onclick=()=>{S.sel=true;S.selset=new Set();render();};
+  // Merged source (e.g. Markets & IPO): combine reports from ALL its feeds
+  if(src.merge){
+    try{ const items = await fetchMany(src.feeds); if(items.length){ store(items); return; } }catch(e){}
+  }
+  // bridge:true -> try the RSS-to-JSON bridge first (better at pulling the brief/summary)
+  const tryBridge = async () => {
+    for(const feed of src.feeds){
+      try{ const items = await fetchViaRss2Json(feed); if(items.length){ store(items); return true; } }catch(e){}
+    }
+    return false;
+  };
+  if(src.bridge){ if(await tryBridge()) return; }
+  // Standard: try each feed in order
+  for(const feed of src.feeds){
+    try{ const items = parsePrint(await proxyFetch(feed)); if(items.length){ store(items); return; } }catch(e){}
   }
 }
 
-/* ---------- NAV ---------- */
-const TABS=[{k:'refresh',ic:'↺',lb:'New'},{k:'foryou',ic:'✦',lb:'For You'},{k:'all',ic:'▤',lb:'All'},{k:'customize',ic:'⚙',lb:'Customize'}];
-function renderNav(){
-  document.getElementById('nav').innerHTML=TABS.map(t=>{const badge=(t.k==='refresh'&&INBOX.length)?`<span class="nbg">${INBOX.length>99?'99+':INBOX.length}</span>`:'';
-    return`<button class="nb${S.v===t.k?' on':''}" data-t="${t.k}"><span class="ic">${t.ic}</span>${t.lb}${badge}</button>`;}).join('');
-  document.getElementById('nav').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{S.v=b.dataset.t;S.q='';S.sel=false;S.selset=new Set();render();});
+async function loadVideo(ch){
+  const tryId = async id => {
+    if(!id) return [];
+    try{
+      const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${id}`;
+      const items = parseVideo(await proxyFetch(url));
+      return items.map(v => {
+        if(v.vid && !v.thumb) v.thumb = `https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg`;
+        return v;
+      });
+    }
+    catch(e){ return []; }
+  };
+
+  const scrapeLatest = async handle => {
+    try {
+      const html = await proxyFetch("https://www.youtube.com/" + handle + "/videos");
+      const vids = [];
+      const patterns = [
+        /{"videoRenderer":{"videoId":"([\w-]{11})".*?"title":{"runs":\[{"text":"(.*?)"}\].*?"publishedTimeText":{"simpleText":"(.*?)"}/g,
+        /"videoId":"([\w-]{11})".*?"title":{"runs":\[{"text":"(.*?)"}\]/g
+      ];
+      let match;
+      for (const pattern of patterns) {
+        while ((match = pattern.exec(html)) !== null) {
+          if (vids.length >= 15) break;
+          const vid = match[1];
+          if (!vids.find(v => v.vid === vid)) {
+            vids.push({
+              vid,
+              title: strip(match[2] || ""),
+              thumb: `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`,
+              ts: Date.now() - (vids.length * 60000), // artificial TS to keep order
+              views: ""
+            });
+          }
+        }
+        if (vids.length) break;
+      }
+      return vids;
+    } catch (e) { return []; }
+  };
+
+  let items = [];
+  // For ABP Ananda or others with forceHandle, try scraping first for newest videos
+  if (ch.forceHandle && ch.handle) {
+    items = await scrapeLatest(ch.handle);
+  }
+
+  if (!items.length) {
+    const id = ch.ytid || localStorage.getItem("brief.ytid." + ch.id);
+    items = await tryId(id);
+    
+    if (!items.length && ch.handle) {
+      const html = await proxyFetch("https://www.youtube.com/" + ch.handle);
+      const patterns = [/"(?:channelId|externalId)":"(UC[\w-]{22})"|channel\/(UC[\w-]{22})|"browseId":"(UC[\w-]{22})"/];
+      let newId = null;
+      for (const p of patterns) { const m = html.match(p); if (m) { newId = m[1] || m[2] || m[3]; break; } }
+      if (newId) {
+        localStorage.setItem("brief.ytid." + ch.id, newId);
+        items = await tryId(newId);
+      }
+    }
+  }
+
+  if(items.length){
+    items.forEach(i => { i.ch = ch.id; i.channelName = ch.name; });
+    state.video[ch.id] = items;
+    save("brief.video."+ch.id, items);
+    scheduleRender();
+  }
 }
 
-/* ---------- chips helper ---------- */
-function showChips(items,active,col,pick){const el=document.getElementById('chips');el.style.display='flex';
-  el.innerHTML=items.map(c=>`<button class="chip${c.k===active?' on':''}" data-col="${col}" data-k="${c.k}">${c.lb}${c.n!=null?` · ${c.n}`:''}</button>`).join('');
-  el.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{S.sel=false;S.selset=new Set();pick(b.dataset.k);});}
-function hideChips(){document.getElementById('chips').style.display='none';}
-function showSearch(){const sb=document.getElementById('sbar');sb.style.display='block';const i=document.getElementById('qIn');i.value=S.q;
-  i.oninput=()=>{S.q=i.value;if(S.paint)S.paint();};}
-function hideSearch(){document.getElementById('sbar').style.display='none';}
-function statusLine(n){return`<div class="status"><span class="pill">${n} videos</span><span class="pill">${INBOX.length} in Refresh</span><span class="pill">${SAVED.length} saved</span></div>`;}
-function pageHead(title,sub){return`<div class="pagetitle"><h2>${title}</h2><div class="divider"></div>${sub?`<p>${sub}</p>`:''}</div>`;}
-
-/* ---------- render router ---------- */
-async function render(){
-  renderNav();updateHeader();
-  if(['refresh','foryou','all'].includes(S.v))await ensurePool();
-  if(S.v==='refresh')viewRefresh();
-  else if(S.v==='foryou')viewForYou();
-  else if(S.v==='all')viewAll();
-  else viewCustomize();
+function hydrateCache(){
+  PRINT.forEach(s => { const c = load("brief.print."+s.id, null); if(c) state.print[s.id] = c; });
+  VIDEO.forEach(c => {
+    const v = load("brief.video."+c.id, null);
+    if(v && v.length){
+      const newest = Math.max(...v.map(i => i.ts||0));
+      // Clear cache if: no real timestamps, older than 4 hours, or any video missing a thumb (blank)
+      const hasBlank = v.some(i => !i.thumb || !i.vid);
+      if(hasBlank || (newest > 0 && Date.now() - newest > 14400000)){
+        localStorage.removeItem("brief.video."+c.id);
+      } else {
+        state.video[c.id] = v;
+      }
+    }
+  });
 }
 
-/* ===================== REFRESH ===================== */
-function viewRefresh(){
-  hideChips();showSearch();
-  setMain(pageHead('New','Fresh videos · auto-collected')+`<div id="list"></div>`);
-  S.paint=paintRefresh;paintRefresh();
+async function refreshFeeds(){
+  setRefreshing(true);
+  await Promise.allSettled([
+    ...PRINT.map(loadPrint),
+    ...VIDEO.map(loadVideo),
+    loadKolkata(),
+  ]);
+  setRefreshing(false);
+  render();
 }
-function paintRefresh(){
-  INBOX=INBOX.filter(v=>!WATCHED.has(v.vid));saveInbox();
-  const today=Date.now()-86400000;const todN=INBOX.filter(v=>v.ts>today).length;
-  const list=INBOX.filter(matchQ).sort((a,b)=>b.ts-a.ts);CURLIST=list;
-  const box=document.getElementById('list');if(!box)return;
-  if(!INBOX.length&&S.err){box.innerHTML=`<div class="empty"><div class="big">📡</div><b>Couldn't reach feeds</b><p>Tap the refresh button to try again.</p></div>`;return;}
-  if(!INBOX.length){box.innerHTML=`<div class="empty"><div class="big">🔔</div><b>You're all caught up</b><p>New videos arrive here automatically when your channels post.</p></div>`;return;}
-  const banner=todN>0?`<div class="daybanner"><div class="cnt">${todN}</div><div><div class="lbl">new today</div><div class="hint">← swipe to watch · swipe → to save</div></div></div>`:'';
+function setRefreshing(on){
+  const ic = document.getElementById("refreshIcon");
+  if(ic) ic.classList.toggle("spin", on);
+}
+
+/* --- AI summary (Anthropic API only on this action, only if key saved) --- */
+async function aiSummarize(breakingCands, aiCands){
+  const key = localStorage.getItem("brief.key");
+  if(!key) return null;
+  const model = localStorage.getItem("brief.model") || "claude-3-5-sonnet-latest";
+  const prompt =
+`You are a sharp news editor. From the two headline lists below, output ONLY a JSON object:
+{"breaking":[15 items],"ai":[15 items]}
+Each item = {"t":"punchy headline, max 14 words","d":"one sentence on why it matters, max 24 words"}.
+Pick the 15 most significant in each list, de-duplicate near-identical stories, and keep the two lists fully distinct (no story may appear in both), no preamble, JSON only.
+
+BREAKING HEADLINES:
+${breakingCands.join("\n")}
+
+AI HEADLINES:
+${aiCands.join("\n")}`;
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{
+      "content-type":"application/json",
+      "x-api-key":key,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true",
+    },
+    body: JSON.stringify({ model, max_tokens:2200, messages:[{ role:"user", content:prompt }] }),
+  });
+  if(!r.ok){ throw new Error("API "+r.status+": "+(await r.text()).slice(0,200)); }
+  const j = await r.json();
+  const txt = (j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+  return JSON.parse(txt.replace(/```json|```/g,"").trim());
+}
+
+async function refreshSummary(){
+  if(state.loadingSum) return;
+  state.loadingSum = true; render();
+  try{
+    // Breaking: from your loaded newspapers only (general news, no API)
+    const breakingItems = Object.values(state.print).flat().filter(Boolean).sort((a,b)=>b.ts-a.ts);
+    const breakingCands = breakingItems.slice(0,30).map(i => i.dek ? `${i.title} — ${i.dek}` : i.title);
+    // Top AI: from dedicated AI publications only (no API) — a different pool, so the lists differ
+    let aiItems = [];
+    try{ aiItems = await fetchMany(AI_FEEDS); }catch(e){}
+    const aiCands = aiItems.slice(0,30).map(i => i.dek ? `${i.title} — ${i.dek}` : i.title);
+
+    let result = null;
+    try{ result = await aiSummarize(breakingCands, aiCands); }catch(e){ console.warn(e); }
+
+    const dekFor = (arr, title) => { const m = arr.find(x => x.title === title); return m && m.dek ? m.dek : ""; };
+
+    if(!result){
+      const seen = new Set();
+      const top = (arr) => {
+        const out=[];
+        for(const i of arr){ const k=i.title.toLowerCase().slice(0,40); if(seen.has(k))continue; seen.add(k);
+          out.push({ t:i.title, d: i.dek || i.sourceName || "", l: i.link||"" }); if(out.length>=15)break; }
+        return out;
+      };
+      result = { breaking: top(breakingItems), ai: top(aiItems), aiWritten:false };
+    } else {
+      result.aiWritten = true;
+      const findLink = (title, sources) => { const m = sources.find(i => i.title && i.title.toLowerCase().slice(0,40) === (title||"").toLowerCase().slice(0,40)); return m ? m.link||"" : ""; };
+      (result.breaking||[]).forEach(it => { if(!it.d) it.d = dekFor(breakingItems, it.t); if(!it.l) it.l = findLink(it.t, breakingItems); });
+      (result.ai||[]).forEach(it => { if(!it.d) it.d = dekFor(aiItems, it.t); if(!it.l) it.l = findLink(it.t, aiItems); });
+    }
+
+    state.sum = { breaking:result.breaking||[], ai:result.ai||[], ts:Date.now(), aiWritten:!!result.aiWritten };
+    save("brief.sum", state.sum);
+  }finally{
+    state.loadingSum = false; render();
+  }
+}
+
+/* --- rendering --- */
+function renderChips(){
+  if(state.tab === "summary" || state.tab === "search"){ $chips.style.display="none"; return; }
+  $chips.style.display="flex";
+  const src = state.tab === "print" ? PRINT.slice() : VIDEO.slice();
+  // alphabetical by name, but any source flagged end:true goes to the very end
+  src.sort((a,b) => (!!a.end - !!b.end) || a.name.localeCompare(b.name));
+  const list = [{id:"all",name:"All",color:"#191510"}, ...src];
+  const cur = state.tab === "print" ? state.printSrc : state.videoSrc;
+  $chips.innerHTML = list.map(s => {
+    const on = s.id === cur;
+    // always colour-coded: filled when active, soft tint + coloured text/border otherwise
+    const style = on
+      ? `background:${s.color};border-color:${s.color};color:#fff;`
+      : `background:${s.color}1A;border-color:${s.color};color:${s.color};`;
+    return `<button class="chip ${on?"on":""}" data-src="${s.id}" style="${style}">${esc(s.name)}</button>`;
+  }).join("");
+  $chips.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+    if(state.tab==="print") state.printSrc = b.dataset.src; else state.videoSrc = b.dataset.src;
+    render();
+  });
+}
+
+function renderPrint(){
+  let items;
+  if(state.printSrc === "all") items = Object.values(state.print).flat().filter(Boolean).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  else items = (state.print[state.printSrc]||[]).slice().sort((a,b)=>(b.ts||0)-(a.ts||0));
+  items = items.filter(matchesQuery);
+
+  if(!items.length){
+    $main.innerHTML = Object.keys(state.print).length
+      ? `<p class="note">No stories yet for this source.<br>Pull the reload icon at top right.</p>`
+      : Array(5).fill('<div class="skel"></div>').join("");
+    return;
+  }
+  $main.innerHTML = items.map((a,i) => {
+    const c = colorFor(PRINT,a.src);
+    return `
+    <article class="pcard" data-link="${esc(a.link)}" style="animation-delay:${i*35}ms;border-left:4px solid ${c};background:${c}12">
+      <div class="meta">
+        <span class="badge" style="background:${c}">${esc((PRINT.find(s=>s.id===a.src)||{}).short||a.src)}</span>
+        <span class="time">${a.ts?timeAgo(a.ts)+" ago":""}</span>
+      </div>
+      <h2 class="ptitle">${esc(a.title)}</h2>
+      ${a.dek?`<p class="pdek">${esc(a.dek)}</p>`:""}
+    </article>`; }).join("");
+  $main.querySelectorAll(".pcard").forEach(c => c.onclick = () => {
+    const url = c.dataset.link; if(!url) return;
+    const a = Object.assign(document.createElement('a'), {href:url, target:'_blank', rel:'noopener'});
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+}
+
+function renderVideo(){
+  const channels = state.videoSrc === "all" ? VIDEO : VIDEO.filter(c => c.id === state.videoSrc);
+  let html = "";
+
+  if(state.videoSrc === "all"){
+    const all = Object.values(state.video).flat().filter(Boolean).sort((a,b)=>(b.ts||0)-(a.ts||0)).filter(matchesQuery);
+    if(all.length){
+      html += all.map((v,i)=>videoCard(v,i)).join("");
+    } else if(!Object.keys(state.video).length){
+      html += Array(3).fill('<div class="skel" style="height:0;padding-bottom:56%"></div>').join("");
+    }
+    // channels with no inline feed -> show open-channel tiles (hide while searching)
+    if(!state.query) VIDEO.filter(c=>!c.ytid).forEach(c => html += openChannelTile(c));
+  } else {
+    const ch = channels[0];
+    const vids = (state.video[ch.id] || []).filter(matchesQuery);
+    if(vids.length) html += vids.map((v,i)=>videoCard(v,i)).join("");
+    else if(ch.ytid) html += Array(3).fill('<div class="skel" style="height:0;padding-bottom:56%"></div>').join("") + openChannelTile(ch,true);
+    else html += openChannelTile(ch);
+  }
+  $main.innerHTML = html || `<p class="note">Tap a channel above.</p>`;
+}
+
+function videoCard(v,i){
+  const url = `https://www.youtube.com/watch?v=${v.vid}`;
+  const c = colorFor(VIDEO,v.ch);
+  return `<a class="vcard" href="${url}" target="_blank" rel="noopener" style="animation-delay:${i*35}ms">
+    <div class="thumbwrap">
+      <img loading="lazy" src="${v.thumb}" alt="" onerror="this.style.display='none'">
+      <span class="playbtn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="${c}" style="margin-left:3px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </span>
+    </div>
+    <h2 class="vtitle" style="border-left:3px solid ${c};padding-left:10px">${esc(v.title)}</h2>
+    <div class="vmeta">
+      <span class="badge" style="background:${c}">${esc((VIDEO.find(c2=>c2.id===v.ch)||{}).short||"")}</span>
+      <span class="time">${v.views?v.views+" views · ":""}${v.ts?timeAgo(v.ts)+" ago":""}</span>
+    </div>
+  </a>`;
+}
+function openChannelTile(ch, secondary){
+  const url = `https://www.youtube.com/${ch.handle}`;
+  return `<a class="openchan" href="${url}" target="_blank" rel="noopener">
+    <span class="lbl">${secondary?"Open more from ":""}${esc(ch.name)} on YouTube</span>
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="${ch.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+  </a>`;
+}
+
+function renderSummary(){
+  $chips.style.display="none";
+  const v = state.sumView;
+  const items = v === "kolkata" ? (state.kolkata || []) : (state.sum[v] || []);
+  const busy = v === "kolkata" ? state.loadingKol : state.loadingSum;
+  const head = `
+    <div class="subtoggle">
+      <button class="${v==="breaking"?"on":""}" data-sv="breaking">Breaking</button>
+      <button class="${v==="kolkata"?"on":""}" data-sv="kolkata">Kolkata</button>
+      <button class="${v==="ai"?"on":""}" data-sv="ai">AI</button>
+    </div>
+    <div class="sumhead">
+      <span class="lt">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B4321F" stroke-width="2"><path d="m12 3 1.9 5.8L20 9l-4.6 3.6L17 19l-5-3.5L7 19l1.6-6.4L4 9l6.1-.2z"/></svg>
+        ${state.sum.aiWritten?"AI‑written digest":"Auto digest"}${state.sum.ts?" · "+timeAgo(state.sum.ts)+" ago":""}
+      </span>
+      <button class="refresh" id="btnSum" ${busy?"disabled":""}>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="${busy?"spin":""}"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        ${v==="kolkata"?(state.loadingKol?"Refreshing…":"Refresh Kolkata news"):(state.loadingSum?"Generating…":"Refresh AI summary")}
+      </button>
+    </div>
+    <button class="podbtn" id="btnPod" ${items.length?"":"disabled"}>
+      ${state.speaking
+        ? `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> Stop podcast`
+        : `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3zM3 19a2 2 0 0 0 2 2h1a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H3z"/></svg> Listen — ${v==="breaking"?"Breaking":v==="kolkata"?"Kolkata":"AI"}`}
+    </button>`;
+
   let body;
-  if(!list.length){body=`<div class="empty"><div class="big">🔍</div><b>No matches</b><p>Try another search term.</p></div>`;}
-  else{const bk=ts=>{const d=Date.now()-ts;return d<86400000?'Today':d<7*86400000?'This week':'Earlier';};
-    let cur='';body=statusLine(list.length);
-    list.forEach((v,i)=>{const b=bk(v.ts);if(b!==cur){cur=b;body+=`<div class="dgroup">${b}</div>`;}body+=card(v,i,'refresh');});}
-  box.innerHTML=banner+topBar('inbox','Clear all',null)+body;
-  bindCards(box);bindTop(()=>{if(confirm('Clear all from Refresh?')){INBOX=[];saveInbox();toast('Cleared');render();}},'inbox');
+  if(busy && !items.length){
+    body = Array(6).fill('<div class="skel" style="height:64px"></div>').join("");
+  } else if(!items.length){
+    body = `<p class="note">No summary yet.<br>Tap "Refresh AI summary" to generate ${v==="ai"?"the top AI stories":v==="kolkata"?"the top Kolkata stories":"the top breaking stories"}.<br><br>${
+      localStorage.getItem("brief.key")
+        ? "Your Anthropic key is saved — used only here, only to rewrite the digest."
+        : "Works free with no key — pulls breaking headlines + top AI stories from reliable feeds. Add a key in <b>Settings ⚙︎</b> only if you want it AI‑rewritten."
+    }</p>`;
+  } else {
+    body = items.map((s,i)=>`
+      <div class="scard" ${s.l?`data-link="${esc(s.l)}" style="cursor:pointer;animation-delay:${i*25}ms"`:`style="animation-delay:${i*25}ms"`}>
+        <span class="snum">${String(i+1).padStart(2,"0")}</span>
+        <div class="stitle">${esc(s.t||s.title||"")}</div>
+        ${s.d?`<div class="sdesc">${esc(s.d)}</div>`:""}
+      </div>`).join("");
+  }
+  $main.innerHTML = head + body;
+  document.getElementById("btnSum").onclick = () => { if(state.sumView === "kolkata") loadKolkata(); else refreshSummary(); };
+  const pod = document.getElementById("btnPod");
+  if(pod) pod.onclick = speakSummary;
+  $main.querySelectorAll("[data-sv]").forEach(b => b.onclick = () => { stopSpeak(); state.sumView = b.dataset.sv; render(); });
+  $main.querySelectorAll(".scard[data-link]").forEach(c => c.onclick = () => {
+    const url = c.dataset.link; if(!url) return;
+    const a = Object.assign(document.createElement('a'), {href:url, target:'_blank', rel:'noopener'});
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
 }
 
-/* ===================== FOR YOU ===================== */
-function viewForYou(){
-  const cats=allCats();const chips=[{k:'foryou',lb:'For You'},...cats.map(c=>({k:c,lb:c,n:recommend(c).length}))];
-  showChips(chips,S.fy,'t2',k=>{S.fy=k;render();});showSearch();
-  setMain(pageHead('For You','Tailored to what you watch')+`<div id="list"></div>`);S.paint=paintForYou;paintForYou();
+/* --- podcast: free on-device text-to-speech, no API --- */
+function stopSpeak(){
+  try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
+  state.speaking = false;
 }
-function paintForYou(){
-  const cat=S.fy==='foryou'?null:S.fy;const list=recommend(cat).filter(matchQ);CURLIST=list;
-  const box=document.getElementById('list');if(!box)return;
-  const hint=Object.keys(watchWeights()).length===0?`<div class="status"><span class="pill">💡 Watch videos to personalise recommendations</span></div>`:'';
-  if(!list.length){box.innerHTML=hint+`<div class="empty"><div class="big">✨</div><b>${S.loading?'Loading…':'Nothing here yet'}</b><p>Watch videos and this fills up tailored to your taste.</p></div>`;return;}
-  box.innerHTML=hint+topBar('feed','Clear picks',null)+statusLine(list.length)+list.map((v,i)=>card(v,i,'foryou')).join('');
-  bindCards(box);bindTop(()=>{if(confirm('Hide all current picks?')){list.forEach(v=>WATCHED.add(v.vid));saveW();toast('Cleared');render();}},'feed');
-}
-
-/* ===================== ALL ===================== */
-function viewAll(){
-  const cats=allCats();const chips=[{k:'all',lb:'All'},...cats.map(c=>({k:c,lb:c}))];
-  showChips(chips,S.cat,'t3',k=>{S.cat=k;render();});showSearch();
-  setMain(pageHead('All','Everything from your subscriptions')+`<div id="list"></div>`);S.paint=paintAll;paintAll();
-}
-function paintAll(){
-  const box=document.getElementById('list');if(!box)return;
-  let pool=S.pool.filter(v=>!WATCHED.has(v.vid)&&!HIDDEN.has(v.vid));
-  if(S.cat!=='all')pool=pool.filter(v=>v.cat===S.cat);
-  pool=pool.filter(matchQ).sort((a,b)=>b.ts-a.ts);CURLIST=pool;
-  if(!pool.length){box.innerHTML=`<div class="empty"><div class="big">📺</div><b>${S.loading?'Loading…':'Nothing here'}</b><p>Pull Refresh or check your Customize settings.</p></div>`;return;}
-  let html=topBar('feed','Mark all watched',null)+statusLine(pool.length);
-  if(S.cat==='all'){
-    allCats().forEach(cat=>{const cl=pool.filter(v=>v.cat===cat);if(!cl.length)return;
-      const col=catColor(cat);
-      html+=`<div class="sechead"><div class="stitle"><span class="secdot" style="background:${col}"></span>${esc(cat)} <span class="secn">${cl.length}</span></div><div class="divider"></div></div>`;
-      html+=cl.slice(0,6).map((v,i)=>card(v,i,'all')).join('');
-      if(cl.length>6)html+=`<button class="showmore" data-cat="${esc(cat)}">Show all ${cl.length} in ${esc(cat)} ›</button>`;});
-  }else{html+=pool.map((v,i)=>card(v,i,'all')).join('');}
-  box.innerHTML=html;bindCards(box);
-  box.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{S.cat=b.dataset.cat;render();});
-  bindTop(()=>{if(confirm('Mark all shown as watched?')){pool.forEach(v=>WATCHED.add(v.vid));saveW();toast('Done');render();}},'feed');
+function speakSummary(){
+  if(!window.speechSynthesis){ return; }
+  if(state.speaking){ stopSpeak(); render(); return; }
+  const items = state.sumView === "kolkata" ? (state.kolkata || []) : (state.sum[state.sumView] || []);
+  if(!items.length) return;
+  const label = state.sumView === "kolkata" ? "Top breaking news in Kolkata. "
+              : state.sumView === "ai" ? "Top A.I. news. "
+              : "Top breaking news. ";
+  let text = "Brief. " + label;
+  items.forEach((s,i) => { text += (i+1) + ". " + (s.t||s.title||"") + ". " + (s.d?s.d+". ":""); });
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 1.0; u.pitch = 1.05;
+  // Prefer a female voice (works on iOS/Android/desktop where available)
+  try{
+    const voices = window.speechSynthesis.getVoices() || [];
+    const femaleNames = /female|samantha|karen|moira|tessa|fiona|victoria|serena|allison|ava|susan|zira|joana|google uk english female|google us english/i;
+    const pick = voices.find(v => /^en/i.test(v.lang) && femaleNames.test(v.name))
+              || voices.find(v => femaleNames.test(v.name))
+              || voices.find(v => /^en/i.test(v.lang));
+    if(pick) u.voice = pick;
+  }catch(e){}
+  u.onend = () => { state.speaking = false; render(); };
+  u.onerror = () => { state.speaking = false; render(); };
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+  state.speaking = true; render();
 }
 
-/* ===================== CUSTOMIZE ===================== */
-function viewCustomize(){
-  hideChips();hideSearch();
-  const subs=[{k:'cats',lb:'📂 Categories'},{k:'saved',lb:`💾 Saved · ${SAVED.length}`},{k:'watched',lb:`👁 Watched · ${WLIST.length}`},{k:'channels',lb:'📡 Channels'}];
-  const el=document.getElementById('chips');el.style.display='flex';
-  el.innerHTML=subs.map(s=>`<button class="chip${S.csub===s.k?' on':''}" data-col="t4" data-cs="${s.k}">${s.lb}</button>`).join('');
-  el.querySelectorAll('[data-cs]').forEach(b=>b.onclick=()=>{S.csub=b.dataset.cs;render();});
-  if(S.csub==='cats')paintCats();else if(S.csub==='saved')paintSaved();
-  else if(S.csub==='watched')paintWatched();else paintChannels();
+function render(){
+  try{
+    // sticky chip offset
+    const hdr = document.querySelector("header");
+    if(hdr) document.documentElement.style.setProperty("--hh", hdr.offsetHeight+"px");
+    const isSearch = state.tab === "search";
+    if($searchbar) $searchbar.style.display = (state.tab === "summary" || isSearch) ? "none" : "block";
+    renderChips();
+    if(state.tab==="print") renderPrint();
+    else if(state.tab==="video") renderVideo();
+    else if(state.tab==="summary") renderSummary();
+    else if(state.tab==="search") renderSearchTab();
+    document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab===state.tab));
+  }catch(e){ console.warn("render error:", e); }
 }
 
-/* --- Categories --- */
-function paintCats(){
-  setMain(pageHead('Categories','Organise your channels')+`<div class="box"><h3>🏷 Create a category</h3>
-    <div class="row"><input class="inp" id="catIn" placeholder="e.g. Finance, Tech, Health…"><button class="btn b2" id="catBtn">Create</button></div></div>
-    <div id="catList"></div>`);
-  document.getElementById('catBtn').onclick=()=>{const n=document.getElementById('catIn').value.trim();
-    if(!n)return;if(allCats().some(c=>c.toLowerCase()===n.toLowerCase()))return toast('Already exists');
-    CATLIST.push(n);saveCats();document.getElementById('catIn').value='';toast('Category created');paintCatList();};
-  paintCatList();}
-function paintCatList(){const box=document.getElementById('catList');if(!box)return;
-  let html='';allCats().forEach(cat=>{const rows=CH.filter(c=>c.cat===cat).sort((a,b)=>a.title.localeCompare(b.title));const col=catColor(cat);
-    html+=`<div class="box"><div class="glabel"><span class="secdot" style="background:${col}"></span>
-      <span class="gtitle">${esc(cat)}</span><span class="gn">${rows.length} channels</span>
-      <button class="renBtn" data-ren="${esc(cat)}">✎ Rename</button></div>
-      ${rows.map(c=>`<div class="crow"><span class="dot" style="background:${col}"></span><b><a href="https://www.youtube.com/channel/${c.id}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(c.title)}</a></b>
-        <select class="csel" data-recat="${c.id}" title="Move to category">${allCats().map(x=>`<option${x===c.cat?' selected':''}>${esc(x)}</option>`).join('')}</select></div>`).join('')}
-      ${rows.length===0?`<p class="note">No channels here yet. Move channels in from another category using the dropdowns.</p>`:''}
-    </div>`;});
-  box.innerHTML=html;
-  box.querySelectorAll('[data-ren]').forEach(b=>b.onclick=()=>{const old=b.dataset.ren;
-    const nv=(prompt(`Rename "${old}" to:`,old)||'').trim();
-    if(!nv||nv===old)return;if(allCats().some(c=>c.toLowerCase()===nv.toLowerCase()))return toast('Name exists');
-    renameCategory(old,nv);});
-  box.querySelectorAll('[data-recat]').forEach(s=>s.onchange=()=>{CATMAP[s.dataset.recat]=s.value;saveCatmap();
-    rebuildCH();syncCats();toast('Channel moved');paintCatList();});}
-function renameCategory(old,nv){const i=CATLIST.indexOf(old);if(i>=0)CATLIST[i]=nv;saveCats();
-  const all=[...CHANNELS.map(c=>({id:c[0],cat:c[2]})),...ADDED.map(c=>({id:c.id,cat:c.cat}))];
-  all.forEach(c=>{if(resolveCat(c.id,c.cat)===old)CATMAP[c.id]=nv;});
-  Object.keys(CATMAP).forEach(id=>{if(CATMAP[id]===old)CATMAP[id]=nv;});
-  saveCatmap();rebuildCH();syncCats();if(S.cat===old)S.cat=nv;
-  toast('Renamed');render();}
+/* --- wire up nav tabs with auto-refresh on every tab switch --- */
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+  stopSpeak();
+  const prevTab = state.tab;
+  state.tab = b.dataset.tab;
+  render();
+  // Every tab switch triggers a fresh data pull in background
+  if(state.tab !== "search") autoRefresh();
+});
+document.getElementById("btnRefresh").onclick = () => autoRefresh();
+document.getElementById("btnWebSearch").onclick = () => { state.tab = "search"; render(); };
 
-/* --- Saved --- */
-function paintSaved(){
-  setMain(pageHead('Saved','Your bookmarked videos')+`<div class="box"><h3>💾 Save any video</h3>
-    <div class="row"><input class="inp" id="vIn" placeholder="Paste YouTube link to save"></div>
-    <div class="row"><button class="btn b3" id="vAdd" style="flex:1">Save video</button></div>
-    <div class="note" id="vNote">Paste any youtube.com/watch or youtu.be link.</div></div>
-    <div id="savedList"></div>`);
-  const vIn=document.getElementById('vIn'),vAdd=document.getElementById('vAdd'),vNote=document.getElementById('vNote');
-  vAdd.onclick=async()=>{const u=vIn.value.trim();if(!u)return;vAdd.disabled=true;vAdd.textContent='…';
-    const v=await resolveVideo(u);vAdd.disabled=false;vAdd.textContent='Save video';
-    if(!v){vNote.textContent="Doesn't look like a YouTube link.";return;}
-    if(SAVED.some(x=>x.vid===v.vid)){vNote.textContent='Already saved.';return;}
-    SAVED.push(v);saveSaved();vIn.value='';vNote.textContent='Saved!';toast('💾 Saved');render();};
-  vIn.addEventListener('keydown',e=>{if(e.key==='Enter')vAdd.click();});
-  paintSavedList();}
-function paintSavedList(){const box=document.getElementById('savedList');if(!box)return;
-  const list=SAVED.slice().reverse();CURLIST=list;
-  if(!list.length){box.innerHTML=`<div class="empty"><div class="big">💾</div><b>Nothing saved yet</b><p>Tap 💾 Save on any video or paste a link above.</p></div>`;return;}
-  box.innerHTML=topBar('saved','Clear all',null)+`<div class="status"><span class="pill">${list.length} saved</span></div>`+
-    list.map((v,i)=>card(v,i,'saved')).join('');
-  bindCards(box);bindTop(()=>{if(confirm('Remove all saved videos?')){SAVED=[];saveSaved();toast('Cleared');render();}},'saved');}
+/* --- Internet Search tab renderer --- */
+function renderSearchTab(){
+  $chips.style.display = "none";
+  $searchbar.style.display = "none";
+  $main.innerHTML = `
+    <div style="padding:8px 0 14px">
+      <h2 style="font-family:var(--serif);font-size:20px;font-weight:600;margin:0 0 12px">Internet Search</h2>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <input id="wsq" type="search" placeholder="Type news or topic…" autocomplete="off"
+          style="flex:1;border:1.5px solid rgba(25,21,16,.18);border-radius:11px;padding:11px 13px;font-family:var(--sans);font-size:14px;background:#fff;color:var(--ink);outline:none;"
+          value="${esc(state.searchQ)}">
+        <button id="wsbtn" style="border:none;background:var(--ink);color:var(--paper);border-radius:11px;padding:0 18px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px;">
+          ${state.searchLoading ? "..." : "Search"}
+        </button>
+      </div>
+      ${state.searchError ? `<p class="note" style="color:var(--accent)">${esc(state.searchError)}</p>` : ""}
+      <div id="wsresults">
+        ${state.searchLoading
+          ? Array(4).fill('<div class="skel" style="height:80px;margin-bottom:10px"></div>').join("")
+          : state.searchResults.length
+            ? state.searchResults.map((r,i)=> r.isVid ? `
+              <a class="vcard" href="${r.l}" target="_blank" rel="noopener" style="animation-delay:${i*35}ms;margin-bottom:12px">
+                <div class="thumbwrap">
+                  <img loading="lazy" src="https://i.ytimg.com/vi/${r.vid}/hqdefault.jpg" alt="" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='">
+                  <span class="playbtn"><svg viewBox="0 0 24 24" width="22" height="22" fill="var(--accent)"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+                </div>
+                <h2 class="vtitle" style="border-left:3px solid var(--accent);padding-left:10px">${esc(r.t)}</h2>
+                <div class="vmeta"><span class="badge" style="background:var(--accent)">VIDEO</span></div>
+              </a>` : `
+              <article class="pcard" data-link="${esc(r.l)}" style="animation-delay:${i*30}ms;border-left:4px solid var(--accent);background:rgba(180,50,31,.06)">
+                <div class="meta">
+                  <span class="badge" style="background:var(--accent)">${esc(r.src)}</span>
+                  <span class="time">${r.ts?timeAgo(r.ts)+" ago":""}</span>
+                </div>
+                <h2 class="ptitle">${esc(r.t)}</h2>
+                ${r.d?`<p class="pdek">${esc(r.d)}</p>`:""}
+              </article>`).join("")
+            : state.searchQ ? `<p class="note">No results.</p>` : `<p class="note">Search news & videos together.</p>`
+        }
+      </div>
+    </div>`;
 
-/* --- Watched --- */
-function paintWatched(){
-  const wl=WLIST.slice().sort((a,b)=>(b.watchedAt||0)-(a.watchedAt||0));CURLIST=wl;
-  setMain(pageHead('Watched','Your watch history')+`<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <button class="btn-s warn" id="clrW">🗑 Clear history</button></div><div id="wWrap"></div>`);
-  document.getElementById('clrW').onclick=()=>{if(confirm('Clear all watched history?')){WLIST=[];WATCHED=new Set();saveW();saveWL();toast('Cleared');render();}};
-  const wrap=document.getElementById('wWrap');
-  if(!wl.length){wrap.innerHTML=`<div class="empty"><div class="big">👁</div><b>No history yet</b><p>Videos you watch will appear here automatically.</p></div>`;return;}
-  wrap.innerHTML=topBar('watched','',null)+`<div class="status"><span class="pill">${wl.length} watched</span></div>`+wl.map((v,i)=>card(v,i,'watched')).join('');
-  bindCards(wrap);bindTop(null,'watched');}
+  const inp = document.getElementById("wsq");
+  const btn = document.getElementById("wsbtn");
 
-/* --- Channels --- */
-function paintChannels(){
-  setMain(pageHead('Channels','Add, remove & categorise')+`<div class="box"><h3>📡 Add a channel</h3>
-    <div class="row"><input class="inp" id="addIn" placeholder="Channel link, @handle, or ID…"></div>
-    <div class="row"><select class="sel" id="addCat"></select><button class="btn b1" id="addBtn" style="flex:1">Add</button></div>
-    <div class="note" id="addNote">Paste a youtube.com/channel/UC… link or the UC… ID. @handles also work.</div></div>
-    <div class="row" style="margin-bottom:8px"><input class="inp" id="mIn" placeholder="Filter channels…"></div>
-    <div id="chFilter" style="display:flex;gap:8px;overflow-x:auto;padding:0 0 10px;-webkit-overflow-scrolling:touch"></div>
-    <div id="chList"></div>`);
-  fillCatSel();paintChFilter();
-  document.getElementById('mIn').oninput=e=>{S.mq=e.target.value;paintChList();};
-  paintChList();
-  const addBtn=document.getElementById('addBtn'),addIn=document.getElementById('addIn'),addCat=document.getElementById('addCat'),note=document.getElementById('addNote');
-  addBtn.onclick=async()=>{const val=addIn.value.trim();if(!val){note.textContent='Paste a link or ID first.';return;}
-    addBtn.disabled=true;addBtn.textContent='…';note.textContent='Looking up…';const res=await resolveChannel(val);
-    if(!res){addBtn.disabled=false;addBtn.textContent='Add';note.textContent='Not found. Try the /channel/UC… link or the UC… ID.';return;}
-    if(CH.some(c=>c.id===res.id)){addBtn.disabled=false;addBtn.textContent='Add';note.textContent='Already in your list.';return;}
-    REMOVED.delete(res.id);saveRemoved();CATMAP[res.id]=addCat.value;saveCatmap();
-    ADDED.push({id:res.id,title:res.title,cat:addCat.value});saveAdded();rebuildCH();
-    delete CACHE[res.id];saveCache();addIn.value='';addBtn.disabled=false;addBtn.textContent='Add';
-    note.textContent=`Added "${res.title}"! Tap ⟳ to load videos.`;toast('Channel added');updateHeader();paintChList();renderNav();};
-  addIn.addEventListener('keydown',e=>{if(e.key==='Enter')addBtn.click();});}
-function fillCatSel(){const s=document.getElementById('addCat');if(s)s.innerHTML=allCats().map(c=>`<option>${esc(c)}</option>`).join('');}
-function paintChFilter(){const el=document.getElementById('chFilter');if(!el)return;
-  const items=[{k:'all',lb:'All'},...allCats().map(c=>({k:c,lb:c}))];
-  el.innerHTML=items.map(c=>`<button class="chip${S.chf===c.k?' on':''}" data-col="t4" data-chf="${esc(c.k)}">${esc(c.lb)}</button>`).join('');
-  el.querySelectorAll('[data-chf]').forEach(b=>b.onclick=()=>{S.chf=b.dataset.chf;paintChFilter();paintChList();});}
-function paintChList(){const box=document.getElementById('chList');if(!box)return;const q=(S.mq||'').trim().toLowerCase();
-  const cats=(S.chf&&S.chf!=='all')?[S.chf]:allCats();
-  let html=`<div class="status"><span class="pill">${CH.length} channels</span>${S.chf!=='all'?`<span class="pill">filter: ${esc(S.chf)}</span>`:''}</div>`;
-  cats.forEach(cat=>{let rows=CH.filter(c=>c.cat===cat&&(!q||c.title.toLowerCase().includes(q)));
-    if(!rows.length&&q)return;rows.sort((a,b)=>a.title.localeCompare(b.title));const col=catColor(cat);
-    html+=`<div class="glabel"><span class="secdot" style="background:${col}"></span><span class="gtitle">${esc(cat)}</span><span class="gn">${rows.length}</span></div>`;
-    if(!rows.length){html+=`<p class="note" style="margin:0 2px 8px">No channels yet.</p>`;return;}
-    html+=rows.map(c=>`<div class="crow"><span class="dot" style="background:${col}"></span>
-      <b><a href="https://www.youtube.com/channel/${c.id}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(c.title)}</a></b>
-      <select class="csel" data-recat="${c.id}">${allCats().map(x=>`<option${x===c.cat?' selected':''}>${esc(x)}</option>`).join('')}</select>
-      <button class="xbtn" data-del="${c.id}">×</button></div>`).join('');});
-  const rst=(REMOVED.size||ADDED.length||Object.keys(CATMAP).length)?`<button class="btn-s warn" id="rstBtn" style="margin-top:10px">↺ Reset all changes</button>`:'';
-  box.innerHTML=html+rst;
-  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const id=b.dataset.del;
-    if(ADDED.some(a=>a.id===id))ADDED=ADDED.filter(a=>a.id!==id),saveAdded();else{REMOVED.add(id);saveRemoved();}
-    delete CATMAP[id];saveCatmap();delete CACHE[id];saveCache();rebuildCH();
-    S.pool=S.pool.filter(v=>v.cid!==id);savePool();
-    INBOX=INBOX.filter(v=>v.cid!==id);saveInbox();
-    SAVED=SAVED.filter(v=>v.cid!==id);saveSaved();
-    WLIST=WLIST.filter(v=>v.cid!==id);saveWL();
-    toast('Channel & its videos removed');updateHeader();paintChList();renderNav();});
-  box.querySelectorAll('[data-recat]').forEach(s=>s.onchange=()=>{CATMAP[s.dataset.recat]=s.value;saveCatmap();rebuildCH();syncCats();toast('Category updated');paintChList();});
-  const rb=document.getElementById('rstBtn');if(rb)rb.onclick=()=>{if(confirm('Restore all original channels and categories?')){
-    REMOVED=new Set();ADDED=[];CATMAP={};CATLIST=[...BASECATS];saveRemoved();saveAdded();saveCatmap();saveCats();
-    rebuildCH();S.pool=[];toast('Reset');updateHeader();render();}};}
+  inp.oninput = () => { state.searchQ = inp.value; };
+  inp.onkeydown = e => { if(e.key === "Enter") doWebSearch(); };
+  btn.onclick = doWebSearch;
+  inp.focus();
 
-/* ---------- init ---------- */
-document.getElementById('refreshBtn').onclick=async()=>{const p=document.getElementById('newpill');if(p)p.classList.remove('show');S.pool=[];await loadPool(true);render();};
-updateHeader();render();
-if(S.pool.length)setTimeout(loadPool,600);   // had cached pool -> silent background refresh
-/* re-check quietly on open, return, focus & periodically — reliable in Home-Screen (standalone) mode too.
-   loadPool is cache-gated per channel (20 min) so calls are cheap; new videos surface via the pill. */
-const recheck=()=>{if(document.visibilityState!=='hidden'&&!S.loading)loadPool();};
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')recheck();});
-window.addEventListener('pageshow',()=>recheck());
-window.addEventListener('focus',recheck);
-setInterval(recheck,8*60*1000);
+  $main.querySelectorAll(".pcard[data-link]").forEach(c => c.onclick = () => {
+    const url = c.dataset.link; if(!url) return;
+    const a = Object.assign(document.createElement('a'), {href:url, target:'_blank', rel:'noopener'});
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+}
+
+async function doWebSearch(){
+  const q = state.searchQ.trim();
+  if(!q || state.searchLoading) return;
+  state.searchLoading = true;
+  state.searchResults = [];
+  state.searchError = "";
+  render();
+
+  try{
+    const newsQueries = [
+      `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-IN&gl=IN&ceid=IN:en`,
+      `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`,
+    ];
+    const ytQuery = `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}&sp=CAI%253D`; // sp=CAI%3D is newest first
+
+    const [newsRes, ytHtml] = await Promise.all([
+      Promise.allSettled(newsQueries.map(async url => {
+        try{ return parsePrint(await proxyFetch(url)); }
+        catch(e){ try{ return await fetchViaRss2Json(url); }catch(e2){ return []; } }
+      })),
+      proxyFetch(ytQuery).catch(() => "")
+    ]);
+
+    let items = [];
+    newsRes.forEach(r => { if(r.status==="fulfilled" && Array.isArray(r.value)) items.push(...r.value); });
+
+    // Parse YouTube results from HTML
+    const ytItems = [];
+    const ytPattern = /{"videoRenderer":{"videoId":"([\w-]{11})".*?"title":{"runs":\[{"text":"(.*?)"}\].*?"longBylineText":{"runs":\[{"text":"(.*?)"}\]/g;
+    let m;
+    while ((m = ytPattern.exec(ytHtml)) !== null) {
+      if (ytItems.length >= 10) break;
+      ytItems.push({
+        t: strip(m[2]),
+        l: "https://www.youtube.com/watch?v=" + m[1],
+        d: "Video by " + m[3],
+        src: "YOUTUBE",
+        ts: Date.now() - (ytItems.length * 10000),
+        isVid: true,
+        vid: m[1]
+      });
+    }
+
+    const seen = new Set();
+    const cleanNews = items.map(i => {
+      const srcMatch = (i.title||"").match(/[-–]\s*([\w\s\.]+)$/);
+      const src = srcMatch ? srcMatch[1].trim().slice(0,16) : "NEWS";
+      return { t: i.title.replace(/[-–]\s*[\w\s\.]+$/, "").trim(), d: i.dek||"", l: i.link||"", ts: i.ts||0, src };
+    });
+
+    state.searchResults = [...ytItems, ...cleanNews].sort((a,b) => (b.ts||0) - (a.ts||0)).filter(i => {
+      const k = i.t.toLowerCase().slice(0,60);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    }).slice(0, 40);
+
+    if(!state.searchResults.length) state.searchError = "No results found.";
+  }catch(e){
+    state.searchError = "Search failed. Try again.";
+  }
+  state.searchLoading = false;
+  render();
+}
+
+/* --- boot: show cache instantly, then refresh in background --- */
+try{ if(window.speechSynthesis){ window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices(); } }catch(e){}
+
+async function loadKolkata(){
+  if(state.loadingKol) return;
+  state.loadingKol = true; render();
+  try{
+    // Direct newspaper RSS feeds for Kolkata (most reliable — no Google News middleman)
+    const directFeeds = [
+      // Telegraph India – West Bengal & Calcutta sections
+      "https://www.telegraphindia.com/west-bengal/feed",
+      "https://www.telegraphindia.com/calcutta/feed",
+      "https://www.telegraphindia.com/bengal/feed",
+      // The Hindu – Kolkata section
+      "https://www.thehindu.com/news/cities/kolkata/feeder/default.rss",
+      // Times of India – Kolkata
+      "https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms",
+      "https://timesofindia.indiatimes.com/city/kolkata/rssfeeds/1.cms",
+      // Indian Express – Kolkata
+      "https://indianexpress.com/section/cities/kolkata/feed/",
+      // NDTV – Kolkata / West Bengal
+      "https://feeds.feedburner.com/ndtvnews-kolkata-news",
+      "https://www.ndtv.com/rss/kolkata",
+    ];
+
+    // Google News search feeds as additional pool
+    const gnFeeds = [
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("West Bengal Kolkata") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata crime politics") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata development Bengal") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:telegraphindia.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:timesofindia.indiatimes.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:thehindu.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:indianexpress.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:ndtv.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata Mamata TMC BJP Bengal politics") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:telegraphindia.com West Bengal") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Bengal flood weather Kolkata") + "&hl=en-IN&gl=IN&ceid=IN:en",
+    ];
+
+    const allFeeds = [...directFeeds, ...gnFeeds];
+
+    // Fetch all feeds in parallel; each tries proxy first then rss2json bridge
+    const results = await Promise.allSettled(allFeeds.map(async feed => {
+      try{ const r = parsePrint(await proxyFetch(feed)); if(r.length >= 1) return r; }catch(e){}
+      try{ return await fetchViaRss2Json(feed); }catch(e){ return []; }
+    }));
+
+    let items = [];
+    results.forEach(r => { if(r.status==="fulfilled" && Array.isArray(r.value)) items.push(...r.value); });
+
+    // Fallback: filter from already-loaded print news if we still don't have enough
+    if(items.length < 10){
+      const fromPrint = Object.values(state.print).flat().filter(i =>
+        /kolkata|west bengal|bengal/i.test((i.title||"") + " " + (i.dek||""))
+      );
+      items.push(...fromPrint);
+    }
+
+    // De-duplicate: strip source suffix then use first 80 chars as key
+    const seen = new Set();
+    items = items
+      .sort((a,b) => (b.ts||0) - (a.ts||0))
+      .filter(i => {
+        const raw = (i.title||"").toLowerCase().replace(/\s+[-–|]\s+[\w\s]+$/, "").trim();
+        const k = raw.slice(0, 80);
+        if(!k || seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+
+    if(items.length){
+      state.kolkata = items.slice(0,40).map(i => ({ t:i.title, d:i.dek||"", l:i.link||"", ts:i.ts||0 }));
+      save("brief.kolkata", state.kolkata);
+    }
+  }catch(e){ console.warn("Kolkata refresh failed", e); }
+  state.loadingKol = false;
+  render();
+}
+
+// Global safety net: catch any unhandled JS errors so page never goes fully blank
+window.addEventListener("error", e => { console.warn("Brief caught error:", e.message); });
+window.addEventListener("unhandledrejection", e => { e.preventDefault(); console.warn("Brief caught rejection:", e.reason); });
+
+hydrateCache();
+try{ render(); }catch(e){ console.warn("render boot error:", e); }
+
+/* Single refresh entry point: feeds + Kolkata together.
+   Runs on every open, every manual refresh, every tab switch, every time the page/app returns to foreground.
+   No setInterval — event-driven only, no background battery drain. */
+let _autoRefreshing = false;
+async function autoRefresh(){
+  if(_autoRefreshing) return;
+  _autoRefreshing = true;
+  try{ await Promise.allSettled([refreshFeeds(), loadKolkata()]); }
+  finally{ _autoRefreshing = false; }
+}
+
+// Refresh on open/load
+autoRefresh();
+
+// Refresh when user returns to this tab/window (desktop browser tab switch or mobile app switch)
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "visible") autoRefresh();
+});
+
+// Refresh when user navigates back to the page (back button, bfcache restore on iOS Safari)
+window.addEventListener("pageshow", e => {
+  if(e.persisted) autoRefresh();   // persisted = restored from bfcache
+});
+
+// Note: focus listener removed — visibilitychange + pageshow cover all real re-open cases
+// without firing on every user interaction within the page.
+
 </script>
-</body></html>
+</body>
+</html>
