@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>Brief</title>
+
+<!-- iOS / PWA: add to home screen, full screen, no browser chrome -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Brief" />
+<meta name="theme-color" content="#F4EEE2" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Crect width='180' height='180' rx='40' fill='%23191510'/%3E%3Ctext x='50%25' y='62%25' font-family='Georgia,serif' font-size='120' font-weight='900' fill='%23F4EEE2' text-anchor='middle'%3EB%3C/text%3E%3Ccircle cx='128' cy='126' r='9' fill='%23B4321F'/%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#191510; --paper:#F4EEE2; --card:#FBF7EE; --accent:#B4321F; --mute:#8A8071;
+    --sans:'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    --serif:'Fraunces', Georgia, serif;
+  }
+  *{box-sizing:border-box; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--sans);
+    overscroll-behavior-y:none;
+  }
+  #app{
+    max-width:520px; margin:0 auto; min-height:100%;
+    display:flex; flex-direction:column;
+    background:var(--paper);
+    position:relative;
+  }
+  .no-bar::-webkit-scrollbar{display:none;}
+  .no-bar{scrollbar-width:none;}
+
+  /* header */
+  header{
+    padding:calc(env(safe-area-inset-top) + 12px) 20px 12px;
+    border-bottom:1px solid rgba(25,21,16,.10);
+    display:flex; align-items:flex-end; justify-content:space-between;
+    position:sticky; top:0; z-index:20;
+    background:rgba(244,238,226,.92); backdrop-filter:blur(12px);
+  }
+  .brand{font-family:var(--serif); font-weight:900; font-size:30px; line-height:1; letter-spacing:-.02em;}
+  .brand b{color:var(--accent);}
+  .tagline{font-size:10.5px; color:var(--mute); letter-spacing:.16em; text-transform:uppercase; margin-top:5px; font-weight:600;}
+  .hbtns{display:flex; align-items:center; gap:14px;}
+  .live{display:flex; align-items:center; gap:5px;}
+  .dot{width:7px; height:7px; border-radius:99px; background:var(--accent); display:inline-block; animation:pulse 1.6s infinite;}
+  .live span{font-size:10px; font-weight:700; color:var(--accent); letter-spacing:.1em;}
+  .iconbtn{border:none; background:transparent; cursor:pointer; color:var(--ink); padding:4px; display:flex;}
+  .iconbtn svg{width:21px; height:21px;}
+  .spin{animation:spin 1s linear infinite;}
+
+  /* chips */
+  .chips{display:flex; overflow-x:auto; gap:8px; padding:12px 16px 10px; border-bottom:1px solid rgba(25,21,16,.07); background:rgba(255,255,255,.25); position:sticky; top:var(--hh,64px); z-index:15;}
+  .chip{flex:0 0 auto; padding:7px 14px; border-radius:999px; border:1.5px solid rgba(25,21,16,.14); background:transparent; color:var(--ink); font-family:var(--sans); font-weight:600; font-size:13px; cursor:pointer; white-space:nowrap; transition:all .18s;}
+  .chip.on{color:#fff;}
+  #searchbar{padding:0 16px 10px; background:rgba(255,255,255,.25);}
+  #searchbar input{width:100%; border:1.5px solid rgba(25,21,16,.16); border-radius:11px; padding:10px 13px; font-family:var(--sans); font-size:14px; background:#fff; color:var(--ink); outline:none;}
+  #searchbar input:focus{border-color:var(--accent);}
+
+  /* body */
+  main{flex:1; overflow-y:auto; padding:14px 16px calc(env(safe-area-inset-bottom) + 92px);}
+
+  /* print card */
+  .pcard{background:var(--card); border:1px solid rgba(25,21,16,.08); border-radius:16px; padding:16px; margin-bottom:12px; cursor:pointer; touch-action:manipulation; animation:rise .4s ease both;}
+  .meta{display:flex; align-items:center; gap:8px; margin-bottom:9px;}
+  .badge{font-family:var(--sans); font-weight:700; font-size:10px; letter-spacing:.06em; color:#fff; padding:3px 8px; border-radius:5px; text-transform:uppercase;}
+  .time{font-size:11px; color:var(--mute); display:flex; align-items:center; gap:4px;}
+  .ptitle{font-family:var(--serif); font-weight:600; font-size:18.5px; line-height:1.18; margin:0;}
+  .pdek{font-size:13px; color:#5c5446; line-height:1.45; margin:8px 0 0;}
+
+  /* video card */
+  .vcard{display:block; text-decoration:none; color:inherit; margin-bottom:16px; cursor:pointer; animation:rise .4s ease both;}
+  .thumbwrap{position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#211c14; border:1px solid rgba(25,21,16,.1);}
+  .thumbwrap img{width:100%; height:100%; object-fit:cover; display:block;}
+  .playbtn{position:absolute; inset:0; margin:auto; width:54px; height:54px; border-radius:99px; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,.25);}
+  .vtitle{font-family:var(--serif); font-weight:600; font-size:16px; line-height:1.22; margin:10px 0 0;}
+  .vmeta{display:flex; align-items:center; gap:8px; margin-top:7px;}
+
+  /* open-channel tile (fallback) */
+  .openchan{display:flex; align-items:center; justify-content:space-between; gap:10px; text-decoration:none; color:inherit; background:var(--card); border:1px solid rgba(25,21,16,.08); border-radius:14px; padding:16px; margin-bottom:12px;}
+  .openchan .lbl{font-family:var(--serif); font-weight:600; font-size:16px;}
+
+  /* summary */
+  .subtoggle{display:flex; background:rgba(25,21,16,.06); border-radius:12px; padding:4px; margin-bottom:14px;}
+  .subtoggle button{flex:1; border:none; cursor:pointer; padding:9px 0; border-radius:9px; background:transparent; color:var(--ink); font-family:var(--sans); font-weight:600; font-size:13px;}
+  .subtoggle button.on{background:var(--ink); color:var(--paper);}
+  .sumhead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:14px;}
+  .sumhead .lt{font-size:12px; font-weight:600; color:var(--mute); display:flex; align-items:center; gap:6px;}
+  .refresh{border:none; background:var(--ink); color:var(--paper); border-radius:10px; padding:9px 14px; font-family:var(--sans); font-weight:700; font-size:12.5px; cursor:pointer; display:flex; align-items:center; gap:7px;}
+  .refresh:disabled{opacity:.55;}
+  .scard{background:var(--card); border:1px solid rgba(25,21,16,.08); border-left:3px solid var(--accent); border-radius:12px; padding:13px 15px; margin-bottom:10px; touch-action:manipulation; animation:rise .4s ease both;}
+  .podbtn{width:100%; border:none; cursor:pointer; background:#3E5C50; color:#F4EEE2; border-radius:13px; padding:14px 0; font-family:var(--sans); font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:9px; margin-bottom:16px; box-shadow:0 4px 14px rgba(62,92,80,.28); transition:opacity .15s;}
+  .podbtn:disabled{opacity:.45;}
+  .snum{font-family:var(--sans); font-weight:800; font-size:11px; color:var(--accent); letter-spacing:.04em;}
+  .stitle{font-family:var(--serif); font-weight:600; font-size:15.5px; line-height:1.25; margin:3px 0 0;}
+  .sdesc{font-size:12.5px; color:#5c5446; line-height:1.4; margin:5px 0 0;}
+
+  /* states */
+  .note{text-align:center; color:var(--mute); font-size:12.5px; line-height:1.5; padding:10px 14px;}
+  .skel{background:var(--card); border:1px solid rgba(25,21,16,.06); border-radius:16px; height:96px; margin-bottom:12px; position:relative; overflow:hidden;}
+  .skel::after{content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent); animation:shimmer 1.3s infinite;}
+
+  /* bottom tabs */
+  nav{position:fixed; left:0; right:0; bottom:0; max-width:520px; margin:0 auto; background:rgba(244,238,226,.94); backdrop-filter:blur(12px); border-top:1px solid rgba(25,21,16,.1); display:flex; padding:10px 12px calc(env(safe-area-inset-bottom) + 12px); z-index:30;}
+  nav button{flex:1; border:none; background:transparent; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--mute); font-family:var(--sans);}
+  nav button.on{color:var(--accent);}
+  nav button svg{width:22px; height:22px;}
+  nav span{font-size:11px; font-weight:500;}
+  nav button.on span{font-weight:700;}
+
+  /* sheets / settings */
+  .scrim{position:fixed; inset:0; z-index:40; background:rgba(10,9,7,.45); display:flex; align-items:flex-end; max-width:520px; margin:0 auto;}
+  .sheet{width:100%; background:var(--paper); border-radius:26px 26px 0 0; padding:10px 22px calc(env(safe-area-inset-bottom) + 30px); animation:up .28s cubic-bezier(.2,.8,.2,1) both; max-height:86vh; overflow-y:auto;}
+  .grip{width:42px; height:5px; border-radius:99px; background:rgba(25,21,16,.2); margin:4px auto 16px;}
+  .field{width:100%; border:1.5px solid rgba(25,21,16,.18); border-radius:10px; padding:11px 12px; font-family:var(--sans); font-size:14px; margin-top:6px; background:#fff;}
+  .pbtn{margin-top:16px; width:100%; border:none; cursor:pointer; background:var(--ink); color:var(--paper); border-radius:12px; padding:14px 0; font-family:var(--sans); font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;}
+
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes up{from{transform:translateY(100%);} to{transform:none;}}
+  @keyframes shimmer{to{transform:translateX(100%);}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div>
+      <div class="brand">Brief<b>.</b></div>
+      <div class="tagline">One desk · every source · build 4</div>
+    </div>
+    <div class="hbtns">
+      <span class="live"><span class="dot"></span><span>LIVE</span></span>
+      <button class="iconbtn" id="btnRefresh" title="Reload news">
+        <svg id="refreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+      </button>
+      <button class="iconbtn" id="btnWebSearch" title="Search News">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="chips no-bar" id="chips"></div>
+  <div id="searchbar"><input id="q" type="search" placeholder="Search news…" autocomplete="off" /></div>
+  <main class="no-bar" id="main"></main>
+
+  <nav id="nav">
+    <button data-tab="print" class="on">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+      <span>Print</span>
+    </button>
+    <button data-tab="video">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <span>YouTube</span>
+    </button>
+    <button data-tab="summary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.94 14.34A6 6 0 1 1 12 3a6 6 0 0 1 2.06 11.34M9 21h6M10 17.5h4"/><path d="m19 3 .7 2.3L22 6l-2.3.7L19 9l-.7-2.3L16 6l2.3-.7z"/></svg>
+      <span>Summary</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+/* ============================================================
+   BRIEF — one desk for all your news (real, standalone, lite)
+   News  : free RSS via CORS-proxy chain (NO Anthropic API)
+   Video : YouTube RSS -> thumbnails; tap opens YouTube app (Premium)
+   Summary: Anthropic API used ONLY on Refresh, ONLY if a key is saved
+   ============================================================ */
+
+/* --- CORS proxy chain: if one is down, the next is tried --- */
+const PROXIES = [
+  u => "https://corsproxy.io/?url=" + encodeURIComponent(u),
+  u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+  u => "https://thingproxy.freeboard.io/fetch/" + u,
+  u => "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u),
+];
+
+/* --- PRINT SOURCES. Each tries its feeds in order until one returns stories.
+   Colours are a soft, soothing muted palette that sits calmly on the cream paper. --- */
+const PRINT = [
+  { id:"et",      name:"Economic Times",   short:"ET",    color:"#B05A6E", bridge:true, feeds:[
+      "https://economictimes.indiatimes.com/rssfeedsdefault.cms",
+      "https://economictimes.indiatimes.com/rssfeedstopstories.cms",
+      "https://news.google.com/rss/search?q=when:2d%20site:economictimes.indiatimes.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"ndtv",    name:"NDTV",             short:"NDTV",  color:"#C26B6B", feeds:[
+      "https://feeds.feedburner.com/ndtvnews-top-stories",
+      "https://news.google.com/rss/search?q=when:2d%20site:ndtv.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"cnbc",    name:"CNBC",             short:"CNBC",  color:"#5B7BA6", feeds:[
+      "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114",
+      "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+      "https://news.google.com/rss/search?q=when:2d%20site:cnbc.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"bs",      name:"Business Standard",short:"BS",    color:"#A6705A", feeds:[
+      "https://news.google.com/rss/search?q=when:2d%20site:business-standard.com&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://www.business-standard.com/rss/latest.rss",
+      "https://www.business-standard.com/rss/home_page_top_stories.rss" ] },
+  { id:"bloomberg",name:"Bloomberg",       short:"BBG",   color:"#5A86A6", feeds:[
+      "https://news.google.com/rss/search?q=when:2d%20site:bloomberg.com&hl=en-US&gl=US&ceid=US:en",
+      "https://feeds.bloomberg.com/markets/news.rss",
+      "https://feeds.bloomberg.com/technology/news.rss",
+      "https://feeds.bloomberg.com/politics/news.rss",
+      "https://feeds.bloomberg.com/economics/news.rss" ] },
+  { id:"bbc",     name:"BBC News",         short:"BBC",   color:"#9A5A5A", feeds:[
+      "https://feeds.bbci.co.uk/news/rss.xml",
+      "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "https://news.google.com/rss/search?q=when:2d%20site:bbc.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"hindu",   name:"The Hindu",        short:"HINDU", color:"#5E8C7B", bridge:true, feeds:[
+      "https://www.thehindu.com/feeder/default.rss",
+      "https://www.thehindu.com/news/national/feeder/default.rss",
+      "https://news.google.com/rss/search?q=when:2d%20site:thehindu.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"ie",      name:"Indian Express",   short:"IE",    color:"#7B8AA6", bridge:true,
+    wpjson:"https://indianexpress.com/wp-json/wp/v2/posts?per_page=15&_fields=title,link,excerpt,date",
+    feeds:[
+      "https://indianexpress.com/feed/",
+      "https://indianexpress.com/section/india/feed/",
+      "https://news.google.com/rss/search?q=when:2d%20site:indianexpress.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"toi",     name:"Times of India",   short:"TOI",   color:"#B0894D", feeds:[
+      "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+      "https://news.google.com/rss/search?q=when:2d%20site:timesofindia.indiatimes.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"ht",      name:"Hindustan Times",  short:"HT",    color:"#88A06B", feeds:[
+      "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml",
+      "https://www.hindustantimes.com/feeds/rss/world-news/rssfeed.xml",
+      "https://news.google.com/rss/search?q=when:2d%20site:hindustantimes.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"nyt",     name:"New York Times",   short:"NYT",   color:"#5C5C5C", feeds:[
+      "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+      "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "https://news.google.com/rss/search?q=when:2d%20site:nytimes.com&hl=en-US&gl=US&ceid=US:en" ] },
+  { id:"guardian",name:"The Guardian",     short:"GDN",   color:"#4E7BA6", feeds:[
+      "https://www.theguardian.com/international/rss",
+      "https://www.theguardian.com/world/rss",
+      "https://news.google.com/rss/search?q=when:2d%20site:theguardian.com&hl=en-GB&gl=GB&ceid=GB:en" ] },
+  { id:"ethr",    name:"ET HR World",      short:"HR",    color:"#8A7BB0", feeds:[
+      "https://hr.economictimes.indiatimes.com/rss/topstories",
+      "https://news.google.com/rss/search?q=when:3d%20site:hr.economictimes.indiatimes.com&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"reuters", name:"Reuters",          short:"RTRS",  color:"#C2885A", feeds:[
+      "https://news.google.com/rss/search?q=reuters&hl=en-US&gl=US&ceid=US:en",
+      "https://news.google.com/rss/search?q=reuters&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"telegraph",name:"The Telegraph",   short:"TGPH",  color:"#6E8AA6", feeds:[
+      "https://www.telegraph.co.uk/rss.xml",
+      "https://www.telegraph.co.uk/news/rss.xml",
+      "https://news.google.com/rss/search?q=when:2d%20site:telegraph.co.uk&hl=en-GB&gl=GB&ceid=GB:en" ] },
+  { id:"markets",  name:"Markets & IPO",    short:"MKTS",  color:"#4F8A6E", merge:true, end:true, feeds:[
+      "https://www.moneycontrol.com/rss/latestnews.xml",
+      "https://www.moneycontrol.com/rss/marketreports.xml",
+      "https://news.google.com/rss/search?q=NSE%20Nifty%20Sensex%20BSE%20stock%20market&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=IPO%20GMP%20listing%20allotment%20India&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=global%20stock%20markets%20Wall%20Street%20Nasdaq&hl=en-US&gl=US&ceid=US:en" ] },
+  { id:"bollywood", name:"Movie",            short:"MOVIE", color:"#B06890", end:true, merge:true, feeds:[
+      "https://timesofindia.indiatimes.com/rss/rssfeed/entertainment.cms",
+      "https://www.bollywoodhungama.com/rss/bollywood-news-rss.xml",
+      "https://www.filmibeat.com/rss/hindi.xml",
+      "https://www.filmibeat.com/rss/telugu.xml",
+      "https://feeds.feedburner.com/ndtvmovies-latest",
+      "https://www.koimoi.com/feed/",
+      "https://www.bollywoodlife.com/feed/",
+      "https://news.google.com/rss/search?q=Bollywood%20movie%20news&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=Tollywood%20Telugu%20movie%20news&hl=en-IN&gl=IN&ceid=IN:en" ] },
+  { id:"sports",    name:"Sports",           short:"SPORT", color:"#4A8AA6", end:true, merge:true, feeds:[
+      "https://feeds.feedburner.com/NdtvSports-latest",
+      "https://timesofindia.indiatimes.com/rss/rssfeed/sports.cms",
+      "https://feeds.bbci.co.uk/sport/rss.xml",
+      "https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
+      "https://www.hindustantimes.com/feeds/rss/sports/rssfeed.xml",
+      "https://www.thehindu.com/sport/feeder/default.rss",
+      "https://news.google.com/rss/search?q=India%20cricket%20IPL%20football%20hockey%20kabaddi%20sports&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=world%20football%20tennis%20Formula1%20NBA%20Olympics%20sports&hl=en-US&gl=US&ceid=US:en" ] },
+];
+
+/* --- VIDEO CHANNELS. ytid verified where present; null -> graceful "Open channel" tile.
+   Soothing muted palette, consistent with the print tab. --- */
+const VIDEO = [
+  { id:"ndtv",      name:"NDTV",                short:"NDTV", color:"#C26B6B", ytid:"UCZFMm1mMw0F81Z37aaEzTUA", handle:"@ndtv" },
+  { id:"reuters",   name:"Reuters",             short:"RTRS", color:"#C2885A", ytid:"UChqUTb7kYRX8-EiaN3XFrSQ", handle:"@Reuters" },
+  { id:"etnow",     name:"ET Now",              short:"ETN",  color:"#5B7BA6", ytid:"UCI_mwTKUhicNzFrhm33MzBQ", handle:"@ETNOW" },
+  { id:"indiatv",   name:"India TV",            short:"ITV",  color:"#B05A6E", ytid:"UCttspZesZIDEwwpVIgoZtWQ", handle:"@indiatv" },
+  { id:"timesnow",  name:"Times Now",           short:"TN",   color:"#A6705A", ytid:"UC6RJ7-PaXg6TIH2BzZfTV7w", handle:"@TimesNow" },
+  { id:"bbc",       name:"BBC News",            short:"BBC",  color:"#7A7A7A", ytid:"UC16niRr50-MSBwiO3YDb3RA", handle:"@BBCNews" },
+  { id:"cnni",      name:"CNN International",    short:"CNN",  color:"#9A6E6E", ytid:"UCupvZG-5ko_eiXAupbDfxWw", handle:"@CNN" },
+  { id:"aje",       name:"Al Jazeera English",  short:"AJE",  color:"#6E9A8A", ytid:"UCNye-wNBqNL5ZzHSJj3l8Bg", handle:"@AlJazeeraEnglish" },
+  { id:"wion",      name:"WION",                short:"WION", color:"#6E9AA6", ytid:"UC_gUM8rL-Lrg6O3adPW9K1g", handle:"@WION" },
+  { id:"news18",    name:"CNN-News18",          short:"N18",  color:"#A68A5A", ytid:"UCef1-8eOpJgud7szVPlZQAQ", handle:"@cnnnews18" },
+  { id:"ddindia",   name:"DD India",            short:"DD",   color:"#7B9A8A", ytid:"UCGDQNvybfDDeGTf4GtigXaw", handle:"@DDIndia" },
+  { id:"republic",  name:"Republic World",      short:"REP",  color:"#B07A5A", ytid:"UCwqusr8YDwM-3mEYTDeJHzw", handle:"@RepublicWorld" },
+  { id:"firstpost", name:"Firstpost",           short:"FP",   color:"#5C8AA6", ytid:"UCz8QaiQxApLq8sLNcszYyJw", handle:"@Firstpost" },
+  { id:"abp",       name:"ABP Ananda",          short:"ABP",  color:"#B06E6E", ytid:"UCv3rFzn-GHGtqzXiaq3sWNg", handle:"@abpanandatv" },
+];
+
+/* Summary sources — all FREE, no API, no Twitter (Twitter has no reliable free feed).
+   Breaking = your loaded newspapers (general news). AI = dedicated AI publications.
+   Kept on separate source pools so the two lists never come out the same. */
+const AI_FEEDS = [
+  "https://techcrunch.com/category/artificial-intelligence/feed/",
+  "https://venturebeat.com/category/ai/feed/",
+  "https://www.theverge.com/rss/index.xml",
+  "https://www.wired.com/feed/tag/ai/latest/rss",
+  "https://news.google.com/rss/search?q=when:1d%20(OpenAI%20OR%20Anthropic%20OR%20%22AI%20model%22%20OR%20Gemini)&hl=en-US&gl=US&ceid=US:en",
+];
+/* fetch several feeds, merge, de-dupe by title, newest first; one dead feed never blocks the rest */
+async function fetchMany(urls){
+  const out = [];
+  const res = await Promise.allSettled(urls.map(async u => {
+    try{ const items = parsePrint(await proxyFetch(u)); if(items.length) return items; throw 0; }
+    catch(e){ return await fetchViaRss2Json(u); }   // bridge fallback (handles Google News)
+  }));
+  res.forEach(r => { if(r.status==="fulfilled") out.push(...r.value); });
+  const seen = new Set();
+  return out.sort((a,b)=>b.ts-a.ts).filter(i => {
+    const k = i.title.toLowerCase().slice(0,45); if(seen.has(k)) return false; seen.add(k); return true;
+  });
+}
+
+/* --- state --- */
+const state = {
+  tab: "print",
+  printSrc: "all",
+  videoSrc: "all",
+  sumView: "breaking",
+  print: {},   // id -> [items]
+  video: {},   // id -> [items]
+  sum: load("brief.sum", { breaking:[], ai:[], ts:null, aiWritten:false }),
+  kolkata: load("brief.kolkata", []),
+  loadingSum: false,
+  loadingKol: false,
+  speaking: false,
+  query: "",
+  searchQ: "",
+  searchResults: [],
+  searchLoading: false,
+  searchError: "",
+};
+
+const $main = document.getElementById("main");
+const $chips = document.getElementById("chips");
+const $searchbar = document.getElementById("searchbar");
+const $q = document.getElementById("q");
+$q.oninput = () => { state.query = $q.value.trim().toLowerCase(); render(); };
+function matchesQuery(it){
+  if(!state.query) return true;
+  return (it.title||"").toLowerCase().includes(state.query) || (it.dek||"").toLowerCase().includes(state.query);
+}
+
+/* --- helpers --- */
+function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function esc(s){ return (s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function strip(html){ const d=document.createElement("div"); d.innerHTML=html||""; return (d.textContent||"").replace(/\s+/g," ").trim(); }
+function timeAgo(ts){
+  if(!ts) return "";
+  const s = Math.floor((Date.now()-ts)/1000);
+  if(s<60) return s+"s"; const m=Math.floor(s/60);
+  if(m<60) return m+"m"; const h=Math.floor(m/60);
+  if(h<24) return h+"h"; const d=Math.floor(h/24); return d+"d";
+}
+function colorFor(list,id){ const x=list.find(s=>s.id===id); return x?x.color:"#191510"; }
+let _renderTimer;
+function scheduleRender(){ clearTimeout(_renderTimer); _renderTimer = setTimeout(() => render(), 120); }
+
+async function proxyFetch(url){
+  // cache-bust so the proxy AND the upstream feed serve fresh content on every refresh
+  const fresh = url + (url.includes("?") ? "&" : "?") + "_=" + Date.now();
+  const attempt = make => {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 6500);
+    return fetch(make(fresh), { cache:"no-store", signal:ctrl.signal }).then(async r => {
+      clearTimeout(to);
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      const t = await r.text();
+      if(t && t.length > 150) return t;
+      throw new Error("empty");
+    }).catch(e => { clearTimeout(to); throw e; });
+  };
+  // race all proxies at once; first one to succeed wins — uses manual race for iOS Safari compatibility
+  return new Promise((resolve, reject) => {
+    let settled = false, pending = PROXIES.length;
+    PROXIES.map(attempt).forEach(p => {
+      p.then(v => { if(!settled){ settled=true; resolve(v); } })
+       .catch(() => { if(--pending === 0 && !settled) reject(new Error("all proxies failed")); });
+    });
+  });
+}
+
+/* RSS-to-JSON bridge: fetches a feed server-side and returns CORS-friendly JSON.
+   Tries multiple bridge services so one going down doesn't break everything. */
+async function fetchViaRss2Json(url){
+  const parseR2J = j => {
+    if(j.status !== "ok" || !Array.isArray(j.items)) throw new Error("bad");
+    return j.items.map(it => {
+      let dek = strip(it.description || it.content || "");
+      if(dek.length > 180) dek = dek.slice(0,178) + "…";
+      return { title: strip(it.title), link: it.link, dek, ts: it.pubDate ? Date.parse(it.pubDate.replace(" ","T")+"Z") : 0 };
+    }).filter(x => x.title && x.link).sort((a,b)=>b.ts-a.ts).slice(0, 25);
+  };
+  // Try rss2json.com
+  try{
+    const r = await fetch("https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(url), { cache:"no-store" });
+    if(r.ok){ const j = await r.json(); const items = parseR2J(j); if(items.length) return items; }
+  }catch(e){}
+  // Try via CORS proxy chain (raw XML parse fallback)
+  try{
+    const text = await proxyFetch(url);
+    const items = parsePrint(text);
+    if(items.length) return items;
+  }catch(e){}
+  throw new Error("all rss2json methods failed");
+}
+
+/* --- parsers --- */
+function parsePrint(xml){
+  const doc = new DOMParser().parseFromString(xml, "text/xml");
+  let nodes = [...doc.getElementsByTagName("item")];
+  if(!nodes.length) nodes = [...doc.getElementsByTagName("entry")]; // Atom
+  return nodes.map(n => {
+    const g = t => { const e = n.getElementsByTagName(t)[0]; return e ? e.textContent.trim() : ""; };
+    // namespace-robust: find first child whose localName matches and has text (handles content:encoded etc.)
+    const gLocal = local => {
+      for(const e of n.getElementsByTagName("*")){
+        if(e.localName === local){ const tx = (e.textContent||"").trim(); if(tx) return tx; }
+      }
+      return "";
+    };
+    let link = g("link");
+    if(!link){ const l = n.getElementsByTagName("link")[0]; if(l) link = l.getAttribute("href") || ""; }
+    let title = g("title");
+    // Google News appends " - Source"; keep title clean
+    const pub = g("pubDate") || g("published") || g("updated") || g("dc:date");
+    let dek = strip(gLocal("description") || gLocal("encoded") || gLocal("summary") || gLocal("content") || g("media:description"));
+    if(dek.length > 180) dek = dek.slice(0,178) + "…";
+    return { title: strip(title), link, dek, ts: pub ? Date.parse(pub) : 0 };
+  }).filter(x => x.title && x.link).sort((a,b)=>b.ts-a.ts).slice(0, 25);
+}
+
+function parseVideo(xml){
+  const doc = new DOMParser().parseFromString(xml, "text/xml");
+  const nodes = [...doc.getElementsByTagName("entry")];
+  return nodes.map(n => {
+    const g = t => { const e = n.getElementsByTagName(t)[0]; return e ? e.textContent.trim() : ""; };
+    let vid = g("yt:videoId") || g("videoId");
+    if(!vid){ const m = (n.getElementsByTagName("link")[0]?.getAttribute("href")||"").match(/v=([\w-]+)/); if(m) vid = m[1]; }
+    const stat = n.getElementsByTagName("media:statistics")[0] || n.getElementsByTagName("statistics")[0];
+    const views = stat ? stat.getAttribute("views") : "";
+    const pub = g("published") || g("updated");
+    return {
+      vid,
+      title: strip(g("title")),
+      thumb: vid ? `https://i.ytimg.com/vi/${vid}/hqdefault.jpg` : "",
+      views: views ? Number(views).toLocaleString("en-IN") : "",
+      ts: pub ? Date.parse(pub) : 0,
+    };
+  }).filter(x => x.vid && x.title).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0, 15);
+}
+
+/* --- loaders (independent; one failure never blocks the rest) --- */
+async function fetchWpJson(url){
+  const text = await proxyFetch(url);
+  const posts = JSON.parse(text);
+  if(!Array.isArray(posts) || !posts.length) throw new Error("no posts");
+  return posts.map(p => ({
+    title: strip(p.title?.rendered||""),
+    link: p.link||"",
+    dek: (() => { const t = strip(p.excerpt?.rendered||""); return t.length>178 ? t.slice(0,178)+"…" : t; })(),
+    ts: p.date ? Date.parse(p.date) : 0
+  })).filter(p => p.title && p.link);
+}
+
+async function loadPrint(src){
+  const store = items => {
+    items.forEach(i => { i.src = src.id; i.sourceName = src.name; });
+    state.print[src.id] = items; save("brief.print."+src.id, items); scheduleRender();
+  };
+  // WordPress REST API: gives real excerpts when RSS is blocked
+  if(src.wpjson){
+    try{ const items = await fetchWpJson(src.wpjson); if(items.length){ store(items); return; } }catch(e){}
+  }
+  // Merged source (e.g. Markets & IPO): combine reports from ALL its feeds
+  if(src.merge){
+    try{ const items = await fetchMany(src.feeds); if(items.length){ store(items); return; } }catch(e){}
+  }
+  // bridge:true -> try the RSS-to-JSON bridge first (better at pulling the brief/summary)
+  const fetchOne = async (url, useBridge) =>
+    useBridge ? fetchViaRss2Json(url) : parsePrint(await proxyFetch(url));
+  const order = src.bridge ? [true, false] : [false, true];
+  for(const useBridge of order){
+    for(const url of src.feeds){
+      try{ const items = await fetchOne(url, useBridge); if(items.length){ store(items); return; } }
+      catch(e){ /* try next */ }
+    }
+  }
+}
+async function loadVideo(ch){
+  // Fetch the channel feed through ALL proxies at once and merge the results.
+  // A single proxy that serves a stale/cached copy can no longer hide new uploads —
+  // any proxy that returns a fresh copy contributes its newest videos to the pool.
+  const tryId = async id => {
+    if(!id) return [];
+    const feed = `https://www.youtube.com/feeds/videos.xml?channel_id=${id}&_=${Date.now()}`;
+    const texts = await Promise.allSettled(PROXIES.map(make => {
+      const ctrl = new AbortController();
+      const to = setTimeout(() => ctrl.abort(), 7000);
+      return fetch(make(feed), { cache:"no-store", signal:ctrl.signal })
+        .then(r => { clearTimeout(to); if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); })
+        .catch(e => { clearTimeout(to); throw e; });
+    }));
+    let merged = [];
+    texts.forEach(t => {
+      if(t.status === "fulfilled" && t.value && t.value.length > 150){
+        try{ merged.push(...parseVideo(t.value)); }catch(e){}
+      }
+    });
+    const seen = new Set();
+    merged = merged.filter(v => { if(!v.vid || seen.has(v.vid)) return false; seen.add(v.vid); return true; })
+                   .sort((a,b) => (b.ts||0) - (a.ts||0))
+                   .slice(0, 15);
+    return merged.map(v => { if(v.vid && !v.thumb) v.thumb = `https://i.ytimg.com/vi/${v.vid}/hqdefault.jpg`; return v; });
+  };
+
+  // Prefer the verified hardcoded ytid. A cached scraped id is only a fallback.
+  const cachedId = localStorage.getItem("brief.ytid."+ch.id);
+  if(ch.ytid && cachedId && cachedId !== ch.ytid) localStorage.removeItem("brief.ytid."+ch.id);
+  let id = ch.ytid || cachedId;
+  let items = await tryId(id);
+
+  // Fallback ONLY when the verified id returned nothing: resolve the channel's own id from its handle page.
+  // Note: we deliberately do NOT use the loose /channel\/UC.../ pattern — on a channel page that also
+  // matches recommended/related channels and would replace the correct feed with the wrong one.
+  if(!items.length && ch.handle){
+    try{
+      const html = await proxyFetch("https://www.youtube.com/"+ch.handle);
+      const patterns = [
+        /"(?:channelId|externalId)":"(UC[\w-]{22})"/,
+        /"browseId":"(UC[\w-]{22})"/,
+        /data-channel-external-id="(UC[\w-]{22})"/,
+        /<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{22})">/
+      ];
+      let newId = null;
+      for(const p of patterns){ const m = html.match(p); if(m && m[1]){ newId = m[1]; break; } }
+      if(newId && newId !== id){
+        const fresh = await tryId(newId);
+        if(fresh.length){ items = fresh; localStorage.setItem("brief.ytid."+ch.id, newId); }
+      }
+    }catch(e){}
+  }
+  // Keep only valid, thumbnailed videos so a single bad entry can never blank a channel.
+  items = (items||[]).filter(v => v.vid && v.thumb);
+
+  // Merge fresh videos with whatever we had cached, de-dupe by video id, keep the 15 newest.
+  // Result: brand-new uploads always rise to the top, old ones naturally fall off,
+  // and if a refresh fetches nothing we still keep showing the cached list (never blank).
+  const prev = state.video[ch.id] || load("brief.video."+ch.id, []) || [];
+  const byId = new Map();
+  [...items, ...prev].forEach(v => { if(v && v.vid && v.thumb && !byId.has(v.vid)) byId.set(v.vid, v); });
+  let outv = [...byId.values()].sort((a,b) => (b.ts||0) - (a.ts||0)).slice(0, 15);
+
+  if(outv.length){
+    outv.forEach(i => { i.ch = ch.id; i.channelName = ch.name; });
+    state.video[ch.id] = outv;
+    save("brief.video."+ch.id, outv);
+    scheduleRender();
+  }
+}
+
+function hydrateCache(){
+  PRINT.forEach(s => { const c = load("brief.print."+s.id, null); if(c) state.print[s.id] = c; });
+  VIDEO.forEach(c => {
+    let v = load("brief.video."+c.id, null);
+    if(v && v.length){
+      // Drop only the individual blank/invalid entries — never wipe the whole channel.
+      v = v.filter(i => i && i.vid && i.thumb);
+      if(v.length){
+        state.video[c.id] = v;
+        save("brief.video."+c.id, v);
+      } else {
+        localStorage.removeItem("brief.video."+c.id);
+      }
+    }
+  });
+}
+
+async function refreshFeeds(){
+  setRefreshing(true);
+  await Promise.allSettled([
+    ...PRINT.map(loadPrint),
+    ...VIDEO.map(loadVideo),
+    loadKolkata(),
+  ]);
+  setRefreshing(false);
+  render();
+}
+function setRefreshing(on){
+  const ic = document.getElementById("refreshIcon");
+  if(ic) ic.classList.toggle("spin", on);
+}
+
+/* --- AI summary (Anthropic API only on this action, only if key saved) --- */
+async function aiSummarize(breakingCands, aiCands){
+  const key = localStorage.getItem("brief.key");
+  if(!key) return null;
+  const model = localStorage.getItem("brief.model") || "claude-3-5-sonnet-latest";
+  const prompt =
+`You are a sharp news editor. From the two headline lists below, output ONLY a JSON object:
+{"breaking":[15 items],"ai":[15 items]}
+Each item = {"t":"punchy headline, max 14 words","d":"one sentence on why it matters, max 24 words"}.
+Pick the 15 most significant in each list, de-duplicate near-identical stories, and keep the two lists fully distinct (no story may appear in both), no preamble, JSON only.
+
+BREAKING HEADLINES:
+${breakingCands.join("\n")}
+
+AI HEADLINES:
+${aiCands.join("\n")}`;
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{
+      "content-type":"application/json",
+      "x-api-key":key,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true",
+    },
+    body: JSON.stringify({ model, max_tokens:2200, messages:[{ role:"user", content:prompt }] }),
+  });
+  if(!r.ok){ throw new Error("API "+r.status+": "+(await r.text()).slice(0,200)); }
+  const j = await r.json();
+  const txt = (j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+  return JSON.parse(txt.replace(/```json|```/g,"").trim());
+}
+
+async function refreshSummary(){
+  if(state.loadingSum) return;
+  state.loadingSum = true; render();
+  try{
+    // Breaking: from your loaded newspapers only (general news, no API)
+    const breakingItems = Object.values(state.print).flat().filter(Boolean).sort((a,b)=>b.ts-a.ts);
+    const breakingCands = breakingItems.slice(0,30).map(i => i.dek ? `${i.title} — ${i.dek}` : i.title);
+    // Top AI: from dedicated AI publications only (no API) — a different pool, so the lists differ
+    let aiItems = [];
+    try{ aiItems = await fetchMany(AI_FEEDS); }catch(e){}
+    const aiCands = aiItems.slice(0,30).map(i => i.dek ? `${i.title} — ${i.dek}` : i.title);
+
+    let result = null;
+    try{ result = await aiSummarize(breakingCands, aiCands); }catch(e){ console.warn(e); }
+
+    const dekFor = (arr, title) => { const m = arr.find(x => x.title === title); return m && m.dek ? m.dek : ""; };
+
+    if(!result){
+      const seen = new Set();
+      const top = (arr) => {
+        const out=[];
+        for(const i of arr){ const k=i.title.toLowerCase().slice(0,40); if(seen.has(k))continue; seen.add(k);
+          out.push({ t:i.title, d: i.dek || i.sourceName || "", l: i.link||"" }); if(out.length>=15)break; }
+        return out;
+      };
+      result = { breaking: top(breakingItems), ai: top(aiItems), aiWritten:false };
+    } else {
+      result.aiWritten = true;
+      const findLink = (title, sources) => { const m = sources.find(i => i.title && i.title.toLowerCase().slice(0,40) === (title||"").toLowerCase().slice(0,40)); return m ? m.link||"" : ""; };
+      (result.breaking||[]).forEach(it => { if(!it.d) it.d = dekFor(breakingItems, it.t); if(!it.l) it.l = findLink(it.t, breakingItems); });
+      (result.ai||[]).forEach(it => { if(!it.d) it.d = dekFor(aiItems, it.t); if(!it.l) it.l = findLink(it.t, aiItems); });
+    }
+
+    state.sum = { breaking:result.breaking||[], ai:result.ai||[], ts:Date.now(), aiWritten:!!result.aiWritten };
+    save("brief.sum", state.sum);
+  }finally{
+    state.loadingSum = false; render();
+  }
+}
+
+/* --- rendering --- */
+function renderChips(){
+  if(state.tab === "summary" || state.tab === "search"){ $chips.style.display="none"; return; }
+  $chips.style.display="flex";
+  const src = state.tab === "print" ? PRINT.slice() : VIDEO.slice();
+  // alphabetical by name, but any source flagged end:true goes to the very end
+  src.sort((a,b) => (!!a.end - !!b.end) || a.name.localeCompare(b.name));
+  const list = [{id:"all",name:"All",color:"#191510"}, ...src];
+  const cur = state.tab === "print" ? state.printSrc : state.videoSrc;
+  $chips.innerHTML = list.map(s => {
+    const on = s.id === cur;
+    // always colour-coded: filled when active, soft tint + coloured text/border otherwise
+    const style = on
+      ? `background:${s.color};border-color:${s.color};color:#fff;`
+      : `background:${s.color}1A;border-color:${s.color};color:${s.color};`;
+    return `<button class="chip ${on?"on":""}" data-src="${s.id}" style="${style}">${esc(s.name)}</button>`;
+  }).join("");
+  $chips.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+    if(state.tab==="print") state.printSrc = b.dataset.src; else state.videoSrc = b.dataset.src;
+    render();
+  });
+}
+
+function renderPrint(){
+  let items;
+  if(state.printSrc === "all") items = Object.values(state.print).flat().filter(Boolean).sort((a,b)=>b.ts-a.ts);
+  else items = (state.print[state.printSrc]||[]).slice().sort((a,b)=>b.ts-a.ts);
+  items = items.filter(matchesQuery);
+
+  if(!items.length){
+    $main.innerHTML = Object.keys(state.print).length
+      ? `<p class="note">No stories yet for this source.<br>Pull the reload icon at top right.</p>`
+      : Array(5).fill('<div class="skel"></div>').join("");
+    return;
+  }
+  $main.innerHTML = items.map((a,i) => {
+    const c = colorFor(PRINT,a.src);
+    return `
+    <article class="pcard" data-link="${esc(a.link)}" style="animation-delay:${i*35}ms;border-left:4px solid ${c};background:${c}12">
+      <div class="meta">
+        <span class="badge" style="background:${c}">${esc((PRINT.find(s=>s.id===a.src)||{}).short||a.src)}</span>
+        <span class="time">${a.ts?timeAgo(a.ts)+" ago":""}</span>
+      </div>
+      <h2 class="ptitle">${esc(a.title)}</h2>
+      ${a.dek?`<p class="pdek">${esc(a.dek)}</p>`:""}
+    </article>`; }).join("");
+  $main.querySelectorAll(".pcard").forEach(c => c.onclick = () => {
+    const url = c.dataset.link; if(!url) return;
+    const a = Object.assign(document.createElement('a'), {href:url, target:'_blank', rel:'noopener'});
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+}
+
+function renderVideo(){
+  const channels = state.videoSrc === "all" ? VIDEO : VIDEO.filter(c => c.id === state.videoSrc);
+  let html = "";
+
+  if(state.videoSrc === "all"){
+    const all = Object.values(state.video).flat().filter(Boolean).sort((a,b)=>b.ts-a.ts).filter(matchesQuery);
+    if(all.length){
+      html += all.map((v,i)=>videoCard(v,i)).join("");
+    } else if(!Object.keys(state.video).length){
+      html += Array(3).fill('<div class="skel" style="height:0;padding-bottom:56%"></div>').join("");
+    }
+    // channels with no inline feed -> show open-channel tiles (hide while searching)
+    if(!state.query) VIDEO.filter(c=>!c.ytid).forEach(c => html += openChannelTile(c));
+  } else {
+    const ch = channels[0];
+    const vids = (state.video[ch.id] || []).filter(matchesQuery);
+    if(vids.length) html += vids.map((v,i)=>videoCard(v,i)).join("");
+    else if(ch.ytid) html += Array(3).fill('<div class="skel" style="height:0;padding-bottom:56%"></div>').join("") + openChannelTile(ch,true);
+    else html += openChannelTile(ch);
+  }
+  $main.innerHTML = html || `<p class="note">Tap a channel above.</p>`;
+}
+
+function videoCard(v,i){
+  const url = `https://www.youtube.com/watch?v=${v.vid}`;
+  const c = colorFor(VIDEO,v.ch);
+  return `<a class="vcard" href="${url}" target="_blank" rel="noopener" style="animation-delay:${i*35}ms">
+    <div class="thumbwrap">
+      <img loading="lazy" src="${v.thumb}" alt="" data-vid="${esc(v.vid)}" data-step="0"
+        onerror="(function(im){var v=im.getAttribute('data-vid');var s=+im.getAttribute('data-step');var f=['hqdefault','mqdefault','default'];s++;if(v&&s<f.length){im.setAttribute('data-step',s);im.src='https://i.ytimg.com/vi/'+v+'/'+f[s]+'.jpg';}else{im.style.display='none';}})(this)">
+      <span class="playbtn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="${c}" style="margin-left:3px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </span>
+    </div>
+    <h2 class="vtitle" style="border-left:3px solid ${c};padding-left:10px">${esc(v.title)}</h2>
+    <div class="vmeta">
+      <span class="badge" style="background:${c}">${esc((VIDEO.find(c2=>c2.id===v.ch)||{}).short||"")}</span>
+      <span class="time">${v.views?v.views+" views · ":""}${v.ts?timeAgo(v.ts)+" ago":""}</span>
+    </div>
+  </a>`;
+}
+function openChannelTile(ch, secondary){
+  const url = `https://www.youtube.com/${ch.handle}`;
+  return `<a class="openchan" href="${url}" target="_blank" rel="noopener">
+    <span class="lbl">${secondary?"Open more from ":""}${esc(ch.name)} on YouTube</span>
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="${ch.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+  </a>`;
+}
+
+function renderSummary(){
+  $chips.style.display="none";
+  const v = state.sumView;
+  const items = v === "kolkata" ? (state.kolkata || []) : (state.sum[v] || []);
+  const busy = v === "kolkata" ? state.loadingKol : state.loadingSum;
+  const head = `
+    <div class="subtoggle">
+      <button class="${v==="breaking"?"on":""}" data-sv="breaking">Breaking</button>
+      <button class="${v==="kolkata"?"on":""}" data-sv="kolkata">Kolkata</button>
+      <button class="${v==="ai"?"on":""}" data-sv="ai">AI</button>
+    </div>
+    <div class="sumhead">
+      <span class="lt">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B4321F" stroke-width="2"><path d="m12 3 1.9 5.8L20 9l-4.6 3.6L17 19l-5-3.5L7 19l1.6-6.4L4 9l6.1-.2z"/></svg>
+        ${state.sum.aiWritten?"AI‑written digest":"Auto digest"}${state.sum.ts?" · "+timeAgo(state.sum.ts)+" ago":""}
+      </span>
+      <button class="refresh" id="btnSum" ${busy?"disabled":""}>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="${busy?"spin":""}"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        ${v==="kolkata"?(state.loadingKol?"Refreshing…":"Refresh Kolkata news"):(state.loadingSum?"Generating…":"Refresh AI summary")}
+      </button>
+    </div>
+    <button class="podbtn" id="btnPod" ${items.length?"":"disabled"}>
+      ${state.speaking
+        ? `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> Stop podcast`
+        : `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3zM3 19a2 2 0 0 0 2 2h1a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H3z"/></svg> Listen — ${v==="breaking"?"Breaking":v==="kolkata"?"Kolkata":"AI"}`}
+    </button>`;
+
+  let body;
+  if(busy && !items.length){
+    body = Array(6).fill('<div class="skel" style="height:64px"></div>').join("");
+  } else if(!items.length){
+    body = `<p class="note">No summary yet.<br>Tap “Refresh AI summary” to generate ${v==="ai"?"the top AI stories":v==="kolkata"?"the top Kolkata stories":"the top breaking stories"}.<br><br>${
+      localStorage.getItem("brief.key")
+        ? "Your Anthropic key is saved — used only here, only to rewrite the digest."
+        : "Works free with no key — pulls breaking headlines + top AI stories from reliable feeds."
+    }</p>`;
+  } else {
+    body = items.map((s,i)=>`
+      <div class="scard" ${s.l?`data-link="${esc(s.l)}" style="cursor:pointer;animation-delay:${i*25}ms"`:`style="animation-delay:${i*25}ms"`}>
+        <span class="snum">${String(i+1).padStart(2,"0")}</span>
+        <div class="stitle">${esc(s.t||s.title||"")}</div>
+        ${s.d?`<div class="sdesc">${esc(s.d)}</div>`:""}
+      </div>`).join("");
+  }
+  $main.innerHTML = head + body;
+  document.getElementById("btnSum").onclick = () => { if(state.sumView === "kolkata") loadKolkata(); else refreshSummary(); };
+  const pod = document.getElementById("btnPod");
+  if(pod) pod.onclick = speakSummary;
+  $main.querySelectorAll("[data-sv]").forEach(b => b.onclick = () => { stopSpeak(); state.sumView = b.dataset.sv; render(); });
+  $main.querySelectorAll(".scard[data-link]").forEach(c => c.onclick = () => {
+    const url = c.dataset.link; if(!url) return;
+    const a = Object.assign(document.createElement('a'), {href:url, target:'_blank', rel:'noopener'});
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+}
+
+/* --- podcast: free on-device text-to-speech, no API --- */
+function stopSpeak(){
+  try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
+  state.speaking = false;
+}
+function speakSummary(){
+  if(!window.speechSynthesis){ return; }
+  if(state.speaking){ stopSpeak(); render(); return; }
+  const items = state.sumView === "kolkata" ? (state.kolkata || []) : (state.sum[state.sumView] || []);
+  if(!items.length) return;
+  const label = state.sumView === "kolkata" ? "Top breaking news in Kolkata. "
+              : state.sumView === "ai" ? "Top A.I. news. "
+              : "Top breaking news. ";
+  let text = "Brief. " + label;
+  items.forEach((s,i) => { text += (i+1) + ". " + (s.t||s.title||"") + ". " + (s.d?s.d+". ":""); });
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 1.0; u.pitch = 1.05;
+  // Prefer a female voice (works on iOS/Android/desktop where available)
+  try{
+    const voices = window.speechSynthesis.getVoices() || [];
+    const femaleNames = /female|samantha|karen|moira|tessa|fiona|victoria|serena|allison|ava|susan|zira|joana|google uk english female|google us english/i;
+    const pick = voices.find(v => /^en/i.test(v.lang) && femaleNames.test(v.name))
+              || voices.find(v => femaleNames.test(v.name))
+              || voices.find(v => /^en/i.test(v.lang));
+    if(pick) u.voice = pick;
+  }catch(e){}
+  u.onend = () => { state.speaking = false; render(); };
+  u.onerror = () => { state.speaking = false; render(); };
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+  state.speaking = true; render();
+}
+
+function render(){
+  try{
+    // sticky chip offset
+    const hdr = document.querySelector("header");
+    if(hdr) document.documentElement.style.setProperty("--hh", hdr.offsetHeight+"px");
+    const isSearch = state.tab === "search";
+    if($searchbar) $searchbar.style.display = (state.tab === "summary" || isSearch) ? "none" : "block";
+    renderChips();
+    if(state.tab==="print") renderPrint();
+    else if(state.tab==="video") renderVideo();
+    else if(state.tab==="summary") renderSummary();
+    else if(state.tab==="search") renderSearchTab();
+    document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab===state.tab));
+  }catch(e){ console.warn("render error:", e); }
+}
+
+/* settings removed */
+
+/* --- wire up nav tabs with auto-refresh on every tab switch --- */
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+  stopSpeak();
+  const prevTab = state.tab;
+  state.tab = b.dataset.tab;
+  render();
+  // Every tab switch triggers a fresh data pull in background
+  if(state.tab !== "search") autoRefresh();
+});
+document.getElementById("btnRefresh").onclick = () => autoRefresh();
+document.getElementById("btnWebSearch").onclick = () => { state.tab = "search"; render(); };
+
+/* --- Internet Search tab renderer --- */
+function renderSearchTab(){
+  $chips.style.display = "none";
+  $searchbar.style.display = "none";
+  $main.innerHTML = `
+    <div style="padding:8px 0 14px">
+      <h2 style="font-family:var(--serif);font-size:20px;font-weight:600;margin:0 0 12px">Search News</h2>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <input id="wsq" type="search" placeholder="Type any news topic…" autocomplete="off"
+          style="flex:1;border:1.5px solid rgba(25,21,16,.18);border-radius:11px;padding:11px 13px;font-family:var(--sans);font-size:14px;background:#fff;color:var(--ink);outline:none;"
+          value="${esc(state.searchQ)}">
+        <button id="wsbtn" style="border:none;background:var(--ink);color:var(--paper);border-radius:11px;padding:0 18px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px;">
+          ${state.searchLoading
+            ? `<svg class="spin" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>`
+            : `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`}
+          Search
+        </button>
+      </div>
+      ${state.searchError ? `<p class="note" style="color:var(--accent)">${esc(state.searchError)}</p>` : ""}
+      <div id="wsresults">
+        ${state.searchLoading
+          ? Array(4).fill('<div class="skel" style="height:80px;margin-bottom:10px"></div>').join("")
+          : state.searchResults.length
+            ? state.searchResults.map((r,i)=>`
+              <article class="pcard" data-link="${esc(r.l)}" style="animation-delay:${i*30}ms;border-left:4px solid var(--accent);background:rgba(180,50,31,.06)">
+                <div class="meta">
+                  <span class="badge" style="background:var(--accent)">${esc(r.src||"NEWS")}</span>
+                  <span class="time">${r.ts?timeAgo(r.ts)+" ago":""}</span>
+                </div>
+                <h2 class="ptitle">${esc(r.t)}</h2>
+                ${r.d?`<p class="pdek">${esc(r.d)}</p>`:""}
+              </article>`).join("")
+            : state.searchQ
+              ? `<p class="note">No results found. Try different keywords.</p>`
+              : `<p class="note">Search for any news topic — politics, sports, tech, local events — and get the latest stories from across the web.</p>`
+        }
+      </div>
+    </div>`;
+
+  const inp = document.getElementById("wsq");
+  const btn = document.getElementById("wsbtn");
+
+  inp.oninput = () => { state.searchQ = inp.value; };
+  inp.onkeydown = e => { if(e.key === "Enter") doWebSearch(); };
+  btn.onclick = doWebSearch;
+  inp.focus();
+
+  $main.querySelectorAll(".pcard[data-link]").forEach(c => c.onclick = () => {
+    const url = c.dataset.link; if(!url) return;
+    const a = Object.assign(document.createElement('a'), {href:url, target:'_blank', rel:'noopener'});
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+}
+
+async function doWebSearch(){
+  const q = state.searchQ.trim();
+  if(!q || state.searchLoading) return;
+  state.searchLoading = true;
+  state.searchResults = [];
+  state.searchError = "";
+  render();
+
+  try{
+    // Build a broad set of Google News RSS queries for the topic
+    const queries = [
+      `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-IN&gl=IN&ceid=IN:en`,
+      `https://news.google.com/rss/search?q=${encodeURIComponent(q+" news")}&hl=en-IN&gl=IN&ceid=IN:en`,
+      `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`,
+    ];
+    const results = await Promise.allSettled(queries.map(async url => {
+      try{ return parsePrint(await proxyFetch(url)); }
+      catch(e){ try{ return await fetchViaRss2Json(url); }catch(e2){ return []; } }
+    }));
+    let items = [];
+    results.forEach(r => { if(r.status==="fulfilled" && Array.isArray(r.value)) items.push(...r.value); });
+
+    // De-dupe and tag source from title suffix
+    const seen = new Set();
+    items = items.sort((a,b)=>(b.ts||0)-(a.ts||0)).filter(i => {
+      const k = (i.title||"").toLowerCase().slice(0,70);
+      if(!k || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    }).slice(0, 30).map(i => {
+      // Extract source from Google News title pattern "Headline - Source"
+      const srcMatch = (i.title||"").match(/[-–]\s*([\w\s\.]+)$/);
+      const src = srcMatch ? srcMatch[1].trim().slice(0,16) : "";
+      const cleanTitle = src ? i.title.replace(new RegExp("[-–]\\s*" + src.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") + "$"), "").trim() : i.title;
+      return { t: cleanTitle||i.title, d: i.dek||"", l: i.link||"", ts: i.ts||0, src };
+    });
+
+    if(items.length){
+      state.searchResults = items;
+    } else {
+      state.searchError = `No recent news found for "${q}". Try broader keywords.`;
+    }
+  }catch(e){
+    state.searchError = "Search failed. Check your connection and try again.";
+  }
+  state.searchLoading = false;
+  render();
+}
+
+/* --- boot: show cache instantly, then refresh in background --- */
+try{ if(window.speechSynthesis){ window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices(); } }catch(e){}
+
+async function loadKolkata(){
+  if(state.loadingKol) return;
+  state.loadingKol = true; render();
+  try{
+    // Direct newspaper RSS feeds for Kolkata (most reliable — no Google News middleman)
+    const directFeeds = [
+      // Telegraph India – West Bengal & Calcutta sections
+      "https://www.telegraphindia.com/west-bengal/feed",
+      "https://www.telegraphindia.com/calcutta/feed",
+      "https://www.telegraphindia.com/bengal/feed",
+      // The Hindu – Kolkata section
+      "https://www.thehindu.com/news/cities/kolkata/feeder/default.rss",
+      // Times of India – Kolkata
+      "https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms",
+      "https://timesofindia.indiatimes.com/city/kolkata/rssfeeds/1.cms",
+      // Indian Express – Kolkata
+      "https://indianexpress.com/section/cities/kolkata/feed/",
+      // NDTV – Kolkata / West Bengal
+      "https://feeds.feedburner.com/ndtvnews-kolkata-news",
+      "https://www.ndtv.com/rss/kolkata",
+    ];
+
+    // Google News search feeds as additional pool
+    const gnFeeds = [
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("West Bengal Kolkata") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata crime politics") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata development Bengal") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:telegraphindia.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:timesofindia.indiatimes.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:thehindu.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:indianexpress.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:ndtv.com") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata Mamata TMC BJP Bengal politics") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Kolkata site:telegraphindia.com West Bengal") + "&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=" + encodeURIComponent("Bengal flood weather Kolkata") + "&hl=en-IN&gl=IN&ceid=IN:en",
+    ];
+
+    const allFeeds = [...directFeeds, ...gnFeeds];
+
+    // Fetch all feeds in parallel; each tries proxy first then rss2json bridge
+    const results = await Promise.allSettled(allFeeds.map(async feed => {
+      try{ const r = parsePrint(await proxyFetch(feed)); if(r.length >= 1) return r; }catch(e){}
+      try{ return await fetchViaRss2Json(feed); }catch(e){ return []; }
+    }));
+
+    let items = [];
+    results.forEach(r => { if(r.status==="fulfilled" && Array.isArray(r.value)) items.push(...r.value); });
+
+    // Fallback: filter from already-loaded print news if we still don't have enough
+    if(items.length < 10){
+      const fromPrint = Object.values(state.print).flat().filter(i =>
+        /kolkata|west bengal|bengal/i.test((i.title||"") + " " + (i.dek||""))
+      );
+      items.push(...fromPrint);
+    }
+
+    // De-duplicate: strip source suffix then use first 80 chars as key
+    const seen = new Set();
+    items = items
+      .sort((a,b) => (b.ts||0) - (a.ts||0))
+      .filter(i => {
+        const raw = (i.title||"").toLowerCase().replace(/\s+[-–|]\s+[\w\s]+$/, "").trim();
+        const k = raw.slice(0, 80);
+        if(!k || seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+
+    if(items.length){
+      state.kolkata = items.slice(0,40).map(i => ({ t:i.title, d:i.dek||"", l:i.link||"", ts:i.ts||0 }));
+      save("brief.kolkata", state.kolkata);
+    }
+  }catch(e){ console.warn("Kolkata refresh failed", e); }
+  state.loadingKol = false;
+  render();
+}
+
+// Global safety net: catch any unhandled JS errors so page never goes fully blank
+window.addEventListener("error", e => { console.warn("Brief caught error:", e.message); });
+window.addEventListener("unhandledrejection", e => { e.preventDefault(); console.warn("Brief caught rejection:", e.reason); });
+
+hydrateCache();
+try{ render(); }catch(e){ console.warn("render boot error:", e); }
+
+/* Single refresh entry point: feeds + Kolkata together.
+   Runs on every open, every manual refresh, every tab switch, every time the page/app returns to foreground.
+   No setInterval — event-driven only, no background battery drain. */
+let _autoRefreshing = false;
+async function autoRefresh(){
+  if(_autoRefreshing) return;
+  _autoRefreshing = true;
+  try{ await Promise.allSettled([refreshFeeds(), loadKolkata()]); }
+  finally{ _autoRefreshing = false; }
+}
+
+// Refresh on open/load
+autoRefresh();
+
+// Refresh when user returns to this tab/window (desktop browser tab switch or mobile app switch)
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "visible") autoRefresh();
+});
+
+// Refresh when user navigates back to the page (back button, bfcache restore on iOS Safari)
+window.addEventListener("pageshow", e => {
+  if(e.persisted) autoRefresh();   // persisted = restored from bfcache
+});
+
+// Note: focus listener removed — visibilitychange + pageshow cover all real re-open cases
+// without firing on every user interaction within the page.
+
+</script>
+</body>
+</html>
