@@ -151,17 +151,17 @@ main{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 
 .dgroup::after{content:"";flex:1;height:1px;background:var(--line)}
 
 /* PAGE TITLE (centered, underline — matches reference) */
-.pagetitle{text-align:center;margin:14px 0 18px}
-.pagetitle h2{font-family:var(--serif);font-weight:600;font-size:28px;letter-spacing:-.3px;color:var(--ink)}
-.pagetitle .divider{width:46px;height:2px;background:var(--ink);opacity:.45;margin:11px auto 0;border-radius:2px}
-.pagetitle p{font-size:12px;color:var(--ink2);margin-top:9px;letter-spacing:.3px}
+.pagetitle{text-align:center;margin:6px 0 12px}
+.pagetitle h2{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.2px;color:var(--ink)}
+.pagetitle .divider{width:34px;height:2px;background:var(--ink);opacity:.4;margin:7px auto 0;border-radius:2px}
+.pagetitle p{font-size:11px;color:var(--ink2);margin-top:6px;letter-spacing:.3px}
 
 /* TODAY BANNER */
-.daybanner{background:linear-gradient(120deg,var(--t1) 15%,var(--t2));color:#fff;border-radius:14px;
-  padding:12px 15px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.daybanner .cnt{font-family:var(--serif);font-weight:900;font-size:28px;line-height:1}
-.daybanner .lbl{font-size:12px;font-weight:700;opacity:.85}
-.daybanner .hint{font-size:10.5px;opacity:.7;margin-top:2px}
+.daybanner{background:linear-gradient(120deg,var(--t1) 15%,var(--t2));color:#fff;border-radius:12px;
+  padding:8px 13px;margin-bottom:11px;display:flex;align-items:center;gap:9px}
+.daybanner .cnt{font-family:var(--serif);font-weight:900;font-size:20px;line-height:1}
+.daybanner .lbl{font-size:11px;font-weight:700;opacity:.9}
+.daybanner .hint{font-size:9.5px;opacity:.72;margin-top:1px}
 
 /* CUSTOMIZE */
 .box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:14px;box-shadow:var(--sh2)}
@@ -332,7 +332,7 @@ function parseXML(x,ch){const d=new DOMParser().parseFromString(x,'text/xml');
       thumb:`https://i.ytimg.com/vi/${id}/mqdefault.jpg`,ts:pub?new Date(pub).getTime():0}})}
 
 async function fetchChannel(ch){
-  const c=CACHE[ch.id];if(c&&Date.now()-c.t<20*60*1000)return c.items;
+  const c=CACHE[ch.id];if(c&&Date.now()-c.t<12*60*1000)return c.items;
   for(const pi of proxyOrder()){
     try{const r=await tf(PROXIES[pi](ch.id));if(!r.ok)continue;
       const ct=r.headers.get('content-type')||'';let items=[];
@@ -418,6 +418,17 @@ function recommend(cat){const w=watchWeights();
   return p.map(v=>{let s=v.ts/1e10;if(w[v.chan])s+=w[v.chan]*6;return{...v,_s:s}}).sort((a,b)=>b._s-a._s);}
 
 /* ---------- helpers ---------- */
+async function downloadCSV(name,csv){
+  try{
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+    try{const file=new File([blob],name,{type:'text/csv'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return;}
+    }catch(e){if(e&&e.name==='AbortError')return;}
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},1500);toast('Saved to Files');
+  }catch(e){try{const u=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));window.open(u,'_blank');}catch(_){toast('Download not supported here');}}
+}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function timeAgo(ts){if(!ts)return'';const s=(Date.now()-ts)/1000;
   if(s<3600)return Math.max(1,Math.floor(s/60))+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';
@@ -472,9 +483,10 @@ function bindCards(root){root=root||document;
   /* manual watched button */
   root.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{markWatched(b.dataset.w);const c=b.closest('.card');if(c)c.style.opacity='.25';setTimeout(render,260);});
   /* add to refresh */
-  root.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const v=JSON.parse(b.dataset.add.replace(/&#39;/g,"'"));
-    if(INBOX.some(x=>x.vid===v.vid))return toast('Already in Refresh');
-    INBOX.unshift(v);saveInbox();toast('Added to Refresh ↑');renderNav();});
+  root.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{let v;try{v=JSON.parse(b.dataset.add.replace(/&#39;/g,"'"))}catch(e){return;}
+    if(INBOX.some(x=>x.vid===v.vid)){toast('Already in New');return;}
+    delete v._s;INBOX.unshift(v);saveInbox();renderNav();updateHeader();toast('Added to New ↑');
+    const c=b.closest('.card');if(c){c.style.opacity='.5';b.textContent='✓ Added';b.disabled=true;}});
   /* save toggle */
   root.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const v=JSON.parse(b.dataset.s.replace(/&#39;/g,"'"));
     if(SAVED.some(x=>x.vid===v.vid)){SAVED=SAVED.filter(x=>x.vid!==v.vid);toast('Removed from Saved');}
@@ -696,8 +708,8 @@ function paintWatched(){
     <button class="btn-s warn" id="clrW">🗑 Clear history</button></div><div id="wWrap"></div>`);
   document.getElementById('dlBtn').onclick=()=>{if(!wl.length)return toast('Nothing to download');
     const rows=[['Title','Channel','Category','Link','Watched At'],...wl.map(v=>[v.title,v.chan,v.cat||'',v.link,new Date(v.watchedAt||v.ts).toLocaleString()])];
-    const csv=rows.map(r=>r.map(x=>'"'+(x||'').replace(/"/g,'""')+'"').join(',')).join('\n');
-    const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='watched.csv';a.click();toast('Downloaded!');};
+    const csv=rows.map(r=>r.map(x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"').join(',')).join('\n');
+    downloadCSV('watched.csv',csv);};
   document.getElementById('clrW').onclick=()=>{if(confirm('Clear all watched history?')){WLIST=[];WATCHED=new Set();saveW();saveWL();toast('Cleared');render();}};
   const wrap=document.getElementById('wWrap');
   if(!wl.length){wrap.innerHTML=`<div class="empty"><div class="big">👁</div><b>No history yet</b><p>Videos you watch will appear here automatically.</p></div>`;return;}
