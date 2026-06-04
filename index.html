@@ -703,13 +703,8 @@ function paintSavedList(){const box=document.getElementById('savedList');if(!box
 /* --- Watched --- */
 function paintWatched(){
   const wl=WLIST.slice().sort((a,b)=>(b.watchedAt||0)-(a.watchedAt||0));CURLIST=wl;
-  setMain(pageHead('Watched','History · open or export the list')+`<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <button class="dlbtn" id="dlBtn">⬇ Export list (${wl.length})</button>
+  setMain(pageHead('Watched','Your watch history')+`<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
     <button class="btn-s warn" id="clrW">🗑 Clear history</button></div><div id="wWrap"></div>`);
-  document.getElementById('dlBtn').onclick=()=>{if(!wl.length)return toast('Nothing to download');
-    const rows=[['Title','Channel','Category','Link','Watched At'],...wl.map(v=>[v.title,v.chan,v.cat||'',v.link,new Date(v.watchedAt||v.ts).toLocaleString()])];
-    const csv=rows.map(r=>r.map(x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"').join(',')).join('\n');
-    downloadCSV('watched.csv',csv);};
   document.getElementById('clrW').onclick=()=>{if(confirm('Clear all watched history?')){WLIST=[];WATCHED=new Set();saveW();saveWL();toast('Cleared');render();}};
   const wrap=document.getElementById('wWrap');
   if(!wl.length){wrap.innerHTML=`<div class="empty"><div class="big">👁</div><b>No history yet</b><p>Videos you watch will appear here automatically.</p></div>`;return;}
@@ -758,8 +753,12 @@ function paintChList(){const box=document.getElementById('chList');if(!box)retur
   box.innerHTML=html+rst;
   box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const id=b.dataset.del;
     if(ADDED.some(a=>a.id===id))ADDED=ADDED.filter(a=>a.id!==id),saveAdded();else{REMOVED.add(id);saveRemoved();}
-    delete CATMAP[id];saveCatmap();rebuildCH();S.pool=S.pool.filter(v=>v.cid!==id);savePool();
-    toast('Channel removed');updateHeader();paintChList();renderNav();});
+    delete CATMAP[id];saveCatmap();delete CACHE[id];saveCache();rebuildCH();
+    S.pool=S.pool.filter(v=>v.cid!==id);savePool();
+    INBOX=INBOX.filter(v=>v.cid!==id);saveInbox();
+    SAVED=SAVED.filter(v=>v.cid!==id);saveSaved();
+    WLIST=WLIST.filter(v=>v.cid!==id);saveWL();
+    toast('Channel & its videos removed');updateHeader();paintChList();renderNav();});
   box.querySelectorAll('[data-recat]').forEach(s=>s.onchange=()=>{CATMAP[s.dataset.recat]=s.value;saveCatmap();rebuildCH();syncCats();toast('Category updated');paintChList();});
   const rb=document.getElementById('rstBtn');if(rb)rb.onclick=()=>{if(confirm('Restore all original channels and categories?')){
     REMOVED=new Set();ADDED=[];CATMAP={};CATLIST=[...BASECATS];saveRemoved();saveAdded();saveCatmap();saveCats();
